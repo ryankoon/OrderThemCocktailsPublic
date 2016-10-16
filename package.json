@@ -1,0 +1,22 @@
+{
+  "name": "orderthemcocktails",
+  "version": "1.0.0",
+  "description": "Cocktail ordering PoS app.",
+  "main": "server.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/alekhrycaiko/OrderThemCocktails"
+  },
+  "keywords": [
+    "cocktail",
+    "app",
+    "nodejs",
+    "mysql",
+    "react-native"
+  ],
+  "author": "Alek, Aditi, Chris and Ryan",
+  "license": "ISC"
+}
