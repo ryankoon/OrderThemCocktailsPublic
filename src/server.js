@@ -4,29 +4,27 @@
 
 // Connect to db
 var mysql = require('mysql');
-
-try {
-    var credentials = require("./credentials");
-    var jsonCredentials = JSON.parse(credentials);
-}
-catch(err){
-    throw new Error('Error obtaining credentials for db login');
-}
+var credentials = require('./../credentials.json');
 
 var connection = mysql.createConnection({
-    host : jsonCredentials.host,
-    user : jsonCredentials.username,
-    password: jsonCredentials.password,
-    database: jsonCredentials.connectionString
+    host : credentials.host,
+    user: credentials.username,
+    password: credentials.password
+})
+
+connection.connect(function (err){
+    console.log('Attempting to connect to MySQL');
+    if (err){
+       console.log('Errored out connecting : ' + err);
+   }
 });
 
-connection.connect();
-
+// TODO: Generate a query so this doesnt fail.
 connection.query('SELECT SOME STUFF AND MAKE A QUERY'), function (err, rows, columns) {
     if (err) {
-        throw new Error;
+        console.log(err);
     }
-    console.log('BOOM!');
+    console.log('BOOM! We did a query');
 }
 
 connection.end();
