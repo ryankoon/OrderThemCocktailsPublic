@@ -5,11 +5,19 @@
 // Connect to db
 var mysql = require('mysql');
 
+try {
+    var credentials = require("./credentials");
+    var jsonCredentials = JSON.parse(credentials);
+}
+catch(err){
+    throw new Error('Error obtaining credentials for db login');
+}
+
 var connection = mysql.createConnection({
-    host : '???',
-    user : 'cpsc304admin',
-    password: 'Hicarpwatcher1',
-    database: 'cpsc304-db'
+    host : jsonCredentials.host,
+    user : jsonCredentials.username,
+    password: jsonCredentials.password,
+    database: jsonCredentials.connectionString
 });
 
 connection.connect();
