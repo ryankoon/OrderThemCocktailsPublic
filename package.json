@@ -18,5 +18,8 @@
     "react-native"
   ],
   "author": "Alek, Aditi, Chris and Ryan",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "mysql": "github:mysqljs/mysql"
+  }
 }
