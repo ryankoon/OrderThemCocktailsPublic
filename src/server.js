@@ -4,21 +4,27 @@
 
 // Connect to db
 var mysql = require('mysql');
+var credentials = require('./../credentials.json');
 
 var connection = mysql.createConnection({
-    host : '???',
-    user : 'cpsc304admin',
-    password: 'Hicarpwatcher1',
-    database: 'cpsc304-db'
+    host : credentials.host,
+    user: credentials.username,
+    password: credentials.password
+})
+
+connection.connect(function (err){
+    console.log('Attempting to connect to MySQL');
+    if (err){
+       console.log('Errored out connecting : ' + err);
+   }
 });
 
-connection.connect();
-
+// TODO: Generate a query so this doesnt fail.
 connection.query('SELECT SOME STUFF AND MAKE A QUERY'), function (err, rows, columns) {
     if (err) {
-        throw new Error;
+        console.log(err);
     }
-    console.log('BOOM!');
+    console.log('BOOM! We did a query');
 }
 
 connection.end();
