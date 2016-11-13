@@ -187,7 +187,7 @@ router.route('/employee/admin/removestaff/:bartender')
 
 router.route('/customer/drinks')
     .get(function (req, res) {
-        var drinks_with_prices = "select d.name, sum(ig.price) from ingredientindrink id " +
+        var drinks_with_prices = "select d.name, sum(ig.price) as price from ingredientindrink id " +
             "join drink d on id.d_id = d.id " +
             "join ingredient ig on id.i_name = ig.name group by d.name";
         endpoint(drinks_with_prices)
