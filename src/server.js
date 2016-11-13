@@ -74,11 +74,12 @@ router.route('/customer')
 
 router.route('/ingredients/base')
     .get(function (req, res) {
-        endpoint("select ingredient.name, price, description from ingredient join alcoholicingredient ai on ai.name = ingredient.name")
+        var showAllAlcoholic = "select * from alcoholictype";
+        endpoint(showAllAlcoholic)
             .then(function (result) {
             res.json(result);
         }).catch(function (err) {
-            console.error("Something went wrong sorry");
+            console.error("Something went wrong, sorry");
         });
     });
 
@@ -89,30 +90,98 @@ router.route('/ingredients/base')
 router.route('/ingredients/base/:type')
     .get(function (req, res) {
         // console.log("type" + JSON.stringify({type:req.params.type}));
-        endpoint("select * from alcoholicbase where type = " + "'" + req.params.type + "'").then(function (result) {
+        var showBase = "select * from alcoholicingredient where type = " + "'" + req.params.type + "'";
+        endpoint(showBase)
+            .then(function (result) {
             res.json(result);
         }).catch(function(err) {
-            console.error("Something went wrong sorry");
+            console.error("Something went wrong, sorry");
         });
     });
 
 router.route('/ingredients/garnish')
     .get(function (req, res) {
-        endpoint("select ingredient.name, price, description from ingredient join garnish g on g.name = ingredient.name")
+        var showGarnish = "select ingredient.name, price, description from ingredient " +
+            "join garnish g on g.name = ingredient.name";
+        endpoint(showGarnish)
             .then(function (result) {
             res.json(result);
         }).catch(function(err) {
-            console.error("Something went wrong sorry");
+            console.error("Something went wrong, sorry");
         });
     });
 
 router.route('/ingredients/nonalcoholic')
     .get(function (req, res) {
-        endpoint("select ingredient.name, price, description from ingredient join nonalcoholic n on n.name = ingredient.name").
-        then(function (result) {
+        var showNonAlcoholic = "select ingredient.name, price, description from ingredient " +
+            "join nonalcoholic n on n.name = ingredient.name";
+        endpoint(showNonAlcoholic)
+            .then(function (result) {
             res.json(result);
         }).catch(function(err) {
-            console.error("Something went wrong sorry");
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+router.route('/employee/admin/staff')
+    .get(function (req, res) {
+        var showBartender = "select name from bartender";
+        endpoint(showBartender)
+            .then(function (result) {
+            res.json(result);
+        }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+/*
+    works but is not a post query. Also, since eid is auto-incrementing and is primary key,
+    can add same bartender name repeatedly. (???)
+ */
+
+router.route('/employee/admin/addstaff/:bartender')
+    .get(function (req, res) {
+        // console.log("insert into bartender (name) values (" + req.params.bartender + ")");
+        var addBartender = "insert into bartender (name) values ('" + req.params.bartender + "')";
+        endpoint(addBartender)
+            .then(function (result) {
+            res.json(result);
+        }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+/*
+ returns preset drinks with prices
+ */
+
+router.route('/customer/drinks')
+    .get(function (req, res) {
+        var drinks_with_prices = "select d.name, sum(ig.price) from ingredientindrink id " +
+            "join drink d on id.d_id = d.id " +
+            "join ingredient ig on id.i_name = ig.name group by d.name";
+        endpoint(drinks_with_prices)
+            .then(function (result) {
+            res.json(result);
+        }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+/*
+    returns ingredients in a preset drink in the menu
+ */
+
+router.route('/customer/drinks/:drink')
+    .get(function (req, res) {
+        // console.log("insert into bartender (name) values (" + req.params.bartender + ")");
+        var showIngredients = "select i_name from ingredientindrink " +
+            "where d_id = (select id from drink where name = '" + req.params.drink + "')";
+        endpoint(showIngredients)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
         });
     });
 
