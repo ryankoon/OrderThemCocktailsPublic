@@ -181,6 +181,38 @@ router.route('/customer/drinks/:drink')
         });
     });
 
+router.route('/employee/bartender')
+    .get(function (req, res) {
+        var showOpenDrinks = "select co.cust_name, co.table_no, drink.name, co.notes " +
+            "from drinksinorder dio join customerorder co on dio.order_no = co.order_no " +
+            "join drink on drink.id = dio.drink_id " +
+            "where co.is_open = 1";
+        endpoint(showOpenDrinks)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+/*
+    order history with drink name, bartender name, customer name, payment for order
+ */
+
+router.route('/employee/admin/orderhistory')
+    .get(function (req, res) {
+        var showOrderHistory = "select drink.name, bartender.name, co.cust_name, payment.amount as paid " +
+            "from drinksinorder dio join customerorder co on dio.order_no = co.order_no " +
+            "join drink on drink.id = dio.drink_id join bartender on co.bartender = bartender.eid " +
+            "join payment on payment.order_no = co.order_no where co.is_open = 0";
+        endpoint(showOrderHistory)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
 // TODO: insert ingredient, drinks to be made - open orders, customer receipt, remove bartender
 // TODO: Profit and loss statement, top 5 drinks, Whisky that has been served by all servers (admin report)
 app.use('/', router);
