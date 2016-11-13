@@ -131,8 +131,26 @@ router.route('/employee/admin/staff')
     });
 
 /*
-    works but is not a post query. Also, since eid is auto-incrementing and is primary key,
-    can add same bartender name repeatedly. (???)
+ order history with drink name, bartender name, customer name, payment for order
+ */
+
+router.route('/employee/admin/orderhistory')
+    .get(function (req, res) {
+        var showOrderHistory = "select drink.name, bartender.name, co.cust_name, payment.amount as paid " +
+            "from drinksinorder dio join customerorder co on dio.order_no = co.order_no " +
+            "join drink on drink.id = dio.drink_id join bartender on co.bartender = bartender.eid " +
+            "join payment on payment.order_no = co.order_no where co.is_open = 0";
+        endpoint(showOrderHistory)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+/*
+ works but is not a post query. Also, since eid is auto-incrementing and is primary key,
+ can add same bartender name repeatedly. (???)
  */
 
 router.route('/employee/admin/addstaff/:bartender')
@@ -141,8 +159,24 @@ router.route('/employee/admin/addstaff/:bartender')
         var addBartender = "insert into bartender (name) values ('" + req.params.bartender + "')";
         endpoint(addBartender)
             .then(function (result) {
-            res.json(result);
-        }).catch(function(err) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+/*
+ works but is not a post query. 
+ */
+
+router.route('/employee/admin/removestaff/:bartender')
+    .get(function (req, res) {
+        // console.log("insert into bartender (name) values (" + req.params.bartender + ")");
+        var addBartender = "DELETE FROM bartender where bartender.name = ('" + req.params.bartender + "')";
+        endpoint(addBartender)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
             console.error("Something went wrong, sorry");
         });
     });
@@ -195,25 +229,7 @@ router.route('/employee/bartender')
         });
     });
 
-/*
-    order history with drink name, bartender name, customer name, payment for order
- */
-
-router.route('/employee/admin/orderhistory')
-    .get(function (req, res) {
-        var showOrderHistory = "select drink.name, bartender.name, co.cust_name, payment.amount as paid " +
-            "from drinksinorder dio join customerorder co on dio.order_no = co.order_no " +
-            "join drink on drink.id = dio.drink_id join bartender on co.bartender = bartender.eid " +
-            "join payment on payment.order_no = co.order_no where co.is_open = 0";
-        endpoint(showOrderHistory)
-            .then(function (result) {
-                res.json(result);
-            }).catch(function(err) {
-            console.error("Something went wrong, sorry");
-        });
-    });
-
-// TODO: insert ingredient, drinks to be made - open orders, customer receipt, remove bartender
+// TODO: insert ingredient, customer receipt
 // TODO: Profit and loss statement, top 5 drinks, Whisky that has been served by all servers (admin report)
 app.use('/', router);
 app.listen(port);
