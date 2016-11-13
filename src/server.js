@@ -121,7 +121,7 @@ router.route('/ingredients/nonalcoholic')
 
 router.route('/employee/admin/staff')
     .get(function (req, res) {
-        var showBartender = "select name from bartender";
+        var showBartender = "select eid as id, name from bartender";
         endpoint(showBartender)
             .then(function (result) {
             res.json(result);
