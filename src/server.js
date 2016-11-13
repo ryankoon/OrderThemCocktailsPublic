@@ -58,18 +58,14 @@ function endpoint(query) {
     });
 }
 
-/*
-TODO: Implement an api endpoint.
- */
-
 router.route('/employee')
     .get(function (req, res) {
-        res.send(200);
+        res.send("login");
     });
 
 router.route('/customer')
     .get(function (req, res) {
-        res.json({notes: "Buy drinks please!"});
+        res.send("login");
     });
 
 router.route('/ingredients/base')
@@ -185,6 +181,8 @@ router.route('/customer/drinks/:drink')
         });
     });
 
+// TODO: insert ingredient, drinks to be made - open orders, customer reciept, remove bartender
+// TODO: Profit and loss statement, top 5 drinks, Whisky that has been served by all servers (admin report)
 app.use('/', router);
 app.listen(port);
 console.log("Oh my..  we have a connection now at port:" + port + " don't we?");
