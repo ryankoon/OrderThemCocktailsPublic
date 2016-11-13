@@ -229,7 +229,7 @@ router.route('/employee/bartender')
         });
     });
 
-// TODO: insert ingredient, customer receipt
+// TODO: insert ingredient, customer receipt, add a new order, add order to bartender
 // TODO: Profit and loss statement, top 5 drinks, Whisky that has been served by all servers (admin report)
 app.use('/', router);
 app.listen(port);
