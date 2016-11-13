@@ -181,7 +181,7 @@ router.route('/customer/drinks/:drink')
         });
     });
 
-// TODO: insert ingredient, drinks to be made - open orders, customer reciept, remove bartender
+// TODO: insert ingredient, drinks to be made - open orders, customer receipt, remove bartender
 // TODO: Profit and loss statement, top 5 drinks, Whisky that has been served by all servers (admin report)
 app.use('/', router);
 app.listen(port);
