@@ -246,7 +246,60 @@ router.route('/employee/bartender')
         });
     });
 
-// TODO: insert ingredient, customer receipt, add a new order, add order to bartender
+/*
+    NEEDS TO BE TESTED
+ */
+
+router.route('/customer/drinks/order')
+    .get(function (req, res) {
+        var name = req.body.cust_name;
+        var phone = req.body.phone_no;
+        var table = req.body.table_no;
+        var notes = req.body.notes;
+        var open = 1;
+        var bartender = null;
+        var datetime = moment().format('YYYY-mm-dd hh:mm:ss');
+        var createOrder = "INSERT INTO customerorder (date_time, bartender, is_open, notes, table_no, phone_no, cust_name) "
+            + "VALUES (" + datetime + ", " + bartender + ", " + open + ", " + notes + ", " + table +  ", " + phone + ", "
+            + "'" + name + "'" + ")";
+        console.log(createOrder);
+        endpoint(createOrder)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+        var order_no = "SELECT LAST_INSERT_ID()";
+        endpoint(order_no)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+        var drinks = req.body.drinks;
+        var drinksId = null;
+        var drinksinorder = "INSERT INTO drinksinorder (order_no, drink_id) VALUES (" + order_no + ", " + drinksId + ")";
+        for (var key in drinks) {
+            drinksId = drinks[key];
+            endpoint(drinksinorder)
+                .then(function (result) {
+                    res.json(result);
+                }).catch(function (err) {
+                console.error("Something went wrong, sorry");
+            });
+        }
+        var amount = req.body.amount;
+        var card_no = req.body.card_no;
+        var payment = "INSERT INTO payment (amount, card_no, order_no) VALUES (" + amount + ", " + card_no + ", " + order_no + ")";
+        endpoint(payment)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+// TODO: insert ingredient, customer receipt, add a new order, add order to bartender, custom drink
 // TODO: Profit and loss statement, top 5 drinks, Whisky that has been served by all servers (admin report)
 app.use('/', router);
 app.listen(port);
