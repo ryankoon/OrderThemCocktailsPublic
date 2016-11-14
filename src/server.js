@@ -206,6 +206,22 @@ router.route('/employee/admin/availability')
     });
 
 /*
+ sets the available value of all ingredients to 1
+ */
+router.route('/employee/admin/restockall')
+    .get(function (req, res) {
+        var checkAvailable = "update ingredient set available = 1";
+        endpoint(checkAvailable )
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+
+
+/*
     returns top 5 most frequently ordered drinks - needs testing with more data
  */
 
