@@ -86,7 +86,9 @@ router.route('/ingredients/base')
 router.route('/ingredients/base/:type')
     .get(function (req, res) {
         // console.log("type" + JSON.stringify({type:req.params.type}));
-        var showBase = "select * from alcoholicingredient where type = " + "'" + req.params.type + "'";
+        var showBase = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a " +
+            "join ingredient i on i.name = a.name " +
+            " where a.type = " + "'" + req.params.type + "'";
         endpoint(showBase)
             .then(function (result) {
             res.json(result);
@@ -97,7 +99,7 @@ router.route('/ingredients/base/:type')
 
 router.route('/ingredients/garnish')
     .get(function (req, res) {
-        var showGarnish = "select ingredient.name, price, description from ingredient " +
+        var showGarnish = "select ingredient.name, price, description, available from ingredient " +
             "join garnish g on g.name = ingredient.name";
         endpoint(showGarnish)
             .then(function (result) {
@@ -109,7 +111,7 @@ router.route('/ingredients/garnish')
 
 router.route('/ingredients/nonalcoholic')
     .get(function (req, res) {
-        var showNonAlcoholic = "select ingredient.name, price, description from ingredient " +
+        var showNonAlcoholic = "select ingredient.name, price, description, available from ingredient " +
             "join nonalcoholic n on n.name = ingredient.name";
         endpoint(showNonAlcoholic)
             .then(function (result) {
@@ -217,6 +219,20 @@ router.route('/customer/drinks/:drink')
     });
 
 router.route('/employee/bartender')
+    .get(function (req, res) {
+        var showOpenDrinks = "select co.cust_name, co.table_no, drink.name, co.notes " +
+            "from drinksinorder dio join customerorder co on dio.order_no = co.order_no " +
+            "join drink on drink.id = dio.drink_id " +
+            "where co.is_open = 1";
+        endpoint(showOpenDrinks)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+router.route('/customer/drinks/order')
     .get(function (req, res) {
         var showOpenDrinks = "select co.cust_name, co.table_no, drink.name, co.notes " +
             "from drinksinorder dio join customerorder co on dio.order_no = co.order_no " +
