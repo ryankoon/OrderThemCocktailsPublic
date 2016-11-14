@@ -87,7 +87,7 @@ router.route('/ingredients/base')
 router.route('/ingredients/base/:type')
     .get(function (req, res) {
         var showBase;
-        if (req.params.type.toLowerCase() == 'all') {
+        if (req.params.type.toLowerCase() === 'all') {
             showBase = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a join ingredient i on i.name = a.name where i.available = 1";
         } else {
             showBase = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a " +
