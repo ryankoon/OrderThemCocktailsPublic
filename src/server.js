@@ -206,11 +206,11 @@ router.route('/employee/admin/availability')
 
 router.route('/employee/admin/topdrinks')
     .get(function (req, res) {
-        var top5 = "SELECT drink FROM (select drink.name as drink, bartender.name as bartender, " +
-        "co.cust_name as customer, payment.amount as paid " +
-        "from drinksinorder dio join customerorder co on dio.order_no = co.order_no " +
-        "join drink on drink.id = dio.drink_id join bartender on co.bartender = bartender.eid " +
-        "join payment on payment.order_no = co.order_no where co.is_open = 0) as k GROUP BY drink ORDER BY COUNT(drink) DESC LIMIT 5";
+        var top5 = "SELECT drink, quantity FROM (select drink.name as drink, count(drink.name) as quantity " +
+            "from drinksinorder dio join customerorder co on dio.order_no = co.order_no " +
+            "join drink on drink.id = dio.drink_id join bartender on co.bartender = bartender.eid " +
+            "join payment on payment.order_no = co.order_no where co.is_open = 0 group by drink.name) AS k " +
+            "GROUP BY drink ORDER BY quantity DESC LIMIT 5";
         endpoint(top5)
             .then(function (result) {
                 res.json(result);
