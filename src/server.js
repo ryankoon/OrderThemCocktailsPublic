@@ -86,7 +86,9 @@ router.route('/ingredients/base')
 router.route('/ingredients/base/:type')
     .get(function (req, res) {
         // console.log("type" + JSON.stringify({type:req.params.type}));
-        var showBase = "select * from alcoholicingredient where type = " + "'" + req.params.type + "'";
+        var showBase = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a " +
+            "join ingredient i on i.name = a.name " +
+            " where a.type = " + "'" + req.params.type + "'";
         endpoint(showBase)
             .then(function (result) {
             res.json(result);
@@ -97,7 +99,7 @@ router.route('/ingredients/base/:type')
 
 router.route('/ingredients/garnish')
     .get(function (req, res) {
-        var showGarnish = "select ingredient.name, price, description from ingredient " +
+        var showGarnish = "select ingredient.name, price, available, description from ingredient " +
             "join garnish g on g.name = ingredient.name";
         endpoint(showGarnish)
             .then(function (result) {
@@ -109,7 +111,7 @@ router.route('/ingredients/garnish')
 
 router.route('/ingredients/nonalcoholic')
     .get(function (req, res) {
-        var showNonAlcoholic = "select ingredient.name, price, description from ingredient " +
+        var showNonAlcoholic = "select ingredient.name, price, available, description from ingredient " +
             "join nonalcoholic n on n.name = ingredient.name";
         endpoint(showNonAlcoholic)
             .then(function (result) {
@@ -121,7 +123,7 @@ router.route('/ingredients/nonalcoholic')
 
 router.route('/employee/admin/staff')
     .get(function (req, res) {
-        var showBartender = "select name from bartender";
+        var showBartender = "select eid as id, name from bartender";
         endpoint(showBartender)
             .then(function (result) {
             res.json(result);
@@ -169,11 +171,26 @@ router.route('/employee/admin/addstaff/:bartender')
  works but is not a post query. 
  */
 
-router.route('/employee/admin/removestaff/:bartender')
+router.route('/employee/admin/removestaff/:eid')
     .get(function (req, res) {
         // console.log("insert into bartender (name) values (" + req.params.bartender + ")");
-        var addBartender = "DELETE FROM bartender where bartender.name = ('" + req.params.bartender + "')";
+        var addBartender = "DELETE FROM bartender where bartender.eid = " + req.params.eid;
         endpoint(addBartender)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+/*
+ returns list of ingredients that are not available
+ */
+
+router.route('/employee/admin/availability')
+    .get(function (req, res) {
+        var checkAvailable = "select * from ingredient where available = 0";
+        endpoint(checkAvailable )
             .then(function (result) {
                 res.json(result);
             }).catch(function(err) {
@@ -187,7 +204,7 @@ router.route('/employee/admin/removestaff/:bartender')
 
 router.route('/customer/drinks')
     .get(function (req, res) {
-        var drinks_with_prices = "select d.name, sum(ig.price) from ingredientindrink id " +
+        var drinks_with_prices = "select  d.id, d.name, sum(ig.price) as price from ingredientindrink id " +
             "join drink d on id.d_id = d.id " +
             "join ingredient ig on id.i_name = ig.name group by d.name";
         endpoint(drinks_with_prices)
@@ -229,7 +246,78 @@ router.route('/employee/bartender')
         });
     });
 
-// TODO: insert ingredient, customer receipt, add a new order, add order to bartender
+
+/*
+    changes order from open to closed and adds bartender to order
+ */
+
+router.route('/employee/bartender/selectOrder/:eid/:order_no')
+    .get(function (req, res) {
+        var eid = req.params.eid;
+        var order_no = req.params.order_no;
+        var selectOrder = "UPDATE customerorder SET bartender = " + eid + ", is_open = 0 WHERE order_no = " + order_no;
+        endpoint(selectOrder)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+/*
+    NEEDS TO BE TESTED
+ */
+
+router.route('/customer/drinks/order')
+    .get(function (req, res) {
+        var name = req.body.cust_name;
+        var phone = req.body.phone_no;
+        var table = req.body.table_no;
+        var notes = req.body.notes;
+        var open = 1;
+        var bartender = null;
+        var datetime = moment().format('YYYY-mm-dd hh:mm:ss');
+        var createOrder = "INSERT INTO customerorder (date_time, bartender, is_open, notes, table_no, phone_no, cust_name) "
+            + "VALUES (" + datetime + ", " + bartender + ", " + open + ", " + notes + ", " + table +  ", " + phone + ", "
+            + "'" + name + "'" + ")";
+        console.log(createOrder);
+        endpoint(createOrder)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+        var order_no = "SELECT LAST_INSERT_ID()";
+        endpoint(order_no)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+        var drinks = req.body.drinks;
+        var drinksId = null;
+        var drinksinorder = "INSERT INTO drinksinorder (order_no, drink_id) VALUES (" + order_no + ", " + drinksId + ")";
+        for (var key in drinks) {
+            drinksId = drinks[key];
+            endpoint(drinksinorder)
+                .then(function (result) {
+                    res.json(result);
+                }).catch(function (err) {
+                console.error("Something went wrong, sorry");
+            });
+        }
+        var amount = req.body.amount;
+        var card_no = req.body.card_no;
+        var payment = "INSERT INTO payment (amount, card_no, order_no) VALUES (" + amount + ", " + card_no + ", " + order_no + ")";
+        endpoint(payment)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+// TODO: insert ingredient, customer receipt, add a new order, add order to bartender, custom drink
 // TODO: Profit and loss statement, top 5 drinks, Whisky that has been served by all servers (admin report)
 app.use('/', router);
 app.listen(port);
