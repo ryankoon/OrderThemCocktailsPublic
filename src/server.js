@@ -169,10 +169,10 @@ router.route('/employee/admin/addstaff/:bartender')
  works but is not a post query. 
  */
 
-router.route('/employee/admin/removestaff/:bartender')
+router.route('/employee/admin/removestaff/:eid')
     .get(function (req, res) {
         // console.log("insert into bartender (name) values (" + req.params.bartender + ")");
-        var addBartender = "DELETE FROM bartender where bartender.name = ('" + req.params.bartender + "')";
+        var addBartender = "DELETE FROM bartender where bartender.eid = " + req.params.eid;
         endpoint(addBartender)
             .then(function (result) {
                 res.json(result);
