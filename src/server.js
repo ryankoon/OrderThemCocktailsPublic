@@ -219,6 +219,26 @@ router.route('/employee/admin/topdrinks')
         });
     });
 
+/*
+returns the drinks sold with their total revenue over the specified time period
+ */
+
+router.route('/employee/admin/revenue/:from/:to')
+    .get(function (req, res) {
+        var from = req.params.from;
+        var to = req.params.to;
+        var revenue = "select drink.name as drink, sum(payment.amount) as revenue from drinksinorder dio " +
+            "join customerorder co on dio.order_no = co.order_no join drink on drink.id = dio.drink_id " +
+            "join payment on payment.order_no = co.order_no " +
+            "where co.is_open = 0 and co.date_time > '" + from + "' and co.date_time < '" + to + "' " +
+            "group by drink.name order by revenue desc";
+        endpoint(revenue)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
 
 /*
  returns preset drinks with prices
