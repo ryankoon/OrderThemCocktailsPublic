@@ -184,6 +184,21 @@ router.route('/employee/admin/removestaff/:eid')
     });
 
 /*
+ returns list of ingredients that are not available
+ */
+
+router.route('/employee/admin/availability')
+    .get(function (req, res) {
+        var checkAvailable = "select * from ingredient where available = 0";
+        endpoint(checkAvailable )
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+/*
  returns preset drinks with prices
  */
 
