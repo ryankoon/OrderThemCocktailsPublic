@@ -17,6 +17,7 @@ var Promise = require('bluebird');
 var express = require('express');
 var bodyParser = require('body-parser'); // used to read results from API calls.
 var path = require('path');
+var moment = require('moment');
 var app = express();
 // setup bodyParser to get data from POST - maybe unnecessary remove if something else is preferred.
 app.use(bodyParser.urlencoded({extended:true}));
@@ -138,7 +139,8 @@ router.route('/employee/admin/staff')
 
 router.route('/employee/admin/orderhistory')
     .get(function (req, res) {
-        var showOrderHistory = "select drink.name, bartender.name, co.cust_name, payment.amount as paid " +
+        var showOrderHistory = "select drink.name as drink, bartender.name as bartender, " +
+            "co.cust_name as customer, payment.amount as paid " +
             "from drinksinorder dio join customerorder co on dio.order_no = co.order_no " +
             "join drink on drink.id = dio.drink_id join bartender on co.bartender = bartender.eid " +
             "join payment on payment.order_no = co.order_no where co.is_open = 0";
@@ -197,6 +199,26 @@ router.route('/employee/admin/availability')
             console.error("Something went wrong, sorry");
         });
     });
+
+/*
+    returns top 5 most frequently ordered drinks - needs testing with more data
+ */
+
+router.route('/employee/admin/topdrinks')
+    .get(function (req, res) {
+        var top5 = "SELECT drink FROM (select drink.name as drink, bartender.name as bartender, " +
+        "co.cust_name as customer, payment.amount as paid " +
+        "from drinksinorder dio join customerorder co on dio.order_no = co.order_no " +
+        "join drink on drink.id = dio.drink_id join bartender on co.bartender = bartender.eid " +
+        "join payment on payment.order_no = co.order_no where co.is_open = 0) as k GROUP BY drink ORDER BY COUNT(drink) DESC LIMIT 5";
+        endpoint(top5)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
 
 /*
  returns preset drinks with prices
@@ -318,7 +340,7 @@ router.route('/customer/drinks/order')
     });
 
 // TODO: insert ingredient, customer receipt, add a new order, add order to bartender, custom drink
-// TODO: Profit and loss statement, top 5 drinks, Whisky that has been served by all servers (admin report)
+// TODO: Revenue statement, top 5 drinks, Whisky that has been served by all servers (admin report)
 app.use('/', router);
 app.listen(port);
 console.log("Oh my..  we have a connection now at port:" + port + " don't we?");
