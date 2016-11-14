@@ -86,7 +86,9 @@ router.route('/ingredients/base')
 router.route('/ingredients/base/:type')
     .get(function (req, res) {
         // console.log("type" + JSON.stringify({type:req.params.type}));
-        var showBase = "select * from alcoholicingredient where type = " + "'" + req.params.type + "'";
+        var showBase = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a " +
+            "join ingredient i on i.name = a.name " +
+            " where a.type = " + "'" + req.params.type + "'";
         endpoint(showBase)
             .then(function (result) {
             res.json(result);
