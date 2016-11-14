@@ -86,10 +86,15 @@ router.route('/ingredients/base')
 
 router.route('/ingredients/base/:type')
     .get(function (req, res) {
-        // console.log("type" + JSON.stringify({type:req.params.type}));
-        var showBase = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a " +
-            "join ingredient i on i.name = a.name " +
-            " where a.type = " + "'" + req.params.type + "'";
+        var showBase;
+        if (req.params.type.toLowerCase() === 'all') {
+            showBase = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a join ingredient i on i.name = a.name where i.available = 1";
+        } else {
+            showBase = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a " +
+                "join ingredient i on i.name = a.name " +
+                " where a.type = " + "'" + req.params.type + "' and i.available = 1";
+        }
+
         endpoint(showBase)
             .then(function (result) {
             res.json(result);
@@ -101,7 +106,7 @@ router.route('/ingredients/base/:type')
 router.route('/ingredients/garnish')
     .get(function (req, res) {
         var showGarnish = "select ingredient.name, price, available, description from ingredient " +
-            "join garnish g on g.name = ingredient.name";
+            "join garnish g on g.name = ingredient.name where ingredient.available = 1";
         endpoint(showGarnish)
             .then(function (result) {
             res.json(result);
@@ -113,7 +118,7 @@ router.route('/ingredients/garnish')
 router.route('/ingredients/nonalcoholic')
     .get(function (req, res) {
         var showNonAlcoholic = "select ingredient.name, price, available, description from ingredient " +
-            "join nonalcoholic n on n.name = ingredient.name";
+            "join nonalcoholic n on n.name = ingredient.name where ingredient.available = 1";
         endpoint(showNonAlcoholic)
             .then(function (result) {
             res.json(result);
