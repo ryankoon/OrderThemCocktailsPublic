@@ -286,9 +286,9 @@ router.route('/customer/drinks/order')
         promiseArray = [];
         secondPromiseArray = [];
         console.log(req.body);
-        name = req.body.cust_name;
-        phone = req.body.phone_no;
-        table = req.body.table_no;
+        name = req.body.cust_name.toString();
+        phone = parseInt(req.body.phone_no);
+        table = parseInt(req.body.table_no);
         notes = req.body.notes;
         drinks = req.body.drinks;
         amount = req.body.amount;
@@ -297,13 +297,15 @@ router.route('/customer/drinks/order')
         open = 1;
         bartender = null;
         datetime = moment().format('YYYY-MM-DD').toString();
-        console.log(typeof datetime);
-        console.log('typeof' + typeof name);
-        createOrder = "INSERT INTO customerorder (date_time, bartender, is_open, notes, table_no, phone_no, cust_name) "
-            + "VALUES (" + datetime + ", " + bartender + ", " + open + ", " + notes + ", " + table +  ", " + phone + ", "
-            + name + ")";
-            console.log(createOrder);
 
+        console.log(typeof notes);
+        console.log(typeof phone);
+        console.log(typeof table);
+        console.log(typeof name);
+        createOrder = "INSERT INTO customerorder (date_time, bartender, is_open, notes, table_no, phone_no, cust_name) "
+            + "VALUES ('" + datetime + "', " + bartender + ", " + open + ", '" + notes + "', " + table +  ", " + phone + ", "
+            + "'" + name + "')";
+        console.log(createOrder);
         query_order_no = "SELECT LAST_INSERT_ID()";
         drinksId = null;
         /*
@@ -317,10 +319,11 @@ router.route('/customer/drinks/order')
         */
         var orderPromise = endpoint(createOrder);
         var orderNoPromise = endpoint(query_order_no);
-
         // we need order_no to be the result
         orderPromise.then(function (result) {
-          return orderNoPromise();
+          return orderNoPromise.then(function (result) { // !!! here... need order_no from promise.
+            return result;
+          });
         }).then(function (order_no) {
           var drinksinorder = "INSERT INTO drinksinorder (order_no, drink_id) VALUES (" + order_no + ", " + drinksId + ")";
           for (var key in drinks) {
