@@ -1,0 +1,12 @@
+drop table drinksinorder;
+drop table garnish;
+drop table nonalcoholic;
+drop table ingredientindrink;
+drop table alcoholicingredient;
+drop table alcoholictype;
+drop table ingredient;
+drop table payment;
+drop table drink;
+drop table customerorder;
+drop table bartender;
+drop table customer;
