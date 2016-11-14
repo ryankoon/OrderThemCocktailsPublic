@@ -6,7 +6,7 @@
 var mysql = require('mysql'),
 
 pool  = mysql.createPool({
-    connectionLimit : 4,
+    connectionLimit : 20,
     host     : 'ca-cdbr-azure-central-a.cloudapp.net',
     user     : 'bac51b949a66b0',
     password : '05b4c318',
@@ -22,6 +22,7 @@ var app = express();
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 var router = express.Router();
+var moment = require('moment');
 
 var port = process.env.PORT || 8080;
 
@@ -168,7 +169,7 @@ router.route('/employee/admin/addstaff/:bartender')
     });
 
 /*
- works but is not a post query. 
+ works but is not a post query.
  */
 
 router.route('/employee/admin/removestaff/:eid')
@@ -269,51 +270,76 @@ router.route('/employee/bartender/selectOrder/:eid/:order_no')
  */
 
 router.route('/customer/drinks/order')
-    .get(function (req, res) {
-        var name = req.body.cust_name;
-        var phone = req.body.phone_no;
-        var table = req.body.table_no;
-        var notes = req.body.notes;
-        var open = 1;
-        var bartender = null;
-        var datetime = moment().format('YYYY-mm-dd hh:mm:ss');
-        var createOrder = "INSERT INTO customerorder (date_time, bartender, is_open, notes, table_no, phone_no, cust_name) "
+    .post(function (req, res) {
+      /*
+      Setup our variables!
+      */
+      var name, phone, table, notes, open, bartender, datetime, createOrder,
+        amount, card_no, drinks,
+        promiseArray, secondPromiseArray,
+        createOrder, lastOrder, query_order_no, drinksId, drinksinorder,
+        open;
+
+        /*
+        Variable setting.
+        */
+        promiseArray = [];
+        secondPromiseArray = [];
+        console.log(req.body);
+        name = req.body.cust_name;
+        phone = req.body.phone_no;
+        table = req.body.table_no;
+        notes = req.body.notes;
+        drinks = req.body.drinks;
+        amount = req.body.amount;
+        card_no = req.body.card_no;
+
+        open = 1;
+        bartender = null;
+        datetime = moment().format('YYYY-MM-DD').toString();
+        console.log(typeof datetime);
+        console.log('typeof' + typeof name);
+        createOrder = "INSERT INTO customerorder (date_time, bartender, is_open, notes, table_no, phone_no, cust_name) "
             + "VALUES (" + datetime + ", " + bartender + ", " + open + ", " + notes + ", " + table +  ", " + phone + ", "
-            + "'" + name + "'" + ")";
-        console.log(createOrder);
-        endpoint(createOrder)
-            .then(function (result) {
-                res.json(result);
-            }).catch(function(err) {
-            console.error("Something went wrong, sorry");
-        });
-        var order_no = "SELECT LAST_INSERT_ID()";
-        endpoint(order_no)
-            .then(function (result) {
-                res.json(result);
-            }).catch(function(err) {
-            console.error("Something went wrong, sorry");
-        });
-        var drinks = req.body.drinks;
-        var drinksId = null;
-        var drinksinorder = "INSERT INTO drinksinorder (order_no, drink_id) VALUES (" + order_no + ", " + drinksId + ")";
-        for (var key in drinks) {
-            drinksId = drinks[key];
-            endpoint(drinksinorder)
-                .then(function (result) {
-                    res.json(result);
-                }).catch(function (err) {
-                console.error("Something went wrong, sorry");
-            });
-        }
-        var amount = req.body.amount;
-        var card_no = req.body.card_no;
-        var payment = "INSERT INTO payment (amount, card_no, order_no) VALUES (" + amount + ", " + card_no + ", " + order_no + ")";
-        endpoint(payment)
-            .then(function (result) {
-                res.json(result);
-            }).catch(function(err) {
-            console.error("Something went wrong, sorry");
+            + name + ")";
+            console.log(createOrder);
+
+        query_order_no = "SELECT LAST_INSERT_ID()";
+        drinksId = null;
+        /*
+        Setup a series of promises to later resolve.
+
+        first run create order.
+
+        then run the array of drinks.
+
+        then run the payment query
+        */
+        var orderPromise = endpoint(createOrder);
+        var orderNoPromise = endpoint(query_order_no);
+
+        // we need order_no to be the result
+        orderPromise.then(function (result) {
+          return orderNoPromise();
+        }).then(function (order_no) {
+          var drinksinorder = "INSERT INTO drinksinorder (order_no, drink_id) VALUES (" + order_no + ", " + drinksId + ")";
+          for (var key in drinks) {
+              drinksId = drinks[key];
+              var drinkPromise = endpoint(drinksinorder);
+              secondPromiseArray.push(drinkPromise);
+          }
+          return order_no;
+        }).then(function (order_no) {
+          var blockScope_order_no = order_no;
+          return Promise.all(secondPromiseArray, function (result) {
+            return blockScope_order_no; // might not scope properly...?
+          });
+        }).then(function () {
+          var payment = "INSERT INTO payment (amount, card_no, order_no) VALUES (" + amount + ", " + card_no + ", " + order_no + ")";
+          var paymentPromise = endpoint(payment);
+          return paymentPromise();
+        }).catch(function (err){
+          console.error(err);
         });
     });
 
