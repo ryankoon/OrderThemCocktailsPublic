@@ -86,10 +86,15 @@ router.route('/ingredients/base')
 
 router.route('/ingredients/base/:type')
     .get(function (req, res) {
-        // console.log("type" + JSON.stringify({type:req.params.type}));
-        var showBase = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a " +
-            "join ingredient i on i.name = a.name " +
-            " where a.type = " + "'" + req.params.type + "' and i.available = 1";
+        var showBase;
+        if (req.params.type.toLowerCase() == 'all') {
+            showBase = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a join ingredient i on i.name = a.name where i.available = 1";
+        } else {
+            showBase = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a " +
+                "join ingredient i on i.name = a.name " +
+                " where a.type = " + "'" + req.params.type + "' and i.available = 1";
+        }
+
         endpoint(showBase)
             .then(function (result) {
             res.json(result);
