@@ -97,7 +97,7 @@ router.route('/ingredients/base/:type')
 
 router.route('/ingredients/garnish')
     .get(function (req, res) {
-        var showGarnish = "select ingredient.name, price, description from ingredient " +
+        var showGarnish = "select ingredient.name, price, available, description from ingredient " +
             "join garnish g on g.name = ingredient.name";
         endpoint(showGarnish)
             .then(function (result) {
@@ -109,7 +109,7 @@ router.route('/ingredients/garnish')
 
 router.route('/ingredients/nonalcoholic')
     .get(function (req, res) {
-        var showNonAlcoholic = "select ingredient.name, price, description from ingredient " +
+        var showNonAlcoholic = "select ingredient.name, price, available, description from ingredient " +
             "join nonalcoholic n on n.name = ingredient.name";
         endpoint(showNonAlcoholic)
             .then(function (result) {
