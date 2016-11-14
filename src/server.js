@@ -246,6 +246,24 @@ router.route('/employee/bartender')
         });
     });
 
+
+/*
+    changes order from open to closed and adds bartender to order
+ */
+
+router.route('/employee/bartender/selectOrder/:eid/:order_no')
+    .get(function (req, res) {
+        var eid = req.params.eid;
+        var order_no = req.params.order_no;
+        var selectOrder = "UPDATE customerorder SET bartender = " + eid + ", is_open = 0 WHERE order_no = " + order_no;
+        endpoint(selectOrder)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
 /*
     NEEDS TO BE TESTED
  */
