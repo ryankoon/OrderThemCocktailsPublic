@@ -166,18 +166,19 @@ router.route('/employee/admin/addstaff/:bartender')
     });
 
 /*
- works but is not a post query. 
+ works but is not a post query.
+ removes by Eid.
  */
-
 router.route('/employee/admin/removestaff/:bartender')
-    .get(function (req, res) {
+    .delete(function (req, res) {
         // console.log("insert into bartender (name) values (" + req.params.bartender + ")");
-        var addBartender = "DELETE FROM bartender where bartender.name = ('" + req.params.bartender + "')";
+        console.log('hit inside');
+        var addBartender = "DELETE FROM bartender where bartender.eid = ('" + req.params.bartender + "')";
         endpoint(addBartender)
             .then(function (result) {
                 res.json(result);
             }).catch(function(err) {
-            console.error("Something went wrong, sorry");
+            console.error("Something went wrong when deleting from bartender, sorry");
         });
     });
 
