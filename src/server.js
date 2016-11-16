@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 var router = express.Router();
 var port = process.env.PORT || 8080;
 
-app.use(express.static('js'));
+app.use(express.static('static'));
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
