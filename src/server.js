@@ -37,7 +37,7 @@ router.use(function (req, res, next){
 /*
 returns a promise from making an endpoint request.
  */
-function endpoint(query) {
+function endpoint(query, res) {
     return new Promise(function (fulfill, reject) {
         pool.getConnection(function (err, connection) {
             if (err) {
@@ -66,6 +66,9 @@ function endpoint(query) {
                     }
                     console.log('Proceeding to release a query');
                     connection.release();
+                    if (res){
+                      res.sendStatus(200);
+                    }
                     fulfill(rows);
                 });
             }
@@ -353,7 +356,7 @@ router.route('/customer/drinks/order')
             return;
           }).then(function () {
             var payment = "INSERT INTO payment (amount, card_no, order_no) VALUES (" + amount + ", " + card_no + ", " + blockScope_order_no + ")";
-            return endpoint(payment);
+            return endpoint(payment, res);
           }).catch(function (err){
             console.error(err);
           })
