@@ -57,6 +57,7 @@ function endpoint(query) {
                   timeout: 10000
                 }
                 console.log('Proceeding to enter the query');
+                console.log('Query is : ' + query);
                 connection.query(queryObject, function (err, rows, col) {
                     if (err) {
                         console.log(err.message);
@@ -336,28 +337,29 @@ router.route('/customer/drinks/order')
         //    return result;
         //  });
         }).then(function (order_no) {
-          var drinksinorder = "INSERT INTO drinksinorder (order_no, drink_id) VALUES (" + order_no + ", " + drinksId + ")";
+          var foundOrderNumber = order_no[0]['LAST_INSERT_ID()'];
+          console.log("Here is order number" +  JSON.stringify(order_no));
+          var drinksinorder = "INSERT INTO drinksinorder (order_no, drink_id) VALUES (" + foundOrderNumber + ", " + drinksId + ")";
+
           for (var key in drinks) {
               drinksId = drinks[key];
               var drinkPromise = endpoint(drinksinorder);
               secondPromiseArray.push(drinkPromise);
           }
-          return order_no;
-        })
-        /*
-        .then(function (order_no) {
-          var blockScope_order_no = order_no;
-          return Promise.all(secondPromiseArray, function (result) {
-            return blockScope_order_no; // might not scope properly...?
-          });
-        }).then(function () {
-          var payment = "INSERT INTO payment (amount, card_no, order_no) VALUES (" + amount + ", " + card_no + ", " + order_no + ")";
-          var paymentPromise = endpoint(payment);
-          return paymentPromise();
+          return foundOrderNumber;
+        }).then(function (ourNumber) {
+          var blockScope_order_no = ourNumber;
+          Promise.all(secondPromiseArray, function (result) {
+            return;
+          }).then(function () {
+            var payment = "INSERT INTO payment (amount, card_no, order_no) VALUES (" + amount + ", " + card_no + ", " + blockScope_order_no + ")";
+            return endpoint(payment);
+          }).catch(function (err){
+            console.error(err);
+          })
         }).catch(function (err){
           console.error(err);
         });
-        */
     });
 
 // TODO: insert ingredient, customer receipt, add a new order, add order to bartender, custom drink
