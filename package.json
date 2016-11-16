@@ -4,7 +4,8 @@
   "description": "Cocktail ordering PoS app.",
   "main": "server.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "start" : "node src/server.js"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,8 @@
     "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
-    "moment": "^2.16.0"
+    "express-handlebars": "^3.0.0",
+    "moment": "^2.16.0",
+    "request": "^2.78.0"
   }
 }

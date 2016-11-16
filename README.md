@@ -5,3 +5,6 @@ Point of service cock-tail ordering app built to more easily serve customers dri
 # Setup
 <p> <strong>npm install</strong> to setup dependencies <p>
 
+
+# Running server
+npm run start

@@ -1,0 +1,46 @@
+<script src="customer.js" type="text/javascript"></script>
+<div class = "container">
+	<div class = "row">
+		<select class ="drink-selector-dropdown">
+	{{#each drink}}
+		<option name-attr={{this.name}} price-attr={{this.price}} value={{this.id}}>
+			{{this.name}} - ${{this.price}}
+		</option>
+	{{/each}}
+	</select>
+	<button class="increment-drink"> + </button>
+	</div>
+	<div class ="row">
+		<div class ="col-md-6">
+			<div >
+				<h3> Drinks currently being ordered: </h3>
+				<ul class = "js-drinks-added">
+
+				</ul>
+				<h2>Total cost</h2>
+				<h3 class = "js-total-price"> 0 </h3>
+			</div>
+
+		</div>
+		<div class ="col-md-6">
+			<form class="order-information">
+				<div class="form-group">
+ 					 <label for="table-input"> Table # </label>
+ 					 <input type="name" class="form-control" id="table-input" placeholder=
+ 									 "Please leave your table #" required/>
+ 			 </div>
+ 			 <div class="form-group">
+ 					 <label for="order-notes"> Order Notes </label>
+ 					 <input type="number" class="form-control" id="order-notes" placeholder=
+ 									 "Leave notes about your order here!"/>
+ 			 </div>
+			 <div class="form-group">
+					 <label for="credit-card"> Credit Card </label>
+					 <input type="number" class="form-control" id="credit-card" placeholder=
+									 "Insert credit card (required)" required/>
+			 </div>
+			 <button class="btn btn-success js-submit-drink-order">Submit Order</button>
+		 </form>
+		</div>
+	</div>
+</div>
