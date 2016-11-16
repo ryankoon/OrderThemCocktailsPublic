@@ -271,7 +271,7 @@ router.route('/customer/drinks/order')
       /*
       Setup our variables!
       */
-      var name, phone, table, notes, open, bartender, datetime, createOrder,
+      var name, phone, table, notes, open, bartender, datetime, createOrder, customerEntry,
         amount, card_no, drinks,
         promiseArray, secondPromiseArray,
         createOrder, lastOrder, query_order_no, drinksId, drinksinorder,
@@ -317,14 +317,25 @@ router.route('/customer/drinks/order')
         bartender = null;
         datetime = moment().format('YYYY-MM-DD').toString();
 
+
+
         createOrder = "INSERT INTO customerorder (date_time, bartender, is_open, notes, table_no, phone_no, cust_name) "
             + "VALUES ('" + datetime + "', " + bartender + ", " + open + ", '" + notes + "', " + table +  ", " + phone + ", "
             + "'" + name + "')";
+
+				customerEntry = "INSERT INTO customer(cust_name, phone_no) " + "VALUES ('" + name +	"'," + phone + ")";
 				console.log(createOrder);
+
         query_order_no = "SELECT LAST_INSERT_ID()";
         drinksId = null;
+				var customerPromise = endpoint(customerEntry);
         var orderPromise = endpoint(createOrder);
         var orderNoPromise = endpoint(query_order_no);
+				customerPromise.then(function (result){
+					return;
+				}).catch(function (err){
+					// fail silently in-case this already exists.
+				}).then(function () {
         orderPromise.then(function (result) {
           console.log('we made it?');
           return orderNoPromise;
@@ -348,6 +359,7 @@ router.route('/customer/drinks/order')
             res.status(404).send({Error: 'Database error : ' + err});
             console.error(err);
           })
+				})
         }).catch(function (err){
           res.status(404).send({Error: 'Database error : ' + err});
           console.error(err);
