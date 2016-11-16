@@ -26,24 +26,22 @@ $(document).ready(function (){
 		var phone = localStorage.getItem("phoneNumber");
 		var name = localStorage.getItem("usersName");
 		var cardNumber = $('#credit-card').val();
-
+		console.log('here is phone : ' + phone);
 		var payload = {
 			notes : note,
-			phone: phone,
-			table : tableValue,
+			phone_no: phone,
+			table_no : tableValue,
 			cust_name: name,
 			drinks: orderHistory,
 			amount: newPrice,
 			card_no: cardNumber
-
 		};
 		var jsonPayload = JSON.stringify(payload);
 
 		$('.submit-drink-order').attr('disabled', true);
-		$.ajax('http://localhost:8080/customer/drinks/order', {
+		$.ajax('http://localhost:8080/api/customer/drinks/order', {
 			contentType: 'application/json',
 			data: jsonPayload,
-			crossDomain : true,
 			dataType: 'json',
 			type: 'POST',
 			success: function () {
