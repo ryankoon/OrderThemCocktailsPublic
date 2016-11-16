@@ -6,7 +6,7 @@
 var mysql = require('mysql'),
 
 pool  = mysql.createPool({
-    connectionLimit : 20,
+    connectionLimit : 15,
     host     : 'ca-cdbr-azure-central-a.cloudapp.net',
     user     : 'bac51b949a66b0',
     password : '05b4c318',
