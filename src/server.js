@@ -43,16 +43,28 @@ function endpoint(query) {
         pool.getConnection(function (err, connection) {
             if (err) {
                 console.log("Error: " + err.message);
+                /*
+                Alek: For development purposes I've added pool.end().
+                      Unless we terminate the connection the connection will not
+                      terminate
+                      until the mysql server handles it (which may be awhile).
+                */
+                pool.end();
                 reject(err.message);
             } else {
                 console.log('connected, doing a query');
-                connection.query(query, function (err, rows, col) {
+                var queryObject = {
+                  sql : query,
+                  timeout: 10000
+                }
+                connection.query(queryObject, function (err, rows, col) {
                     if (err) {
                         console.log(err.message);
+                        connection.release();
                         reject(err.message);
                     }
-                    fulfill(rows);
                     connection.release();
+                    fulfill(rows);
                 });
             }
         });
@@ -321,10 +333,12 @@ router.route('/customer/drinks/order')
         var orderNoPromise = endpoint(query_order_no);
         // we need order_no to be the result
         orderPromise.then(function (result) {
-          return orderNoPromise.then(function (result) { // !!! here... need order_no from promise.
-            return result;
-          });
+          return orderNoPromise; // this isnt fulfilled imo.
+        //  .then(function (result) { // !!! here... need order_no from promise.
+        //    return result;
+        //  });
         }).then(function (order_no) {
+          console.log('here is order_no' + JSON.stringify(order_no));
           var drinksinorder = "INSERT INTO drinksinorder (order_no, drink_id) VALUES (" + order_no + ", " + drinksId + ")";
           for (var key in drinks) {
               drinksId = drinks[key];
