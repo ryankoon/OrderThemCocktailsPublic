@@ -20,11 +20,6 @@ var app = express();
 // setup bodyParser to get data from POST - maybe unnecessary remove if something else is preferred.
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
 var router = express.Router();
 var moment = require('moment');
 
@@ -75,7 +70,7 @@ function endpoint(query, res) {
                     if (res){
                       res.sendStatus(200);
                     }
-                    fulfill(rows);
+                    fulfill(rows);p
                 });
             }
         });
@@ -325,12 +320,12 @@ router.route('/customer/drinks/order')
         drinks = req.body.drinks;
         amount = req.body.amount;
         card_no = req.body.card_no;
-        /*
+
         if (name === undefined || phone === undefined || table === undefined
           || notes === undefined || drinks === undefined || amount === undefined || card_no === undefined){
             res.status(404).send({Error: 'Please provide the correct payload: ' + JSON.stringify(req.body)});
           }
-          */
+        
         open = 1;
         bartender = null;
         datetime = moment().format('YYYY-MM-DD').toString();
