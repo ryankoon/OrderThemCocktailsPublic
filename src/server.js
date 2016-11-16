@@ -3,10 +3,9 @@
  */
 'use strict';
 // Connect to db
-var mysql = require('mysql'),
-
-pool  = mysql.createPool({
-    connectionLimit : 4,
+var mysql = require('mysql');
+var pool  = mysql.createPool({
+    connectionLimit : 1,
     host     : 'ca-cdbr-azure-central-a.cloudapp.net',
     user     : 'bac51b949a66b0',
     password : '05b4c318',
@@ -22,6 +21,7 @@ var app = express();
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 var router = express.Router();
+var moment = require('moment');
 
 var port = process.env.PORT || 8080;
 
@@ -37,21 +37,39 @@ router.use(function (req, res, next){
 /*
 returns a promise from making an endpoint request.
  */
-function endpoint(query) {
+function endpoint(query, res) {
     return new Promise(function (fulfill, reject) {
         pool.getConnection(function (err, connection) {
             if (err) {
                 console.log("Error: " + err.message);
+                /*
+                Alek: For development purposes I've added pool.end().
+                      Unless we terminate the connection the connection will not
+                      terminate
+                      until the mysql server handles it (which may be awhile).
+                */
+                console.log('Destroying a query');
+                pool.end();
                 reject(err.message);
             } else {
-                console.log('connected, doing a query');
-                connection.query(query, function (err, rows, col) {
+                var queryObject = {
+                  sql : query,
+                  timeout: 10000
+                }
+                console.log('Proceeding to enter the query');
+                console.log('Query is : ' + query);
+                connection.query(queryObject, function (err, rows, col) {
                     if (err) {
                         console.log(err.message);
+                        connection.release();
                         reject(err.message);
                     }
-                    fulfill(rows);
+                    console.log('Proceeding to release a query');
                     connection.release();
+                    if (res){
+                      res.sendStatus(200);
+                    }
+                    fulfill(rows);
                 });
             }
         });
@@ -86,7 +104,9 @@ router.route('/ingredients/base')
 router.route('/ingredients/base/:type')
     .get(function (req, res) {
         // console.log("type" + JSON.stringify({type:req.params.type}));
-        var showBase = "select * from alcoholicingredient where type = " + "'" + req.params.type + "'";
+        var showBase = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a " +
+            "join ingredient i on i.name = a.name " +
+            " where a.type = " + "'" + req.params.type + "'";
         endpoint(showBase)
             .then(function (result) {
             res.json(result);
@@ -97,7 +117,7 @@ router.route('/ingredients/base/:type')
 
 router.route('/ingredients/garnish')
     .get(function (req, res) {
-        var showGarnish = "select ingredient.name, price, description from ingredient " +
+        var showGarnish = "select ingredient.name, price, available, description from ingredient " +
             "join garnish g on g.name = ingredient.name";
         endpoint(showGarnish)
             .then(function (result) {
@@ -109,7 +129,7 @@ router.route('/ingredients/garnish')
 
 router.route('/ingredients/nonalcoholic')
     .get(function (req, res) {
-        var showNonAlcoholic = "select ingredient.name, price, description from ingredient " +
+        var showNonAlcoholic = "select ingredient.name, price, available, description from ingredient " +
             "join nonalcoholic n on n.name = ingredient.name";
         endpoint(showNonAlcoholic)
             .then(function (result) {
@@ -121,7 +141,7 @@ router.route('/ingredients/nonalcoholic')
 
 router.route('/employee/admin/staff')
     .get(function (req, res) {
-        var showBartender = "select name from bartender";
+        var showBartender = "select eid as id, name from bartender";
         endpoint(showBartender)
             .then(function (result) {
             res.json(result);
@@ -167,13 +187,12 @@ router.route('/employee/admin/addstaff/:bartender')
 
 /*
  works but is not a post query.
- removes by Eid.
  */
-router.route('/employee/admin/removestaff/:bartender')
+
+router.route('/employee/admin/removestaff/:eid')
     .delete(function (req, res) {
         // console.log("insert into bartender (name) values (" + req.params.bartender + ")");
-        console.log('hit inside');
-        var addBartender = "DELETE FROM bartender where bartender.eid = ('" + req.params.bartender + "')";
+        var addBartender = "DELETE FROM bartender where bartender.eid = " + req.params.eid;
         endpoint(addBartender)
             .then(function (result) {
                 res.json(result);
@@ -183,12 +202,27 @@ router.route('/employee/admin/removestaff/:bartender')
     });
 
 /*
+ returns list of ingredients that are not available
+ */
+
+router.route('/employee/admin/availability')
+    .get(function (req, res) {
+        var checkAvailable = "select * from ingredient where available = 0";
+        endpoint(checkAvailable )
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+/*
  returns preset drinks with prices
  */
 
 router.route('/customer/drinks')
     .get(function (req, res) {
-        var drinks_with_prices = "select d.name, sum(ig.price) from ingredientindrink id " +
+        var drinks_with_prices = "select  d.id, d.name, sum(ig.price) as price from ingredientindrink id " +
             "join drink d on id.d_id = d.id " +
             "join ingredient ig on id.i_name = ig.name group by d.name";
         endpoint(drinks_with_prices)
@@ -230,7 +264,108 @@ router.route('/employee/bartender')
         });
     });
 
-// TODO: insert ingredient, customer receipt, add a new order, add order to bartender
+
+/*
+    changes order from open to closed and adds bartender to order
+ */
+
+router.route('/employee/bartender/selectOrder/:eid/:order_no')
+    .get(function (req, res) {
+        var eid = req.params.eid;
+        var order_no = req.params.order_no;
+        var selectOrder = "UPDATE customerorder SET bartender = " + eid + ", is_open = 0 WHERE order_no = " + order_no;
+        endpoint(selectOrder)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+/*
+    NEEDS TO BE TESTED
+ */
+
+router.route('/customer/drinks/order')
+    .post(function (req, res) {
+      /*
+      Setup our variables!
+      */
+      var name, phone, table, notes, open, bartender, datetime, createOrder,
+        amount, card_no, drinks,
+        promiseArray, secondPromiseArray,
+        createOrder, lastOrder, query_order_no, drinksId, drinksinorder,
+        open;
+
+        /*
+        Variable setting.
+        */
+        promiseArray = [];
+        secondPromiseArray = [];
+        console.log(req.body);
+        name = req.body.cust_name.toString();
+        phone = parseInt(req.body.phone_no);
+        table = parseInt(req.body.table_no);
+        notes = req.body.notes;
+        drinks = req.body.drinks;
+        amount = req.body.amount;
+        card_no = req.body.card_no;
+
+        open = 1;
+        bartender = null;
+        datetime = moment().format('YYYY-MM-DD').toString();
+
+        createOrder = "INSERT INTO customerorder (date_time, bartender, is_open, notes, table_no, phone_no, cust_name) "
+            + "VALUES ('" + datetime + "', " + bartender + ", " + open + ", '" + notes + "', " + table +  ", " + phone + ", "
+            + "'" + name + "')";
+        console.log(createOrder);
+        query_order_no = "SELECT LAST_INSERT_ID()";
+        drinksId = null;
+        /*
+        Setup a series of promises to later resolve.
+
+        first run create order.
+
+        then run the array of drinks.
+
+        then run the payment query
+        */
+        var orderPromise = endpoint(createOrder);
+        var orderNoPromise = endpoint(query_order_no);
+        // we need order_no to be the result
+        orderPromise.then(function (result) {
+          console.log('we made it?');
+          return orderNoPromise; // this isnt fulfilled imo.
+        //  .then(function (result) { // !!! here... need order_no from promise.
+        //    return result;
+        //  });
+        }).then(function (order_no) {
+          var foundOrderNumber = order_no[0]['LAST_INSERT_ID()'];
+          console.log("Here is order number" +  JSON.stringify(order_no));
+          var drinksinorder = "INSERT INTO drinksinorder (order_no, drink_id) VALUES (" + foundOrderNumber + ", " + drinksId + ")";
+
+          for (var key in drinks) {
+              drinksId = drinks[key];
+              var drinkPromise = endpoint(drinksinorder);
+              secondPromiseArray.push(drinkPromise);
+          }
+          return foundOrderNumber;
+        }).then(function (ourNumber) {
+          var blockScope_order_no = ourNumber;
+          Promise.all(secondPromiseArray, function (result) {
+            return;
+          }).then(function () {
+            var payment = "INSERT INTO payment (amount, card_no, order_no) VALUES (" + amount + ", " + card_no + ", " + blockScope_order_no + ")";
+            return endpoint(payment, res);
+          }).catch(function (err){
+            console.error(err);
+          })
+        }).catch(function (err){
+          console.error(err);
+        });
+    });
+
+// TODO: insert ingredient, customer receipt, add a new order, add order to bartender, custom drink
 // TODO: Profit and loss statement, top 5 drinks, Whisky that has been served by all servers (admin report)
 app.use('/', router);
 app.listen(port);
