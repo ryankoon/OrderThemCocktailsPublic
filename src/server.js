@@ -3,10 +3,9 @@
  */
 'use strict';
 // Connect to db
-var mysql = require('mysql'),
-
-pool  = mysql.createPool({
-    connectionLimit : 15,
+var mysql = require('mysql');
+var pool  = mysql.createPool({
+    connectionLimit : 1,
     host     : 'ca-cdbr-azure-central-a.cloudapp.net',
     user     : 'bac51b949a66b0',
     password : '05b4c318',
@@ -49,20 +48,22 @@ function endpoint(query) {
                       terminate
                       until the mysql server handles it (which may be awhile).
                 */
+                console.log('Destroying a query');
                 pool.end();
                 reject(err.message);
             } else {
-                console.log('connected, doing a query');
                 var queryObject = {
                   sql : query,
                   timeout: 10000
                 }
+                console.log('Proceeding to enter the query');
                 connection.query(queryObject, function (err, rows, col) {
                     if (err) {
                         console.log(err.message);
                         connection.release();
                         reject(err.message);
                     }
+                    console.log('Proceeding to release a query');
                     connection.release();
                     fulfill(rows);
                 });
@@ -310,10 +311,6 @@ router.route('/customer/drinks/order')
         bartender = null;
         datetime = moment().format('YYYY-MM-DD').toString();
 
-        console.log(typeof notes);
-        console.log(typeof phone);
-        console.log(typeof table);
-        console.log(typeof name);
         createOrder = "INSERT INTO customerorder (date_time, bartender, is_open, notes, table_no, phone_no, cust_name) "
             + "VALUES ('" + datetime + "', " + bartender + ", " + open + ", '" + notes + "', " + table +  ", " + phone + ", "
             + "'" + name + "')";
@@ -333,12 +330,12 @@ router.route('/customer/drinks/order')
         var orderNoPromise = endpoint(query_order_no);
         // we need order_no to be the result
         orderPromise.then(function (result) {
+          console.log('we made it?');
           return orderNoPromise; // this isnt fulfilled imo.
         //  .then(function (result) { // !!! here... need order_no from promise.
         //    return result;
         //  });
         }).then(function (order_no) {
-          console.log('here is order_no' + JSON.stringify(order_no));
           var drinksinorder = "INSERT INTO drinksinorder (order_no, drink_id) VALUES (" + order_no + ", " + drinksId + ")";
           for (var key in drinks) {
               drinksId = drinks[key];
@@ -346,7 +343,9 @@ router.route('/customer/drinks/order')
               secondPromiseArray.push(drinkPromise);
           }
           return order_no;
-        }).then(function (order_no) {
+        })
+        /*
+        .then(function (order_no) {
           var blockScope_order_no = order_no;
           return Promise.all(secondPromiseArray, function (result) {
             return blockScope_order_no; // might not scope properly...?
@@ -358,6 +357,7 @@ router.route('/customer/drinks/order')
         }).catch(function (err){
           console.error(err);
         });
+        */
     });
 
 // TODO: insert ingredient, customer receipt, add a new order, add order to bartender, custom drink
