@@ -1,0 +1,135 @@
+<div class="container container-admin">
+    <h1>Administration</h1>
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#refill">Refill Ingredients</a></li>
+        <li><a data-toggle="tab" href="#employees">Manage Employees</a></li>
+        <li><a data-toggle="tab" href="#reports">Generate Reports</a></li>
+    </ul>
+    <div class="tab-content">
+        <div id="refill" class="tab-pane fade in active">
+            <form>
+                <div class="form-group">
+                    <table class="table">
+                        <thead class="thead-default">
+                        <tr>
+                            <th>#</th>
+                            <th>Ingredient</th>
+                            <th>Quantity</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>Mint Leaves</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">2</th>
+                            <td>Lime</td>
+                            <td>3</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">3</th>
+                            <td>Ginger</td>
+                            <td>1</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+            <button type="submit" class="btn btn-primary">Refill</button>
+        </div>
+
+        <div id="employees" class="tab-pane fade">
+            <form>
+                <div class="form-group">
+                    <table class="table">
+                        <thead class="thead-default">
+                        <tr>
+                            <th>#</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Username</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>@mdo</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">2</th>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                            <td>@fat</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">3</th>
+                            <td>Larry</td>
+                            <td>the Bird</td>
+                            <td>@twitter</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div>
+                        <form>
+                            <div class="form-group">
+                                <label for="eid">Employee ID</label>
+                                <input type="number" class="form-control" id="eid" placeholder="e.g. 12345678">
+                                </div>
+                            <div class="form-group">
+                                <label for="employeename">Employee Name</label>
+                                <input type="text" class="form-control" id="employeename" placeholder="Enter Full Name">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="reports" class="tab-pane fade">
+            <div class="reports-options">
+                Choose a report:
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Dropdown
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a href="#">Whisky served by all bartenders</a></li>
+                        <li><a href="#">Frequently ordered drinks</a></li>
+                        <li><a href="#">Profit loss statement</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="results-container">
+                <table class="table">
+                    <thead class="thead-default">
+                    <tr>
+                        <th>#</th>
+                        <th>Whisky</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>WhiskyName1</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td>WhiskyName2</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">3</th>
+                        <td>WhiskyName3</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="adminhome.js"></script>

@@ -14,6 +14,8 @@ var pool  = mysql.createPool({
 var Promise = require('bluebird');
 
 var express = require('express');
+var exphbs  = require('express-handlebars');
+var request = require('request');
 var bodyParser = require('body-parser'); // used to read results from API calls.
 var path = require('path');
 var app = express();
@@ -22,14 +24,15 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 var router = express.Router();
 var port = process.env.PORT || 8080;
+
+app.use(express.static('js'));
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
+
 var apiRouter = require('./api_routes');
+var uiRouter = require('./ui_routes');
 apiRouter.apiRouting(router, pool);
-
-/*
-In order to setup api routes, use router.route
-In order to serve html to the client, use app.route and provide res.send with the html file. should also work for templating.
- */
-
+uiRouter.uiRouting(app);
 
 
 // TODO: insert ingredient, customer receipt, add a new order, add order to bartender, custom drink
