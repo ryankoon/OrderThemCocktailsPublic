@@ -20,6 +20,11 @@ var app = express();
 // setup bodyParser to get data from POST - maybe unnecessary remove if something else is preferred.
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 var router = express.Router();
 var moment = require('moment');
 
@@ -62,6 +67,7 @@ function endpoint(query, res) {
                     if (err) {
                         console.log(err.message);
                         connection.release();
+                        res.status(500).send({Error: 'Server error occurred when connecting to db'});
                         reject(err.message);
                     }
                     console.log('Proceeding to release a query');
@@ -302,15 +308,29 @@ router.route('/customer/drinks/order')
         */
         promiseArray = [];
         secondPromiseArray = [];
-        console.log(req.body);
-        name = req.body.cust_name.toString();
-        phone = parseInt(req.body.phone_no);
-        table = parseInt(req.body.table_no);
+          console.log(req.body);
+
+        if (typeof req.body.phone_no === "string" || typeof req.body.table_no === "string") {
+          phone = parseInt(req.body.phone_no);
+          table = parseInt(req.body.table_no);
+        }
+        else{
+          phone = req.body.phone_no;
+          table = req.body.table_no;
+        }
+
+
+        name = req.body.cust_name;
         notes = req.body.notes;
         drinks = req.body.drinks;
         amount = req.body.amount;
         card_no = req.body.card_no;
-
+        /*
+        if (name === undefined || phone === undefined || table === undefined
+          || notes === undefined || drinks === undefined || amount === undefined || card_no === undefined){
+            res.status(404).send({Error: 'Please provide the correct payload: ' + JSON.stringify(req.body)});
+          }
+          */
         open = 1;
         bartender = null;
         datetime = moment().format('YYYY-MM-DD').toString();
@@ -318,7 +338,6 @@ router.route('/customer/drinks/order')
         createOrder = "INSERT INTO customerorder (date_time, bartender, is_open, notes, table_no, phone_no, cust_name) "
             + "VALUES ('" + datetime + "', " + bartender + ", " + open + ", '" + notes + "', " + table +  ", " + phone + ", "
             + "'" + name + "')";
-        console.log(createOrder);
         query_order_no = "SELECT LAST_INSERT_ID()";
         drinksId = null;
         /*
@@ -358,9 +377,11 @@ router.route('/customer/drinks/order')
             var payment = "INSERT INTO payment (amount, card_no, order_no) VALUES (" + amount + ", " + card_no + ", " + blockScope_order_no + ")";
             return endpoint(payment, res);
           }).catch(function (err){
+            res.status(404).send({Error: 'Database error : ' + err});
             console.error(err);
           })
         }).catch(function (err){
+          res.status(404).send({Error: 'Database error : ' + err});
           console.error(err);
         });
     });
