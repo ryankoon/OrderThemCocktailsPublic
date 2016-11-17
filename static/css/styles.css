@@ -1,12 +1,19 @@
-html {
-    background: url(/images/bgbar.jpg)
-}
-
 .thumbnail {
-    width: 50%;
-    height: 50%
+    display: inline-block;
 }
 
-.transparent {
-    opacity: 80; !important
+.thumbnail img {
+    height: 15%;
+    width: 15%
 }
+
+.equalize-row {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+

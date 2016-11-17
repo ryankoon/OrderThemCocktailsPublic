@@ -52,7 +52,7 @@ router.route('/customer')
         res.send("login");
     });
 
-router.route('/ingredients/base')
+router.route('/ingredients/type')
     .get(function (req, res) {
         var showAllAlcoholic = "select * from alcoholictype";
         endpoint(showAllAlcoholic)
@@ -63,10 +63,22 @@ router.route('/ingredients/base')
         });
     });
 
+router.route('/ingredients/name/:name')
+    .get(function (req, res) {
+        var getIngredientByName = 'select a.name, i.description, a.abv, a.origin, a.type, i.available from alcoholicingredient a ' +
+            'join ingredient i on i.name = a.name where  i.name =' + "'" + req.params.name +"'";
+        endpoint(getIngredientByName)
+            .then(function (result) {
+                res.json(result)
+            })
+            .catch(function (err) {
+                console.error("error in ingredients/name/:name");
+            })
+    });
+
 /*
     ex. ingredients/base/Vodka
  */
-
 router.route('/ingredients/base/:type')
     .get(function (req, res) {
         // console.log("type" + JSON.stringify({type:req.params.type}));

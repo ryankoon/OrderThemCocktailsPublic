@@ -1,29 +1,85 @@
-<script src="/js/customer.js" type="text/javascript"></script>
+<script src="/js/customdrink.js" type="text/javascript"></script>
 <link rel="stylesheet" href="/css/bootstrap-horizon.css">
 <link rel="stylesheet" href="/css/styles.css">
 <html>
-<div class = "container transparent">
-    <div class ="row transparent">
-        <div class ="col-md-12 transparent">
-            <h3>Alcoholic</h3>
-            <div class="row row-horizon transparent">
+<div class = "container">
+
+    <div class="modal" id="infoModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="exampleModalLabel">Yo</h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Send message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class ="row">
+        <div class ="col-md-12">
+            <h3>Spirits and Liqueors</h3>
+            <div class="row-horizon equalize">
                 {{#each alcoholic}}
-                    <div class="col-sm-2 transparent">
-                        <img src="/images/abc.jpg" class="thumbnail"></img>
-                        {{this.name}} <br>
-                        {{this.type}} <br>
-                        {{this.abv}} <br>
+                    <div class="col-sm-3 equalize">
+                        <div class="thumbnail">
+                            <img src="/images/abc.jpg">
+                            <div class="caption">
+                                <div class="inner">
+                                    <hr>
+                                    <h5>{{this.name}}</h5>
+                                    <p>{{this.type}}</p>
+                                </div>
+                                <div class="inner">
+                                    <a nohref class="btn btn-primary" role="button" onclick="showInfoModal('{{this.name}}')">Info</a>
+                                    <a nohref class="btn btn-default" role="button">Add</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 {{/each}}
             </div>
-            <div>
-                <h3>NonAlcoholic</h3>
+
+            <h3>Mixers</h3>
+            <div class="row row-horizon transparent">
                 {{#each nonalcoholic}}
-                    {{this.name}}<br>
+                    <div class="col-sm-3 transparent">
+                        <div class="thumbnail">
+                            <img src="/images/abc.jpg">
+                            <div class="caption">
+                                <div class="inner">
+                                    <h5>{{this.name}}</h5>
+                                </div>
+                                <div class="inner">
+                                    <a href="#" class="btn btn-primary" role="button">Info</a>
+                                    <a href="#" class="btn btn-default" role="button">Add</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 {{/each}}
-                <h3>Garnish</h3>
+            </div>
+            <h3>Garnishes</h3>
+            <div class="row row-horizon transparent">
                 {{#each garnish}}
-                    {{this.name}}</br>
+                    <div class="col-sm-3 transparent">
+                        <div class="thumbnail">
+                            <img src="/images/abc.jpg">
+                            <div class="caption">
+                                <div class="inner">
+                                    <h5>{{this.name}}</h5>
+                                </div>
+                                <div class="inner">
+                                    <a href="#" class="btn btn-primary" role="button">Info</a>
+                                    <a href="#" class="btn btn-default" role="button">Add</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 {{/each}}
             </div>
         </div>
