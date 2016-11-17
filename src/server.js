@@ -22,16 +22,14 @@ var path = require('path');
 var app = express();
 
 
+// setup static file serving.
+app.use(express.static(path.join(__dirname, '../static')));
+
 // setup bodyParser to get data from POST - maybe unnecessary remove if something else is preferred.
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 var router = express.Router();
 var port = process.env.PORT || 8080;
-
-// setup static file serving.
-app.use('/static', express.static(path.join(__dirname, 'static')));
-
-
 
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
