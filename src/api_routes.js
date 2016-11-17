@@ -119,6 +119,20 @@ router.route('/ingredients/nonalcoholic')
         });
     });
 
+/*
+ sets the available value of all ingredients to 1
+ */
+router.route('/employee/admin/setAllIngredientsAvailable')
+    .get(function (req, res) {
+        var checkAvailable = "update ingredient set available = 1";
+        endpoint(checkAvailable )
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
 router.route('/employee/admin/staff')
     .get(function (req, res) {
         var showBartender = "select eid as id, name from bartender";
