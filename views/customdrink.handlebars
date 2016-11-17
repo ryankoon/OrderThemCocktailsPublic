@@ -1,12 +1,22 @@
 <script src="/js/customer.js" type="text/javascript"></script>
-<div class = "container">
-    <div class ="row">
-        <div class ="col-md-12">
-            <div >
-                <h3>Alcoholic</h3>
+<link rel="stylesheet" href="/css/bootstrap-horizon.css">
+<link rel="stylesheet" href="/css/styles.css">
+<html>
+<div class = "container transparent">
+    <div class ="row transparent">
+        <div class ="col-md-12 transparent">
+            <h3>Alcoholic</h3>
+            <div class="row row-horizon transparent">
                 {{#each alcoholic}}
-                    {{this.name}}</br>
+                    <div class="col-sm-2 transparent">
+                        <img src="/images/abc.jpg" class="thumbnail"></img>
+                        {{this.name}} <br>
+                        {{this.type}} <br>
+                        {{this.abv}} <br>
+                    </div>
                 {{/each}}
+            </div>
+            <div>
                 <h3>NonAlcoholic</h3>
                 {{#each nonalcoholic}}
                     {{this.name}}<br>
@@ -16,9 +26,7 @@
                     {{this.name}}</br>
                 {{/each}}
             </div>
-            <img src="/images/abc.jpg">An image that I should see</img>
-
         </div>
-
     </div>
 </div>
+</html>

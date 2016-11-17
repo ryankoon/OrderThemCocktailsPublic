@@ -1,0 +1,12 @@
+html {
+    background: url(/images/bgbar.jpg)
+}
+
+.thumbnail {
+    width: 50%;
+    height: 50%
+}
+
+.transparent {
+    opacity: 80; !important
+}

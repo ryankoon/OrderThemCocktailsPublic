@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "test",
-    "start" : "node src/server.js"
+    "start": "node src/server.js"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
   "dependencies": {
     "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
+    "bootstrap-horizon": "^1.0.1",
     "express": "^4.14.0",
     "express-handlebars": "^3.0.0",
     "moment": "^2.16.0",
