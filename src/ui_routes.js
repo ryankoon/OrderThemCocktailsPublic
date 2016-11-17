@@ -1,7 +1,7 @@
-function uiRouting(app) {
+function uiRouting(app, hbs) {
 
 	var apiRoot = 'http://localhost:8080/api',
-		request = require('request');
+	request = require('request');
 
 	/*
 	Home route for customers to input information.
