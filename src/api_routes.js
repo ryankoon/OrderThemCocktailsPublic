@@ -362,7 +362,7 @@ router.route('/customer/drinks/order')
     });
     router.route('/top5')
         .get(function (req, res) {
-            var selectTop5 = "select drink_id, COUNT(drink_id) as total from drinksinorder group by drink_id limit 0, 5;";
+            var selectTop5 = "select d.name, COUNT(drink_id) as total from drinksinorder o, drink d where o.drink_id = d.id group by drink_id order by total DESC limit 0 , 5";
             console.log('entering this');
             endpoint(selectTop5)
                 .then(function (result) {
