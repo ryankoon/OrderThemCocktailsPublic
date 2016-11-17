@@ -43,4 +43,12 @@
 		 </form>
 		</div>
 	</div>
+    <div class ="row">
+        <div class  = "col-md-12">
+            <ul class="top5-list"></ul>
+            {{#each top5}}
+                <li> {{this.drink_id}} {{this.total}}</li>
+            {{/each}}
+    </div>
+    </div>
 </div>
