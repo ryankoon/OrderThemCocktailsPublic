@@ -42,7 +42,7 @@ uiRouter.uiRouting(app);
 
 
 // TODO: insert ingredient, customer receipt, add a new order, add order to bartender, custom drink
-// TODO: Profit and loss statement, top 5 drinks, Whisky that has been served by all servers (admin report)
+// TODO: Profit and loss statement, Whisky that has been served by all servers (admin report)
 app.use('/api', router);
 app.listen(port);
 console.log("Oh my..  we have a connection now at port:" + port + " don't we?");

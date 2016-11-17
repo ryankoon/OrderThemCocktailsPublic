@@ -26,39 +26,35 @@
             <div class="row-horizon equalize">
                 {{#each alcoholic}}
                     <div class="col-sm-3 equalize">
-                        <div class="thumbnail">
-                            <img src="/images/abc.jpg">
-                            <div class="caption">
-                                <div class="inner">
-                                    <hr>
-                                    <h5>{{this.name}}</h5>
-                                    <p>{{this.type}}</p>
+                        <div class="thumbnail clearfix">
+                            <a class ="add-item" href="#" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                            <h4 class="drink-type">{{this.type}}</h4>
+                            <a class ="modal-button" href="#" role="button" onclick="showInfoModal('{{this.name}}')">
+                                <img src="/images/abc.jpg">
+                                <div>
+                                    <div class="custom-drink-info">
+                                        <h3>{{this.name}}</h3>
+                                    </div>
                                 </div>
-                                <div class="inner">
-                                    <a nohref class="btn btn-primary" role="button" onclick="showInfoModal('{{this.name}}')">Info</a>
-                                    <a nohref class="btn btn-default" role="button">Add</a>
-                                </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 {{/each}}
             </div>
-
             <h3>Mixers</h3>
             <div class="row row-horizon transparent">
                 {{#each nonalcoholic}}
-                    <div class="col-sm-3 transparent">
-                        <div class="thumbnail">
-                            <img src="/images/abc.jpg">
-                            <div class="caption">
-                                <div class="inner">
-                                    <h5>{{this.name}}</h5>
+                    <div class="col-sm-3 equalize">
+                        <div class="thumbnail clearfix">
+                            <a class ="add-item" href="#" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                            <a class ="modal-button" href="#" role="button" onclick="showInfoModal('{{this.name}}')">
+                                <img src="/images/abc.jpg">
+                                <div>
+                                    <div class="custom-drink-info">
+                                        <h3>{{this.name}}</h3>
+                                    </div>
                                 </div>
-                                <div class="inner">
-                                    <a href="#" class="btn btn-primary" role="button">Info</a>
-                                    <a href="#" class="btn btn-default" role="button">Add</a>
-                                </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 {{/each}}
@@ -66,18 +62,17 @@
             <h3>Garnishes</h3>
             <div class="row row-horizon transparent">
                 {{#each garnish}}
-                    <div class="col-sm-3 transparent">
-                        <div class="thumbnail">
-                            <img src="/images/abc.jpg">
-                            <div class="caption">
-                                <div class="inner">
-                                    <h5>{{this.name}}</h5>
+                    <div class="col-sm-3 equalize">
+                        <div class="thumbnail clearfix">
+                            <a class ="add-item" href="#" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                            <a class ="modal-button" href="#" role="button" onclick="showInfoModal('{{this.name}}')">
+                                <img src="/images/abc.jpg">
+                                <div>
+                                    <div class="custom-drink-info">
+                                        <h3>{{this.name}}</h3>
+                                    </div>
                                 </div>
-                                <div class="inner">
-                                    <a href="#" class="btn btn-primary" role="button">Info</a>
-                                    <a href="#" class="btn btn-default" role="button">Add</a>
-                                </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 {{/each}}
