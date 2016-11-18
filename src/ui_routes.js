@@ -110,6 +110,7 @@ function uiRouting(app, hbs) {
 	app.get('/admin', function (req,res){
 		var garnishes;
 		var employees;
+		var top5Drinks;
 
 		var adminPromises = [];
 		var adminpromise;
@@ -137,14 +138,28 @@ function uiRouting(app, hbs) {
 		});
 		adminPromises.push(adminpromise);
 
+		adminpromise = new Promise(function (resolve, reject) {
+			request.get(apiRoot + '/top5', function (err, resp, body) {
+				if (err) {
+					console.error('Error getting drinks:' + err);
+					reject(err);
+				} else {
+					top5Drinks = JSON.parse(body);
+					resolve(body);
+				}
+			});
+		});
+		adminPromises.push(adminpromise);
+
 		Promise.all(adminPromises)
 			.then(function() {
 				res.render('adminhome', {
 					garnishes: garnishes,
-					employees: employees
+					employees: employees,
+					top5Drinks: top5Drinks
 				});
 			}).catch(function(err) {
-			console.log(err);
+			res.status(404).send({Error: 'Error contacting the db:'} + err)
 		});
 	});
 	app.get('/bartender', function (req,res){
