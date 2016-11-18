@@ -108,7 +108,44 @@ function uiRouting(app, hbs) {
 	  res.render('employeelogin');
 	});
 	app.get('/admin', function (req,res){
-	  res.render('adminhome');
+		var garnishes;
+		var employees;
+
+		var adminPromises = [];
+		var adminpromise;
+		adminpromise = new Promise(function (resolve, reject) {
+			request(apiRoot + '/employee/admin/availability', function (error, response, body) {
+				if (error) {
+					reject(error);
+				} else {
+					garnishes = JSON.parse(body);
+					resolve(body);
+				}
+			});
+		});
+		adminPromises.push(adminpromise);
+
+		adminpromise = new Promise(function (resolve, reject) {
+			request(apiRoot + '/employee/admin/staff', function (error, response, body) {
+				if (error) {
+					reject(error);
+				} else {
+					employees = JSON.parse(body);
+					resolve(body);
+				}
+			});
+		});
+		adminPromises.push(adminpromise);
+
+		Promise.all(adminPromises)
+			.then(function() {
+				res.render('adminhome', {
+					garnishes: garnishes,
+					employees: employees
+				});
+			}).catch(function(err) {
+			console.log(err);
+		});
 	});
 	app.get('/bartender', function (req,res){
 	  res.render('bartenderhome');

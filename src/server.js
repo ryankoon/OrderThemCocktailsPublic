@@ -34,7 +34,12 @@ var customhbs = exphbs.create({
     defaultLayout : 'main',
     partialsDir : [
         path.join(__dirname, '../views/partials')
-    ]
+    ],
+    helpers: {
+        inc: function (value) {
+            return parseInt(value) + 1;
+        }
+    }
 });
     app.engine('handlebars', customhbs.engine);
     app.set('view engine', 'handlebars');

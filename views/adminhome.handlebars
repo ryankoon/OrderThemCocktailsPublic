@@ -1,43 +1,37 @@
+<script src="js/adminhome.js"></script>
 <div class="container container-admin">
     <h1>Administration</h1>
+    <button class="btn btn-danger" onclick="logout()">Logout</button>
     <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#refill">Refill Ingredients</a></li>
+        <li class="active"><a data-toggle="tab" href="#restock">Restock Ingredients</a></li>
         <li><a data-toggle="tab" href="#employees">Manage Employees</a></li>
         <li><a data-toggle="tab" href="#reports">Generate Reports</a></li>
     </ul>
-    <div class="tab-content">
-        <div id="refill" class="tab-pane fade in active">
+    <div id="adminTabContent" class="tab-content">
+        <div id="restock" class="tab-pane fade in active">
             <form>
                 <div class="form-group">
                     <table class="table">
                         <thead class="thead-default">
                         <tr>
-                            <th>#</th>
-                            <th>Ingredient</th>
-                            <th>Quantity</th>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Price</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mint Leaves</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Lime</td>
-                            <td>3</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>Ginger</td>
-                            <td>1</td>
-                        </tr>
+                        {{#each garnishes}}
+                            <tr>
+                                <th scope="row">{{inc @index}}</th>
+                                <td>{{name}}</td>
+                                <td>{{price}}</td>
+                            </tr>
+                        {{/each}}
                         </tbody>
                     </table>
                 </div>
             </form>
-            <button type="submit" class="btn btn-primary">Refill</button>
+            <button type="button" class="btn btn-primary" onclick="restockAll()">Restock</button>
         </div>
 
         <div id="employees" class="tab-pane fade">
@@ -46,44 +40,35 @@
                     <table class="table">
                         <thead class="thead-default">
                         <tr>
-                            <th>#</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Username</th>
+                            <th>ID</th>
+                            <th>Name</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>@fat</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>Larry</td>
-                            <td>the Bird</td>
-                            <td>@twitter</td>
-                        </tr>
+                        {{#each employees}}
+                            <tr>
+                                <td>{{id}}</td>
+                                <td>{{name}}</td>
+                            </tr>
+                        {{/each}}
                         </tbody>
                     </table>
-                    <div>
+                    <div class="col-md-6">
                         <form>
-                            <div class="form-group">
-                                <label for="eid">Employee ID</label>
-                                <input type="number" class="form-control" id="eid" placeholder="e.g. 12345678">
-                                </div>
                             <div class="form-group">
                                 <label for="employeename">Employee Name</label>
                                 <input type="text" class="form-control" id="employeename" placeholder="Enter Full Name">
                             </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="button" class="btn btn-primary" onclick="addEmployee()">Add</button>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <form>
+                            <div class="form-group">
+                                <label for="eid">Employee ID</label>
+                                <input type="number" class="form-control" id="eid" placeholder="e.g. 12345678">
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="removeEmployee()">Remove</button>
                         </form>
                     </div>
                 </div>
@@ -91,45 +76,96 @@
         </div>
         <div id="reports" class="tab-pane fade">
             <div class="reports-options">
-                Choose a report:
                 <div class="dropdown">
                     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        Dropdown
+                        Choose a report
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                        <li><a href="#">Whisky served by all bartenders</a></li>
-                        <li><a href="#">Frequently ordered drinks</a></li>
-                        <li><a href="#">Profit loss statement</a></li>
+                        <li><a data-toggle="tab" href="#report1">Whisky served by all bartenders</a></li>
+                        <li><a data-toggle="tab" href="#report2">Frequently ordered drinks</a></li>
+                        <li><a data-toggle="tab" href="#report3">Profit loss statement</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="results-container">
-                <table class="table">
-                    <thead class="thead-default">
-                    <tr>
-                        <th>#</th>
-                        <th>Whisky</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>WhiskyName1</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>WhiskyName2</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>WhiskyName3</td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div id="reportsTabContent" class="tab-content">
+                <div id="report1" class="tab-pane fade">
+                    <h3>Whisky served by all bartenders</h3>
+                    <table class="table">
+                        <thead class="thead-default">
+                        <tr>
+                            <th>#</th>
+                            <th>Whisky</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>WhiskyName1</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">2</th>
+                            <td>WhiskyName2</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">3</th>
+                            <td>WhiskyName3</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="report2" class="tab-pane fade">
+                    <h3>Frequently Ordered Drinks</h3>
+                    <table class="table">
+                        <thead class="thead-default">
+                        <tr>
+                            <th>Drink</th>
+                            <th>Amount</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>MockWhisky</td>
+                            <td>354</td>
+                        </tr>
+                        <tr>
+                            <td>MockVodka</td>
+                            <td>234</td>
+                        </tr>
+                        <tr>
+                            <td>MockBeer</td>
+                            <td>146</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="report3" class="tab-pane fade">
+                    <h3>Profit Loss Statement</h3>
+                    <table class="table">
+                        <thead class="thead-default">
+                        <tr>
+                            <th>Drink</th>
+                            <th>Amount</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>MockWhisky</td>
+                            <td>354</td>
+                        </tr>
+                        <tr>
+                            <td>MockVodka</td>
+                            <td>234</td>
+                        </tr>
+                        <tr>
+                            <td>MockBeer</td>
+                            <td>146</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<script src="adminhome.js"></script>
