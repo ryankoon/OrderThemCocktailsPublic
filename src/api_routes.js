@@ -56,14 +56,37 @@ function endpoint(query, res) {
     });
 }
 
-router.route('/employee')
-    .get(function (req, res) {
-        res.send("login");
-    });
 
-router.route('/customer')
-    .get(function (req, res) {
-        res.send("login");
+router.route('/drinks/withingredients')
+    .get(function (req, res){
+
+        var makeView = makeViewString(req.query.ingredient),
+            clearView = 'drop view if exists temp_drinkSearchByIngredient',
+            doDivision = 'select d.id from drink d where not exists ' +
+                '(select * from temp_drinkSearchByIngredient t where not exists ' +
+                '(select iid.i_name from ingredientindrink iid where iid.i_name = t.name and d.id= iid.d_id))';
+
+        endpoint(clearView)
+            .then(function() {
+                return endpoint(makeView);
+            }).then(function() {
+                return endpoint(doDivision);
+            }).then(function(result) {
+                res.json(result);
+            }).catch(function (error) {
+                console.error("error in /drinks/withingredients " + error);
+            })
+
+        function makeViewString (ingredients) {
+            var view = "create view temporary as select * from ingredient i where ";
+            for (var i = 0; i < ingredients.length; i++) {
+                view = view.concat("i.name=" + "'" + ingredients[i] + "'");
+
+                if (i < ingredients.length - 1)
+                    view += " or ";
+            }
+            return view;
+        }
     });
 
 router.route('/ingredients/type')
