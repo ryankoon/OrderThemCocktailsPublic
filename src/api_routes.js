@@ -56,15 +56,19 @@ function endpoint(query, res) {
     });
 }
 
-
-router.route('/drinks/withingredients')
+/*
+ Endpoint for drink searching using ingredients via division.  This endpoint will return only drinks
+ that contain the entire ingredient list;
+*/
+router.route('/drinks/withallingredients')
     .get(function (req, res){
 
         var makeView = makeViewString(req.query.ingredient),
             clearView = 'drop view if exists temp_drinkSearchByIngredient',
-            doDivision = 'select d.id from drink d where not exists ' +
-                '(select * from temp_drinkSearchByIngredient t where not exists ' +
-                '(select iid.i_name from ingredientindrink iid where iid.i_name = t.name and d.id= iid.d_id))';
+            doDivision = 'SELECT i.d_id FROM ingredientindrink i ' +
+                'LEFT OUTER JOIN temp_drinkSearchByIngredient t ON i.i_name = t.name GROUP BY i.d_id ' +
+                'HAVING COUNT(i.i_name) = (SELECT COUNT(name) FROM temp_drinkSearchByIngredient) AND ' +
+                'COUNT(t.name) = (SELECT COUNT(name) FROM temp_drinkSearchByIngredient)';
 
         endpoint(clearView)
             .then(function() {
@@ -78,7 +82,7 @@ router.route('/drinks/withingredients')
             })
 
         function makeViewString (ingredients) {
-            var view = "create view temporary as select * from ingredient i where ";
+            var view = "create view temp_drinkSearchByIngredient as select * from ingredient i where ";
             for (var i = 0; i < ingredients.length; i++) {
                 view = view.concat("i.name=" + "'" + ingredients[i] + "'");
 
