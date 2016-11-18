@@ -1,24 +1,26 @@
-var apiRoot = 'http://localhost:8080/api';
+const apiRoot = 'http://localhost:8080/api';
 var currentTab = window.location.href;
-var navTabs = $('.nav-tabs a');
-for (var i = 0; i < navTabs.length; i++) {
-    if (navTabs[i].href === currentTab) {
-        $(navTabs[i]).tab('show');
-        break;
+var navTabs;
+
+function init() {
+    navTabs = $('.nav-tabs a');
+    for (var i = 0; i < navTabs.length; i++) {
+        if (navTabs[i].href === currentTab) {
+            $(navTabs[i]).tab('show');
+            break;
+        };
     };
-};
+    
+    $('.nav-tabs a').click(function () {
+        $(this).tab('show');
+        window.location = this.href;
+    });
 
-
-$('.nav-tabs a').click(function(){
-    $(this).tab('show');
-    window.location = this.href;
-});
-
-$('.dropdown-menu li').click(function(){
-    $(this)[0].classList.remove("active");
-    //e.stopPropagation();
-});
-
+    $('.dropdown-menu li').click(function () {
+        $(this)[0].classList.remove("active");
+        //e.stopPropagation();
+    });
+}
 
 function addEmployee() {
     var enameinput = $('#employeename');
@@ -53,3 +55,11 @@ function restockAll() {
         window.location.reload();
     });
 }
+
+function logout() {
+    window.location = "/employee";
+}
+
+$(document).ready(function(){
+    init();
+});
