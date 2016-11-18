@@ -84,7 +84,7 @@
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                         <li><a data-toggle="tab" href="#report1">Whisky served by all bartenders</a></li>
-                        <li><a data-toggle="tab" href="#report2">Frequently ordered drinks</a></li>
+                        <li><a data-toggle="tab" href="#top5">Frequently ordered drinks</a></li>
                         <li><a data-toggle="tab" href="#report3">Profit loss statement</a></li>
                     </ul>
                 </div>
@@ -115,28 +115,22 @@
                         </tbody>
                     </table>
                 </div>
-                <div id="report2" class="tab-pane fade">
+                <div id="top5" class="tab-pane fade">
                     <h3>Frequently Ordered Drinks</h3>
                     <table class="table">
                         <thead class="thead-default">
                         <tr>
                             <th>Drink</th>
-                            <th>Amount</th>
+                            <th>Orders</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>MockWhisky</td>
-                            <td>354</td>
-                        </tr>
-                        <tr>
-                            <td>MockVodka</td>
-                            <td>234</td>
-                        </tr>
-                        <tr>
-                            <td>MockBeer</td>
-                            <td>146</td>
-                        </tr>
+                        {{#each top5Drinks}}
+                            <tr>
+                                <td>{{name}}</td>
+                                <td>{{total}}</td>
+                            </tr>
+                        {{/each}}
                         </tbody>
                     </table>
                 </div>
