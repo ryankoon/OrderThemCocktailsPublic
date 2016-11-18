@@ -21,7 +21,6 @@ var bodyParser = require('body-parser'); // used to read results from API calls.
 var path = require('path');
 var app = express();
 
-
 // setup static file serving.
 app.use(express.static(path.join(__dirname, '../static')));
 
@@ -31,14 +30,25 @@ app.use(bodyParser.json());
 var router = express.Router();
 var port = process.env.PORT || 8080;
 
-app.engine('handlebars', exphbs({defaultLayout: 'main'}));
-app.set('view engine', 'handlebars');
+var customhbs = exphbs.create({
+    defaultLayout : 'main',
+    partialsDir : [
+        path.join(__dirname, '../views/partials')
+    ],
+    helpers: {
+        inc: function (value) {
+            return parseInt(value) + 1;
+        }
+    }
+});
+    app.engine('handlebars', customhbs.engine);
+    app.set('view engine', 'handlebars');
 
-var apiRouter = require('./api_routes');
-var uiRouter = require('./ui_routes');
+    var apiRouter = require('./api_routes');
+    var uiRouter = require('./ui_routes', customhbs);
 
-apiRouter.apiRouting(router, pool);
-uiRouter.uiRouting(app);
+    apiRouter.apiRouting(router, pool);
+    uiRouter.uiRouting(app);
 
 
 // TODO: insert ingredient, customer receipt, add a new order, add order to bartender, custom drink

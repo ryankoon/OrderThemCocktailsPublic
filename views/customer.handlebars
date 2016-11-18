@@ -1,6 +1,23 @@
 <script src="/js/customer.js" type="text/javascript"></script>
 <div class = "container">
-	<div class = "row">
+
+    <div class ="row">
+        <div class  = "col-md-12">
+            <table class="top5-list">
+                <tr>
+                    <th>Drink Name</th>
+                    <th> Number Ordered </th>
+                </tr>
+            {{#each top5}}
+                <tr>
+                    <td>{{this.name}} </td>
+                    <td>{{this.total}}<td>
+                </tr>
+            {{/each}}
+            </table>
+        </div>
+
+    <div class = "row">
 		<select class ="drink-selector-dropdown">
 	{{#each drink}}
 		<option name-attr={{this.name}} price-attr={{this.price}} value={{this.id}}>
@@ -43,4 +60,5 @@
 		 </form>
 		</div>
 	</div>
+    </div>
 </div>

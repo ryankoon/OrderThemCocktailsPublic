@@ -2,6 +2,18 @@
 
 function apiRouting(router, pool) {
 var moment = require('moment');
+
+
+var undefinedList = function undefinedArrayCheck(list){
+	var out = [];
+	for (var i=0; i < list.length;i++){
+		if (list[i] === undefined){
+			out.push(list[i]);
+		}
+	}
+	return out;
+}
+
 router.use(function (req, res, next){
     next();
 });
@@ -27,7 +39,9 @@ function endpoint(query, res) {
                     if (err) {
                         console.log(err.message);
                         connection.release();
+												if (res){
                         res.status(500).send({Error: 'Server error occurred when connecting to db'});
+											}
                         reject(err.message);
                     }
                     console.log('Proceeding to release a query');
@@ -108,6 +122,20 @@ router.route('/ingredients/nonalcoholic')
             .then(function (result) {
             res.json(result);
         }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+/*
+ sets the available value of all ingredients to 1
+ */
+router.route('/employee/admin/setAllIngredientsAvailable')
+    .get(function (req, res) {
+        var checkAvailable = "update ingredient set available = 1";
+        endpoint(checkAvailable )
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
             console.error("Something went wrong, sorry");
         });
     });
@@ -254,17 +282,12 @@ router.route('/employee/bartender/selectOrder/:eid/:order_no')
             console.error("Something went wrong, sorry");
         });
     });
-
-/*
-    NEEDS TO BE TESTED
- */
-
 router.route('/customer/drinks/order')
     .post(function (req, res) {
       /*
       Setup our variables!
       */
-      var name, phone, table, notes, open, bartender, datetime, createOrder,
+      var name, phone, table, notes, open, bartender, datetime, createOrder, customerEntry,
         amount, card_no, drinks,
         promiseArray, secondPromiseArray,
         createOrder, lastOrder, query_order_no, drinksId, drinksinorder,
@@ -278,8 +301,11 @@ router.route('/customer/drinks/order')
           console.log(req.body);
 
         if (typeof req.body.phone_no === "string" || typeof req.body.table_no === "string") {
-          phone = parseInt(req.body.phone_no);
-          table = parseInt(req.body.table_no);
+					console.log('here is phone : ' + phone);
+				phone = parseInt(req.body.phone_no);
+				console.log('here is phone converted : ' + phone);
+
+        table = parseInt(req.body.table_no);
         }
         else{
           phone = req.body.phone_no;
@@ -292,44 +318,46 @@ router.route('/customer/drinks/order')
         drinks = req.body.drinks;
         amount = req.body.amount;
         card_no = req.body.card_no;
-
-        if (name === undefined || phone === undefined || table === undefined
-          || notes === undefined || drinks === undefined || amount === undefined || card_no === undefined){
-            res.status(404).send({Error: 'Please provide the correct payload: ' + JSON.stringify(req.body)});
+				var payloadList = [];
+				payloadList.push(name);
+				payloadList.push(notes);
+				payloadList.push(drinks);
+				payloadList.push(amount);
+				payloadList.push(card_no);
+				var out = [];
+				out = undefinedList(payloadList);
+				if (out.length > 0){
+            res.status(404).send({Error: 'Please provide the correct payload: ' + JSON.stringify(out)});
           }
-
         open = 1;
         bartender = null;
         datetime = moment().format('YYYY-MM-DD').toString();
 
+
+
         createOrder = "INSERT INTO customerorder (date_time, bartender, is_open, notes, table_no, phone_no, cust_name) "
             + "VALUES ('" + datetime + "', " + bartender + ", " + open + ", '" + notes + "', " + table +  ", " + phone + ", "
             + "'" + name + "')";
+
+				customerEntry = "INSERT INTO customer(cust_name, phone_no) " + "VALUES ('" + name +	"'," + phone + ")";
+				console.log(createOrder);
+
         query_order_no = "SELECT LAST_INSERT_ID()";
         drinksId = null;
-        /*
-        Setup a series of promises to later resolve.
-
-        first run create order.
-
-        then run the array of drinks.
-
-        then run the payment query
-        */
+				var customerPromise = endpoint(customerEntry);
         var orderPromise = endpoint(createOrder);
         var orderNoPromise = endpoint(query_order_no);
-        // we need order_no to be the result
+				customerPromise.then(function (result){
+					return;
+				}).catch(function (err){
+					// fail silently in-case this already exists.
+				}).then(function () {
         orderPromise.then(function (result) {
           console.log('we made it?');
-          return orderNoPromise; // this isnt fulfilled imo.
-        //  .then(function (result) { // !!! here... need order_no from promise.
-        //    return result;
-        //  });
+          return orderNoPromise;
         }).then(function (order_no) {
           var foundOrderNumber = order_no[0]['LAST_INSERT_ID()'];
-          console.log("Here is order number" +  JSON.stringify(order_no));
           var drinksinorder = "INSERT INTO drinksinorder (order_no, drink_id) VALUES (" + foundOrderNumber + ", " + drinksId + ")";
-
           for (var key in drinks) {
               drinksId = drinks[key];
               var drinkPromise = endpoint(drinksinorder);
@@ -347,11 +375,23 @@ router.route('/customer/drinks/order')
             res.status(404).send({Error: 'Database error : ' + err});
             console.error(err);
           })
+				})
         }).catch(function (err){
           res.status(404).send({Error: 'Database error : ' + err});
           console.error(err);
         });
     });
+    router.route('/top5')
+        .get(function (req, res) {
+            var selectTop5 = "select d.name, COUNT(drink_id) as total from drinksinorder o, drink d where o.drink_id = d.id group by drink_id order by total DESC limit 0 , 5";
+            console.log('entering this');
+            endpoint(selectTop5)
+                .then(function (result) {
+                    res.json(result);
+                }).catch(function (err){
+                console.error("Something went wrong, sorry : " + err);
+            });
+        });
 	};
 	module.exports.apiRouting = apiRouting;
 
