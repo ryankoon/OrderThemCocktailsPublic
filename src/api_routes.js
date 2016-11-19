@@ -62,13 +62,48 @@ function endpoint(query, res) {
 }
 
 /*
+    Escape any characters that need escaping before sending the query string to the database
+
+    Source:
+    http://stackoverflow.com/questions/7744912/making-a-javascript-string-sql-friendly
+ */
+function escape_string (str) {
+    if (typeof str != 'string')
+        return str;
+
+    return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
+        switch (char) {
+            case "\0":
+                return "\\0";
+            case "\x08":
+                return "\\b";
+            case "\x09":
+                return "\\t";
+            case "\x1a":
+                return "\\z";
+            case "\n":
+                return "\\n";
+            case "\r":
+                return "\\r";
+            case "'":
+            case "\"":
+            case "\\":
+            case "%":
+                return "\\"+char;
+        }
+    });
+}
+
+/*
  Endpoint for drink searching using ingredients via division.  This endpoint will return only drinks
  that contain the entire ingredient list;
+
+ Pattern from source: https://www.simple-talk.com/sql/t-sql-programming/divided-we-stand-the-sql-of-relational-division/
 */
 router.route('/drinks/withallingredients')
     .get(function (req, res){
 
-        var makeView = makeViewString(req.query.ingredient),
+        var makeView = makeViewString(escape_string(req.query.ingredient)),
             clearView = 'drop view if exists temp_drinkSearchByIngredient',
             doDivision = 'SELECT i.d_id FROM ingredientindrink i ' +
                 'LEFT OUTER JOIN temp_drinkSearchByIngredient t ON i.i_name = t.name GROUP BY i.d_id ' +
@@ -89,7 +124,7 @@ router.route('/drinks/withallingredients')
         function makeViewString (ingredients) {
             var view = "create view temp_drinkSearchByIngredient as select * from ingredient i where ";
             for (var i = 0; i < ingredients.length; i++) {
-                view = view.concat("i.name=" + "'" + ingredients[i] + "'");
+                view = view.concat("i.name=" + "'" + escape_string(ingredients[i]) + "'");
 
                 if (i < ingredients.length - 1)
                     view += " or ";
@@ -112,7 +147,7 @@ router.route('/ingredients/type')
 router.route('/ingredients/name/:name')
     .get(function (req, res) {
         var getIngredientByName = 'select a.name, i.description, a.abv, a.origin, a.type, i.available from alcoholicingredient a ' +
-            'join ingredient i on i.name = a.name where  i.name =' + "'" + req.params.name +"'";
+            'join ingredient i on i.name = a.name where  i.name =' + "'" + escape_string(req.params.name) +"'";
         endpoint(getIngredientByName)
             .then(function (result) {
                 res.json(result)
@@ -136,7 +171,7 @@ router.route('/ingredients/base/:type')
         } else {
             showBase = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a " +
                 "join ingredient i on i.name = a.name " +
-                " where a.type = " + "'" + req.params.type + "'";
+                " where a.type = " + "'" + escape_string(req.params.type) + "'";
         }
         endpoint(showBase)
             .then(function (result) {
@@ -221,7 +256,7 @@ router.route('/employee/admin/orderhistory')
 router.route('/employee/admin/addstaff/:bartender')
     .get(function (req, res) {
         // console.log("insert into bartender (name) values (" + req.params.bartender + ")");
-        var addBartender = "insert into bartender (name) values ('" + req.params.bartender + "')";
+        var addBartender = "insert into bartender (name) values ('" + escape_string(req.params.bartender) + "')";
         endpoint(addBartender)
             .then(function (result) {
                 res.json(result);
@@ -237,7 +272,7 @@ router.route('/employee/admin/addstaff/:bartender')
 router.route('/employee/admin/removestaff/:eid')
     .delete(function (req, res) {
         // console.log("insert into bartender (name) values (" + req.params.bartender + ")");
-        var addBartender = "DELETE FROM bartender where bartender.eid = " + req.params.eid;
+        var addBartender = "DELETE FROM bartender where bartender.eid = " + escape_string(req.params.eid);
         endpoint(addBartender)
             .then(function (result) {
                 res.json(result);
@@ -285,7 +320,7 @@ router.route('/customer/drinks/:drink')
     .get(function (req, res) {
         // console.log("insert into bartender (name) values (" + req.params.bartender + ")");
         var showIngredients = "select i_name from ingredientindrink " +
-            "where d_id = (select id from drink where name = '" + req.params.drink + "')";
+            "where d_id = (select id from drink where name = '" + escape_string(req.params.drink) + "')";
         endpoint(showIngredients)
             .then(function (result) {
                 res.json(result);
@@ -325,6 +360,7 @@ router.route('/employee/bartender/selectOrder/:eid/:order_no')
             console.error("Something went wrong, sorry");
         });
     });
+
 router.route('/customer/drinks/order')
     .post(function (req, res) {
       /*
@@ -356,9 +392,9 @@ router.route('/customer/drinks/order')
         }
 
 
-        name = req.body.cust_name;
-        notes = req.body.notes;
-        drinks = req.body.drinks;
+        name = escape_string(req.body.cust_name);
+        notes = escape_string(req.body.notes);
+        drinks = req.body.drinks;       // TODO: escape?
         amount = req.body.amount;
         card_no = req.body.card_no;
 				var payloadList = [];
@@ -424,6 +460,7 @@ router.route('/customer/drinks/order')
           console.error(err);
         });
     });
+
     router.route('/top5')
         .get(function (req, res) {
             var selectTop5 = "select d.name, COUNT(drink_id) as total from drinksinorder o, drink d where o.drink_id = d.id group by drink_id order by total DESC limit 0 , 5";
@@ -436,6 +473,7 @@ router.route('/customer/drinks/order')
             });
         });
 	};
+
 	module.exports.apiRouting = apiRouting;
 
 	return module
