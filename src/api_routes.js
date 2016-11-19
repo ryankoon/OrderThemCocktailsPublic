@@ -170,6 +170,20 @@ router.route('/ingredients/nonalcoholic')
         });
     });
 
+/*
+ sets the available value of all ingredients to 1
+ */
+router.route('/employee/admin/setAllIngredientsAvailable')
+    .get(function (req, res) {
+        var checkAvailable = "update ingredient set available = 1";
+        endpoint(checkAvailable )
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
 router.route('/employee/admin/staff')
     .get(function (req, res) {
         var showBartender = "select eid as id, name from bartender";
@@ -311,11 +325,6 @@ router.route('/employee/bartender/selectOrder/:eid/:order_no')
             console.error("Something went wrong, sorry");
         });
     });
-
-/*
-    NEEDS TO BE TESTED
- */
-
 router.route('/customer/drinks/order')
     .post(function (req, res) {
       /*
@@ -415,6 +424,17 @@ router.route('/customer/drinks/order')
           console.error(err);
         });
     });
+    router.route('/top5')
+        .get(function (req, res) {
+            var selectTop5 = "select d.name, COUNT(drink_id) as total from drinksinorder o, drink d where o.drink_id = d.id group by drink_id order by total DESC limit 0 , 5";
+            console.log('entering this');
+            endpoint(selectTop5)
+                .then(function (result) {
+                    res.json(result);
+                }).catch(function (err){
+                console.error("Something went wrong, sorry : " + err);
+            });
+        });
 	};
 	module.exports.apiRouting = apiRouting;
 

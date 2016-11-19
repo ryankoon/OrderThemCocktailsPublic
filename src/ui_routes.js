@@ -15,13 +15,35 @@ function uiRouting(app, hbs) {
 	*/
 	app.get('/customer', function (req, res) {
 
-	  request(apiRoot + '/customer/drinks', function (err, resp, body){
-	   var outcomeNamesArray = [];
-	    var jsonObject = JSON.parse(body);
-	    res.render('customer', {
-	      drink : jsonObject
-	    });
-	  });
+		var promiseFirst = new Promise(function (fulfill, reject) {
+			request.get(apiRoot + '/top5', function (err, resp, body) {
+				if (err) {
+					console.error('Error getting top5');
+					res.status(404).send({Error: 'Error contacting the db:' + err});
+					reject(err);
+				}
+				var top5Json = JSON.parse(body);
+				console.log(top5Json);
+				fulfill(top5Json);
+			});
+		});
+		promiseFirst.then(function (top5Result) {
+			request.get(apiRoot + '/customer/drinks', function (err, resp, body) {
+				if (err) {
+					console.error('Error getting drinks:' + err);
+					res.status(404).send({Error: 'Error contacting the db:'} + err)
+				}
+				var jsonObject = JSON.parse(body);
+				res.render('customer', {
+					drink: jsonObject,
+					top5: top5Result
+				})
+			}).catch(function (err){
+				console.error(err);
+				res.status(404).send({Error: 'Error contacting the db:'} + err)
+			});
+		});
+
 	});
 
 	/*
@@ -85,7 +107,59 @@ function uiRouting(app, hbs) {
 	  res.render('employeelogin');
 	});
 	app.get('/admin', function (req,res){
-	  res.render('adminhome');
+		var garnishes;
+		var employees;
+		var top5Drinks;
+
+		var adminPromises = [];
+		var adminpromise;
+		adminpromise = new Promise(function (resolve, reject) {
+			request(apiRoot + '/employee/admin/availability', function (error, response, body) {
+				if (error) {
+					reject(error);
+				} else {
+					garnishes = JSON.parse(body);
+					resolve(body);
+				}
+			});
+		});
+		adminPromises.push(adminpromise);
+
+		adminpromise = new Promise(function (resolve, reject) {
+			request(apiRoot + '/employee/admin/staff', function (error, response, body) {
+				if (error) {
+					reject(error);
+				} else {
+					employees = JSON.parse(body);
+					resolve(body);
+				}
+			});
+		});
+		adminPromises.push(adminpromise);
+
+		adminpromise = new Promise(function (resolve, reject) {
+			request.get(apiRoot + '/top5', function (err, resp, body) {
+				if (err) {
+					console.error('Error getting drinks:' + err);
+					reject(err);
+				} else {
+					top5Drinks = JSON.parse(body);
+					resolve(body);
+				}
+			});
+		});
+		adminPromises.push(adminpromise);
+
+		Promise.all(adminPromises)
+			.then(function() {
+				res.render('adminhome', {
+					garnishes: garnishes,
+					employees: employees,
+					top5Drinks: top5Drinks
+				});
+			}).catch(function(err) {
+			res.status(404).send({Error: 'Error contacting the db:'} + err)
+		});
 	});
 	app.get('/bartender', function (req,res){
 	  res.render('bartenderhome');
