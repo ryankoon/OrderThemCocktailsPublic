@@ -83,35 +83,47 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                        <li><a data-toggle="tab" href="#report1">Whisky served by all bartenders</a></li>
+                        <li><a data-toggle="tab" href="#whiskeyExperts">Bartenders who served all whiskey drinks</a></li>
+                        <li><a data-toggle="tab" href="#whiskeyServedByAll">Whisky drinks served by all bartenders</a></li>
                         <li><a data-toggle="tab" href="#top5">Frequently ordered drinks</a></li>
                         <li><a data-toggle="tab" href="#report3">Profit loss statement</a></li>
                     </ul>
                 </div>
             </div>
             <div id="reportsTabContent" class="tab-content">
-                <div id="report1" class="tab-pane fade">
-                    <h3>Whisky served by all bartenders</h3>
+                <div id="whiskeyExperts" class="tab-pane fade">
+                    <h3>Whiskey Experts</h3>
                     <table class="table">
                         <thead class="thead-default">
                         <tr>
-                            <th>#</th>
-                            <th>Whisky</th>
+                            <th>ID</th>
+                            <th>Name</th>
                         </tr>
                         </thead>
                         <tbody>
+                        {{#each whiskeyBartenders}}
+                            <tr>
+                                <td>{{id}}</td>
+                                <td>{{name}}</td>
+                            </tr>
+                        {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+                <div id="whiskeyServedByAll" class="tab-pane fade">
+                    <h3>Whiskey Drinks Expertise</h3>
+                    <table class="table">
+                        <thead class="thead-default">
                         <tr>
-                            <th scope="row">1</th>
-                            <td>WhiskyName1</td>
+                            <th>Drink</th>
                         </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>WhiskyName2</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>WhiskyName3</td>
-                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#each whiskeyservedbyall}}
+                            <tr>
+                                <td>{{name}}</td>
+                            </tr>
+                        {{/each}}
                         </tbody>
                     </table>
                 </div>
