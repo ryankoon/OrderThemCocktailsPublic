@@ -106,9 +106,9 @@ router.route('/drinks/withallingredients')
         var makeView = makeViewString(escape_string(req.query.ingredient)),
             clearView = 'drop view if exists temp_drinkSearchByIngredient',
             doDivision = 'SELECT i.d_id FROM ingredientindrink i ' +
-                'LEFT OUTER JOIN temp_drinkSearchByIngredient t ON i.i_name = t.name GROUP BY i.d_id ' +
-                'HAVING COUNT(i.i_name) = (SELECT COUNT(name) FROM temp_drinkSearchByIngredient) AND ' +
-                'COUNT(t.name) = (SELECT COUNT(name) FROM temp_drinkSearchByIngredient)';
+                         'LEFT OUTER JOIN temp_drinkSearchByIngredient t ON i.i_name = t.name GROUP BY i.d_id ' +
+                         'HAVING COUNT(i.i_name) = (SELECT COUNT(name) FROM temp_drinkSearchByIngredient) AND ' +
+                         'COUNT(t.name) = (SELECT COUNT(name) FROM temp_drinkSearchByIngredient)';
 
         endpoint(clearView)
             .then(function() {
@@ -119,7 +119,7 @@ router.route('/drinks/withallingredients')
                 res.json(result);
             }).catch(function (error) {
                 console.error("error in /drinks/withingredients " + error);
-            })
+            });
 
         function makeViewString (ingredients) {
             var view = "create view temp_drinkSearchByIngredient as select * from ingredient i where ";
@@ -144,36 +144,20 @@ router.route('/ingredients/type')
         });
     });
 
-router.route('/ingredients/name/:name')
-    .get(function (req, res) {
-        var getIngredientByName = 'select a.name, i.description, a.abv, a.origin, a.type, i.available from alcoholicingredient a ' +
-            'join ingredient i on i.name = a.name where  i.name =' + "'" + escape_string(req.params.name) +"'";
-        endpoint(getIngredientByName)
-            .then(function (result) {
-                res.json(result)
-            })
-            .catch(function (err) {
-                console.error("error in ingredients/name/:name");
-            })
-    });
-
-/*
-    ex. ingredients/base/Vodka
+ /**
+ *  Get an alcoholic ingredient by name, regardless of availability
  */
-router.route('/ingredients/base/:type')
+router.route('/ingredients/alcoholic/:name')
     .get(function (req, res) {
-        // console.log("type" + JSON.stringify({type:req.params.type}));
-        var showBase;
 
-        if (req.params.type === "all") {
-            showBase = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a " +
-                "join ingredient i on i.name = a.name where i.available=true";
-        } else {
-            showBase = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a " +
-                "join ingredient i on i.name = a.name " +
-                " where a.type = " + "'" + escape_string(req.params.type) + "'";
-        }
-        endpoint(showBase)
+        var showAlc,
+            type = req.params.name;
+
+            showAlc = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a " +
+                      "join ingredient i on i.name = a.name " +
+                      "where a.name = " + "'" + escape_string(type) + "'";
+
+        endpoint(showAlc)
             .then(function (result) {
             res.json(result);
         }).catch(function(err) {
@@ -181,7 +165,27 @@ router.route('/ingredients/base/:type')
         });
     });
 
-router.route('/ingredients/garnish')
+/**
+ *  Get all alcoholic ingredients, regardless of availability
+ */
+router.route('/ingredients/all/alcoholic/')
+    .get(function (req, res) {
+
+        var showAlc = "select a.name, a.abv, a.origin, a.type, i.price, i.available from alcoholicingredient a " +
+                      "join ingredient i on i.name = a.name ";
+
+        endpoint(showAlc)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+                console.error("Something went wrong, sorry");
+            });
+    });
+
+/**
+ *  Get all garnishes, regardless of availability
+ */
+router.route('/ingredients/all/garnish/')
     .get(function (req, res) {
         var showGarnish = "select ingredient.name, price, available, description from ingredient " +
             "join garnish g on g.name = ingredient.name";
@@ -193,7 +197,10 @@ router.route('/ingredients/garnish')
         });
     });
 
-router.route('/ingredients/nonalcoholic')
+/**
+ *  Get all non-alcoholic ingredients, regardless of availability
+ */
+router.route('/ingredients/all/nonalcoholic')
     .get(function (req, res) {
         var showNonAlcoholic = "select ingredient.name, price, available, description from ingredient " +
             "join nonalcoholic n on n.name = ingredient.name";
@@ -203,6 +210,30 @@ router.route('/ingredients/nonalcoholic')
         }).catch(function(err) {
             console.error("Something went wrong, sorry");
         });
+    });
+
+/**
+ *  Get all ingredients, regardless of availability
+ */
+router.route('/ingredients/name/:name')
+    .get(function (req, res) {
+
+        var showIng,
+            type = req.params.name || "all";
+
+        if (type == "all") {
+            showIng = "select * from ingredient i where i.available=true"
+        } else {
+            showIng = "select i.name, i.price from ingredient i " +
+                    "where i.name = " + "'" + escape_string(type) + "' and i.available=true";
+        }
+
+        endpoint(showIng)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+                console.error("Something went wrong, sorry");
+            });
     });
 
 /*

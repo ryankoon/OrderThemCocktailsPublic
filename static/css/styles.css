@@ -8,6 +8,14 @@
     top: 10px;
     color: black;
 }
+
+.add-item-alcoholic > .fa {
+    position: absolute;
+    right: 25px;
+    top: 10px;
+    color: black;
+}
+
 .button-wraper {
     position: absolute;
     bottom: 25px;
@@ -27,25 +35,27 @@
     text-decoration: none !important;
 }
 
-.infoModal-image {
+
+
+.infoModal-image, .alcModal-image {
     height: 400px;
 }
 
-.infoModal-textbox {
+.infoModal-textbox, .alcModal-textbox {
     float: right;
     width: 100%;
     text-align: right;
 }
 
-#infoModal-description {
+#infoModal-description, #alcModal-description {
     text-align: left;
 }
 
-#infoModal-type {
+#alcModal-type {
 
 }
 
-#infoModal-abv {
+#alcModal-abv {
 
 }
 
@@ -56,8 +66,14 @@ span#price-header {
 
 .price-display {
     float: right;
+    visibility: hidden;
 }
 
+#order-button {
+    float: right;
+    margin-top: -7px;
+    visibility: hidden;
+}
 .custom-drink-info{
     text-align: center;
     margin-right: 5px;
