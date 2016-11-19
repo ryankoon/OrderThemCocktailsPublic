@@ -8,7 +8,7 @@ $(document).ready(function (){
 
 	var updateOrderHistoryDisplay = function (val) {
 		$('.js-drinks-added').append('<li>' + val + '</li>');
-	}
+	};
 
 	var updateOrderPrice = function (val) {
 		var price = $('.js-total-price').text();

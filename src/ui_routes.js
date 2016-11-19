@@ -28,7 +28,6 @@ function uiRouting(app, hbs) {
 	Custom drink route.
 	*/
 	app.get('/customer/customdrink', function (req, res) {
-		console.log("hit the custom drink route ok");
 		var ingredientPromises = [],
 			alcoholic,
 			nonalcoholic,

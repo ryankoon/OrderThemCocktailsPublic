@@ -14,9 +14,14 @@ var undefinedList = function undefinedArrayCheck(list){
 	return out;
 }
 
+
 router.use(function (req, res, next){
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.header("Access-Control-Allow-Methods", "GET");
     next();
 });
+
 /*
 returns a promise from making an endpoint request.
  */
@@ -25,7 +30,7 @@ function endpoint(query, res) {
         pool.getConnection(function (err, connection) {
             if (err) {
                 console.log("Error: " + err.message);
-                console.log('Destroying a query');
+                //console.log('Destroying a query');
                 pool.end();
                 reject(err.message);
             } else {
@@ -33,7 +38,7 @@ function endpoint(query, res) {
                   sql : query,
                   timeout: 10000
                 }
-                console.log('Proceeding to enter the query');
+                //console.log('Proceeding to enter the query');
                 console.log('Query is : ' + query);
                 connection.query(queryObject, function (err, rows, col) {
                     if (err) {
@@ -44,7 +49,7 @@ function endpoint(query, res) {
 											}
                         reject(err.message);
                     }
-                    console.log('Proceeding to release a query');
+                    //console.log('Proceeding to release a query');
                     connection.release();
                     if (res){
                       res.sendStatus(200);
@@ -262,7 +267,6 @@ router.route('/customer/drinks')
 /*
     returns ingredients in a preset drink in the menu
  */
-
 router.route('/customer/drinks/:drink')
     .get(function (req, res) {
         // console.log("insert into bartender (name) values (" + req.params.bartender + ")");

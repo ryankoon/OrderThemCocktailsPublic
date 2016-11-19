@@ -17,8 +17,7 @@
     display: inline-block;
 }
 .drink-type{
-    color: black;
-    opacity: 0.8;
+    color: dimgray;
     padding-left: 10px;
     font-size: 14px;
     position: absolute;
@@ -27,6 +26,38 @@
 .modal-button{
     text-decoration: none !important;
 }
+
+.infoModal-image {
+    height: 400px;
+}
+
+.infoModal-textbox {
+    float: right;
+    width: 100%;
+    text-align: right;
+}
+
+#infoModal-description {
+    text-align: left;
+}
+
+#infoModal-type {
+
+}
+
+#infoModal-abv {
+
+}
+
+span#price-header {
+    font-size: 18px;
+    margin-right: 20px;
+}
+
+.price-display {
+    float: right;
+}
+
 .custom-drink-info{
     text-align: center;
     margin-right: 5px;
@@ -37,7 +68,7 @@
     font-size: 18px;
 }
 .thumbnail img {
-    width: 35%;
+    width: 30%;
     margin-left: 5px;
     margin-top: 15px;
     margin-bottom: 15px;
