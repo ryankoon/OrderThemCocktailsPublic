@@ -69,9 +69,14 @@ span#price-header {
     visibility: hidden;
 }
 
+#name-input {
+    width: 50%;
+    margin-bottom: 10px;
+}
+
 #order-button {
     float: right;
-    margin-top: -7px;
+    margin-top:-45px;
     visibility: hidden;
 }
 .custom-drink-info{

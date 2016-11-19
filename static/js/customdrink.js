@@ -14,6 +14,8 @@
                 price = $parent.attr('data-price');
                 updateOrderHistoryDisplay({name: name, type: type, price: price});
         });
+
+        $('#order-button').on('click', submitOrder);
     });
 
     updateOrderHistoryDisplay = function (drinkObj) {
@@ -41,9 +43,32 @@
             }
     };
 
+    submitOrder = function () {
+        addDrinkToLocalStorage();
+        window.location.href = '/customer/';
+    }
+
+    addDrinkToLocalStorage = function () {
+        var totalOrder = localStorage.getItem('order');
+
+        if (!totalOrder) {
+            totalOrder = [];
+        } else {
+            totalOrder = JSON.parse(totalOrder);
+        }
+
+        totalOrder.push({
+                         name: $('#name-input').val(),
+                         ingredients: drinkIngredients,
+                         price: parseFloat($('#price-counter').text())}
+        );
+
+        localStorage.setItem('order', JSON.stringify(totalOrder));
+    };
+
     ingredientNotInDrink = function (name) {
         return (drinkIngredients.indexOf(name) == -1)
-    }
+    };
 
 
     /**
@@ -70,11 +95,6 @@
         })
     }
 
-
-
-    function updateIngOrderedDisplay() {
-
-    }
 
 
 
