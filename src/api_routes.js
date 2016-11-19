@@ -328,6 +328,40 @@ router.route('/employee/admin/availability')
     });
 
 /*
+ returns list employees who have served all drinks with whiskey ingredient
+ keys: id, name
+ */
+
+router.route('/employee/admin/whiskeybartenders')
+    .get(function (req, res) {
+        var checkAvailable = "SELECT bsw.bartender AS id, b.name FROM bartendersservedwhiskey bsw, bartender b " +
+            "WHERE bsw.bartender = b.eid GROUP BY bsw.bartender HAVING COUNT(bsw.bartender) = ( SELECT COUNT(*) " +
+            "FROM drinkswithwhiskey )";
+        endpoint(checkAvailable)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+/*
+ returns list of drinks with whiskey that has been served by all bartenders
+ keys: name
+ */
+
+    router.route('/employee/admin/whiskeyservedbyall')
+        .get(function (req, res) {
+            var checkAvailable = "SELECT * FROM whiskeydrinkservedbyall";
+            endpoint(checkAvailable)
+                .then(function (result) {
+                    res.json(result);
+                }).catch(function(err) {
+                console.error("Something went wrong, sorry");
+            });
+        });
+
+/*
  returns preset drinks with prices
  */
 

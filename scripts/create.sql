@@ -110,3 +110,50 @@ CREATE TABLE Payment (
         ON DELETE CASCADE,
     PRIMARY KEY (payment_id , order_no)
 );
+
+CREATE VIEW drinkswithwhiskey AS
+  SELECT d.id, d.name, ai.type
+  FROM drink d, ingredientindrink iid, ingredient i, alcoholicingredient ai
+  WHERE d.id = iid.d_id
+        AND iid.i_name = i.name
+        AND i.name = ai.name
+        AND ai.type LIKE "%whiskey%";
+
+CREATE VIEW NonWhiskeyOrders AS
+  SELECT c.bartender, do.drink_id
+  FROM customerorder c, drinksinorder do
+  WHERE c.order_no = do.order_no
+        AND do.drink_id NOT IN (
+    SELECT dw.id
+    FROM drinkswithwhiskey dw
+  );
+
+CREATE VIEW BartendersServedWhiskey AS
+  SELECT c.bartender, do.drink_id
+  FROM customerorder c, drinksinorder do
+  WHERE c.order_no = do.order_no
+        AND (do.drink_id NOT IN (
+    SELECT dw.drink_id
+    FROM nonwhiskeyorders dw
+  ))
+  GROUP BY c.bartender, do.drink_id;
+
+CREATE VIEW WhiskeyDrinkServedByAll AS
+  SELECT d.name
+  FROM bartendersservedwhiskey bsw, drink d
+  WHERE bsw.drink_id = d.id
+  GROUP BY bsw.drink_id
+  HAVING COUNT(bsw.bartender) = (
+    SELECT COUNT(*)
+    FROM bartender
+  );
+
+CREATE VIEW WhiskeyExperts AS
+  SELECT bsw.bartender AS id, b.name
+  FROM bartendersservedwhiskey bsw, bartender b
+  WHERE bsw.bartender = b.eid
+  GROUP BY bsw.bartender
+  HAVING COUNT(bsw.bartender) = (
+    SELECT COUNT(*)
+    FROM drinkswithwhiskey
+  );

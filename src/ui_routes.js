@@ -107,9 +107,11 @@ function uiRouting(app, hbs) {
 	  res.render('employeelogin');
 	});
 	app.get('/admin', function (req,res){
-		var garnishes;
-		var employees;
-		var top5Drinks;
+		var garnishes,
+			employees,
+			whiskeyBartenders,
+			whiskeyservedbyall,
+			top5Drinks;
 
 		var adminPromises = [];
 		var adminpromise;
@@ -138,6 +140,32 @@ function uiRouting(app, hbs) {
 		adminPromises.push(adminpromise);
 
 		adminpromise = new Promise(function (resolve, reject) {
+			request.get(apiRoot + '/employee/admin/whiskeybartenders', function (err, resp, body) {
+				if (err) {
+					console.error('Error getting whiskey bartenders:' + err);
+					reject(err);
+				} else {
+					whiskeyBartenders = JSON.parse(body);
+					resolve(body);
+				}
+			});
+		});
+		adminPromises.push(adminpromise);
+
+		adminpromise = new Promise(function (resolve, reject) {
+			request.get(apiRoot + '/employee/admin/whiskeyservedbyall', function (err, resp, body) {
+				if (err) {
+					console.error('Error getting whiskey bartenders:' + err);
+					reject(err);
+				} else {
+					whiskeyservedbyall = JSON.parse(body);
+					resolve(body);
+				}
+			});
+		});
+		adminPromises.push(adminpromise);
+
+		adminpromise = new Promise(function (resolve, reject) {
 			request.get(apiRoot + '/top5', function (err, resp, body) {
 				if (err) {
 					console.error('Error getting drinks:' + err);
@@ -155,6 +183,8 @@ function uiRouting(app, hbs) {
 				res.render('adminhome', {
 					garnishes: garnishes,
 					employees: employees,
+					whiskeyBartenders: whiskeyBartenders,
+					whiskeyservedbyall: whiskeyservedbyall,
 					top5Drinks: top5Drinks
 				});
 			}).catch(function(err) {
