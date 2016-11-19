@@ -7,6 +7,11 @@
             $('#alcModal').hide();
         });
 
+        $('#infomodal-close').on('click', function (e) {
+            e.preventDefault();
+            $('#infoModal').hide();
+        });
+
         $('.add-item-alcoholic').on('click', function () {
             var $parent = $(this).parent().siblings('#data'),
                 name = $parent.attr('data-name'),
@@ -21,20 +26,36 @@
     updateOrderHistoryDisplay = function (drinkObj) {
         if (ingredientNotInDrink(drinkObj.name)) {
             drinkIngredients.push(drinkObj.name);
-            $('.js-ingredients-added').append("<li class=\'list-group-item\'>" + drinkObj.type + drinkObj.name + drinkObj.price + "</li>");
+            $('.js-ingredients-added').append("<li class=\'list-group-item\' data-name=" + drinkObj.name + " data-price=" + drinkObj.price + ">" + drinkObj.type + drinkObj.name + drinkObj.price + "<button type='button' class='close list-remove'>&times;</button></li>");
+
+            // unbind click listeners from the remove buttons, otherwise the older ones will have multiple listeners
+            // bound to them.  There is probably a better way to do this.
+            $('.list-remove').unbind('click');
+            $('.list-remove').on('click', function () {
+                var $parent = $(this).parent(),
+                    index = drinkIngredients.indexOf($parent.attr('data-name'));
+                drinkIngredients.splice(index, 1);
+                updateOrderPrice("-" + $parent.attr('data-price'));
+                $parent.remove();
+            })
             updateOrderPrice(drinkObj.price);
         } else {
             alert(drinkObj.name + " is already in your drink");
         }
     };
 
+    removeIngredientFromList = function (name) {
+        console.log(hello);
+    };
+
     updateOrderPrice = function (val) {
-        var price = $('#price-counter').text(),
-            newPrice = parseFloat(price) + parseFloat(val);
-
+        var oldPrice = $('#price-counter').text(),
+            newPrice = parseFloat(oldPrice) + parseFloat(val);
+            console.log('old price is ' + parseFloat(oldPrice));
+            console.log('val is ' + parseFloat(val));
+            console.log('new price is ' + newPrice);
             $('#price-counter').text(newPrice.toFixed(2).toString());
-
-            if (newPrice > 0) {
+            if (newPrice > 0 ) {
                 $('.price-display').css('visibility', 'visible');
                 $('#order-button').css('visibility', 'visible');
             } else {
@@ -72,7 +93,7 @@
 
 
     /**
-     * Display the info modal object
+     * Display alcoholic modal
      * @param name
      */
     function showAlcModal(name) {
@@ -88,6 +109,27 @@
                 $('#alcModal-price').html(result[0].price);
                 $('#alcModal-origin').html(result[0].origin);
                 $('#alcModal').show();
+            },
+            error: function (err) {
+                alert("ERROR! : " + err)
+            }
+        })
+    }
+
+    /**
+     * Display alcoholic modal
+     * @param name
+     */
+    function showInfoModal(name) {
+        $.ajax('http://localhost:8080/api/ingredients/name/' + name, {
+            dataType: 'json',
+            type: "GET",
+            success: function (result) {
+                alert(JSON.stringify(result[0]));
+                $('#infoModal-title').html(result[0].name);
+                $('#infoModal-description').html('"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."')
+                $('#infoModal-price').html(result[0].price);
+                $('#infoModal').show();
             },
             error: function (err) {
                 alert("ERROR! : " + err)
