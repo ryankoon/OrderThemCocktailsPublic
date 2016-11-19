@@ -16,7 +16,7 @@
     color: black;
 }
 
-.button-wraper {
+.button-wrapper {
     position: absolute;
     bottom: 25px;
     right: 25px;
@@ -24,18 +24,45 @@
 .caption {
     display: inline-block;
 }
-.drink-type{
-    color: dimgray;
+
+.drink-type {
+    color: darkgray;
     padding-left: 10px;
     font-size: 14px;
     position: absolute;
     top: 0;
 }
+
+.list-infobox {
+    width: 95%;
+    display: inline-block;
+}
+
+.list-buttonbox {
+    width: 5%;
+    display: inline-block;
+}
+
+.list-type {
+    color: darkgray;
+    display: inline-block;
+    width: 25%;
+}
+
+.list-name {
+    display: inline-block;
+    width: 50%;
+}
+
+.list-price {
+    display: inline-block;
+    text-align: right;
+    width: 20%;
+}
+
 .modal-button{
     text-decoration: none !important;
 }
-
-
 
 .infoModal-image, .alcModal-image {
     height: 400px;
