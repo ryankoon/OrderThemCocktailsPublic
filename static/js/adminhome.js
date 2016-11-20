@@ -3,6 +3,7 @@ var currentTab = window.location.href;
 var navTabs;
 
 function init() {
+    validateSession();
     navTabs = $('.nav-tabs a');
     for (var i = 0; i < navTabs.length; i++) {
         if (navTabs[i].href === currentTab) {
@@ -20,6 +21,21 @@ function init() {
         $(this)[0].classList.remove("active");
         //e.stopPropagation();
     });
+}
+
+function validateSession() {
+    sessionid = localStorage.getItem("sessionEID");
+    sessionid = parseInt(sessionid);
+
+    if (sessionid !== 0) {
+        setAlert("alert-info", "Your session has expired. Redirecting to login page...");
+        setTimeout(function() {
+            logout();
+        }, 3000);
+
+    } else {
+        $("#admin-content").removeClass("collapse");
+    }
 }
 
 function addEmployee() {
@@ -58,6 +74,18 @@ function restockAll() {
 
 function logout() {
     window.location = "/employee";
+}
+
+function setAlert(alertClass, text) {
+    $('div.alert').first().addClass("collapse");
+    $('div.alert').first().removeClass("alert-success");
+    $('div.alert').first().removeClass("alert-info");
+    $('div.alert').first().removeClass("alert-warning");
+    $('div.alert').first().removeClass("alert-danger");
+
+    $('div.alert').first().text(text);
+    $('div.alert').first().addClass(alertClass);
+    $('div.alert').first().removeClass("collapse");
 }
 
 $(document).ready(function(){
