@@ -14,9 +14,14 @@ var undefinedList = function undefinedArrayCheck(list){
 	return out;
 }
 
+
 router.use(function (req, res, next){
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.header("Access-Control-Allow-Methods", "GET");
     next();
 });
+
 /*
 returns a promise from making an endpoint request.
  */
@@ -25,7 +30,7 @@ function endpoint(query, res) {
         pool.getConnection(function (err, connection) {
             if (err) {
                 console.log("Error: " + err.message);
-                console.log('Destroying a query');
+                //console.log('Destroying a query');
                 pool.end();
                 reject(err.message);
             } else {
@@ -33,7 +38,7 @@ function endpoint(query, res) {
                   sql : query,
                   timeout: 10000
                 }
-                console.log('Proceeding to enter the query');
+                //console.log('Proceeding to enter the query');
                 console.log('Query is : ' + query);
                 connection.query(queryObject, function (err, rows, col) {
                     if (err) {
@@ -44,7 +49,7 @@ function endpoint(query, res) {
 											}
                         reject(err.message);
                     }
-                    console.log('Proceeding to release a query');
+                    //console.log('Proceeding to release a query');
                     connection.release();
                     if (res){
                       res.sendStatus(200);
@@ -56,17 +61,79 @@ function endpoint(query, res) {
     });
 }
 
-router.route('/employee')
-    .get(function (req, res) {
-        res.send("login");
+/*
+    Escape any characters that need escaping before sending the query string to the database
+
+    Source:
+    http://stackoverflow.com/questions/7744912/making-a-javascript-string-sql-friendly
+ */
+function escape_string (str) {
+    if (typeof str != 'string')
+        return str;
+
+    return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
+        switch (char) {
+            case "\0":
+                return "\\0";
+            case "\x08":
+                return "\\b";
+            case "\x09":
+                return "\\t";
+            case "\x1a":
+                return "\\z";
+            case "\n":
+                return "\\n";
+            case "\r":
+                return "\\r";
+            case "'":
+            case "\"":
+            case "\\":
+            case "%":
+                return "\\"+char;
+        }
+    });
+}
+
+/*
+ Endpoint for drink searching using ingredients via division.  This endpoint will return only drinks
+ that contain the entire ingredient list;
+
+ Pattern from source: https://www.simple-talk.com/sql/t-sql-programming/divided-we-stand-the-sql-of-relational-division/
+*/
+router.route('/drinks/withallingredients')
+    .get(function (req, res){
+
+        var makeView = makeViewString(escape_string(req.query.ingredient)),
+            clearView = 'drop view if exists temp_drinkSearchByIngredient',
+            doDivision = 'SELECT i.d_id FROM ingredientindrink i ' +
+                         'LEFT OUTER JOIN temp_drinkSearchByIngredient t ON i.i_name = t.name GROUP BY i.d_id ' +
+                         'HAVING COUNT(i.i_name) = (SELECT COUNT(name) FROM temp_drinkSearchByIngredient) AND ' +
+                         'COUNT(t.name) = (SELECT COUNT(name) FROM temp_drinkSearchByIngredient)';
+
+        endpoint(clearView)
+            .then(function() {
+                return endpoint(makeView);
+            }).then(function() {
+                return endpoint(doDivision);
+            }).then(function(result) {
+                res.json(result);
+            }).catch(function (error) {
+                console.error("error in /drinks/withingredients " + error);
+            });
+
+        function makeViewString (ingredients) {
+            var view = "create view temp_drinkSearchByIngredient as select * from ingredient i where ";
+            for (var i = 0; i < ingredients.length; i++) {
+                view = view.concat("i.name=" + "'" + escape_string(ingredients[i]) + "'");
+
+                if (i < ingredients.length - 1)
+                    view += " or ";
+            }
+            return view;
+        }
     });
 
-router.route('/customer')
-    .get(function (req, res) {
-        res.send("login");
-    });
-
-router.route('/ingredients/base')
+router.route('/ingredients/type')
     .get(function (req, res) {
         var showAllAlcoholic = "select * from alcoholictype";
         endpoint(showAllAlcoholic)
@@ -77,17 +144,20 @@ router.route('/ingredients/base')
         });
     });
 
-/*
-    ex. ingredients/base/Vodka
+ /**
+ *  Get an alcoholic ingredient by name, regardless of availability
  */
-
-router.route('/ingredients/base/:type')
+router.route('/ingredients/alcoholic/:name')
     .get(function (req, res) {
-        // console.log("type" + JSON.stringify({type:req.params.type}));
-        var showBase = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a " +
-            "join ingredient i on i.name = a.name " +
-            " where a.type = " + "'" + req.params.type + "'";
-        endpoint(showBase)
+
+        var showAlc,
+            type = req.params.name;
+
+            showAlc = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a " +
+                      "join ingredient i on i.name = a.name " +
+                      "where a.name = " + "'" + escape_string(type) + "'";
+
+        endpoint(showAlc)
             .then(function (result) {
             res.json(result);
         }).catch(function(err) {
@@ -95,7 +165,27 @@ router.route('/ingredients/base/:type')
         });
     });
 
-router.route('/ingredients/garnish')
+/**
+ *  Get all alcoholic ingredients, regardless of availability
+ */
+router.route('/ingredients/all/alcoholic/')
+    .get(function (req, res) {
+
+        var showAlc = "select a.name, a.abv, a.origin, a.type, i.price, i.available from alcoholicingredient a " +
+                      "join ingredient i on i.name = a.name ";
+
+        endpoint(showAlc)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+                console.error("Something went wrong, sorry");
+            });
+    });
+
+/**
+ *  Get all garnishes, regardless of availability
+ */
+router.route('/ingredients/all/garnish/')
     .get(function (req, res) {
         var showGarnish = "select ingredient.name, price, available, description from ingredient " +
             "join garnish g on g.name = ingredient.name";
@@ -107,7 +197,10 @@ router.route('/ingredients/garnish')
         });
     });
 
-router.route('/ingredients/nonalcoholic')
+/**
+ *  Get all non-alcoholic ingredients, regardless of availability
+ */
+router.route('/ingredients/all/nonalcoholic')
     .get(function (req, res) {
         var showNonAlcoholic = "select ingredient.name, price, available, description from ingredient " +
             "join nonalcoholic n on n.name = ingredient.name";
@@ -117,6 +210,30 @@ router.route('/ingredients/nonalcoholic')
         }).catch(function(err) {
             console.error("Something went wrong, sorry");
         });
+    });
+
+/**
+ *  Get all ingredients, regardless of availability
+ */
+router.route('/ingredients/name/:name')
+    .get(function (req, res) {
+
+        var showIng,
+            type = req.params.name || "all";
+
+        if (type == "all") {
+            showIng = "select * from ingredient i where i.available=true"
+        } else {
+            showIng = "select i.name, i.price from ingredient i " +
+                    "where i.name = " + "'" + escape_string(type) + "' and i.available=true";
+        }
+
+        endpoint(showIng)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+                console.error("Something went wrong, sorry");
+            });
     });
 
 /*
@@ -170,7 +287,7 @@ router.route('/employee/admin/orderhistory')
 router.route('/employee/admin/addstaff/:bartender')
     .get(function (req, res) {
         // console.log("insert into bartender (name) values (" + req.params.bartender + ")");
-        var addBartender = "insert into bartender (name) values ('" + req.params.bartender + "')";
+        var addBartender = "insert into bartender (name) values ('" + escape_string(req.params.bartender) + "')";
         endpoint(addBartender)
             .then(function (result) {
                 res.json(result);
@@ -186,7 +303,7 @@ router.route('/employee/admin/addstaff/:bartender')
 router.route('/employee/admin/removestaff/:eid')
     .delete(function (req, res) {
         // console.log("insert into bartender (name) values (" + req.params.bartender + ")");
-        var addBartender = "DELETE FROM bartender where bartender.eid = " + req.params.eid;
+        var addBartender = "DELETE FROM bartender where bartender.eid = " + escape_string(req.params.eid);
         endpoint(addBartender)
             .then(function (result) {
                 res.json(result);
@@ -264,12 +381,11 @@ router.route('/customer/drinks')
 /*
     returns ingredients in a preset drink in the menu
  */
-
 router.route('/customer/drinks/:drink')
     .get(function (req, res) {
         // console.log("insert into bartender (name) values (" + req.params.bartender + ")");
         var showIngredients = "select i_name from ingredientindrink " +
-            "where d_id = (select id from drink where name = '" + req.params.drink + "')";
+            "where d_id = (select id from drink where name = '" + escape_string(req.params.drink) + "')";
         endpoint(showIngredients)
             .then(function (result) {
                 res.json(result);
@@ -325,7 +441,6 @@ router.route('/employee/bartender/selectOrder/:eid/:order_no')
             console.error("Something went wrong, sorry");
         });
     });
-
 /*
  returns info about the order and bartender given an order no
  */
@@ -342,7 +457,6 @@ router.route('/employee/order/:order_no')
             console.error("Something went wrong, sorry");
         });
     });
-
 
 router.route('/customer/drinks/order')
     .post(function (req, res) {
@@ -375,9 +489,9 @@ router.route('/customer/drinks/order')
         }
 
 
-        name = req.body.cust_name;
-        notes = req.body.notes;
-        drinks = req.body.drinks;
+        name = escape_string(req.body.cust_name);
+        notes = escape_string(req.body.notes);
+        drinks = req.body.drinks;       // TODO: escape?
         amount = req.body.amount;
         card_no = req.body.card_no;
 				var payloadList = [];
@@ -443,6 +557,7 @@ router.route('/customer/drinks/order')
           console.error(err);
         });
     });
+
     router.route('/top5')
         .get(function (req, res) {
             var selectTop5 = "select d.name, COUNT(drink_id) as total from drinksinorder o, drink d where o.drink_id = d.id group by drink_id order by total DESC limit 0 , 5";
@@ -455,6 +570,7 @@ router.route('/customer/drinks/order')
             });
         });
 	};
+
 	module.exports.apiRouting = apiRouting;
 
 	return module

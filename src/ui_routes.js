@@ -27,6 +27,7 @@ function uiRouting(app, hbs) {
 				fulfill(top5Json);
 			});
 		});
+
 		promiseFirst.then(function (top5Result) {
 			request.get(apiRoot + '/customer/drinks', function (err, resp, body) {
 				if (err) {
@@ -43,21 +44,19 @@ function uiRouting(app, hbs) {
 				res.status(404).send({Error: 'Error contacting the db:'} + err)
 			});
 		});
-
 	});
 
 	/*
 	Custom drink route.
 	*/
 	app.get('/customer/customdrink', function (req, res) {
-		console.log("hit the custom drink route ok");
 		var ingredientPromises = [],
 			alcoholic,
 			nonalcoholic,
 			garnish;
 
 		ingredientPromises.push(new Promise(function (resolve, reject) {
-			request(apiRoot + '/ingredients/base/all', function (error, response, body) {
+			request(apiRoot + '/ingredients/all/alcoholic/', function (error, response, body) {
 				if (error) {
 					reject(error)
 				} else {
@@ -68,7 +67,7 @@ function uiRouting(app, hbs) {
 		}));
 
 		ingredientPromises.push(new Promise(function (resolve, reject) {
-			request(apiRoot + '/ingredients/nonalcoholic', function (error, response, body) {
+			request(apiRoot + '/ingredients/all/nonalcoholic/', function (error, response, body) {
 				if (error) {
 					reject(error)
 				} else {
@@ -79,7 +78,7 @@ function uiRouting(app, hbs) {
 		}));
 
 		ingredientPromises.push(new Promise(function (resolve, reject) {
-			request(apiRoot + '/ingredients/garnish', function (error, response, body) {
+			request(apiRoot + '/ingredients/all/garnish/', function (error, response, body) {
 				if (error) {
 					reject(error)
 				} else {

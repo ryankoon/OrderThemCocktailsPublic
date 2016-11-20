@@ -1,0 +1,135 @@
+.thumbnail > img {
+    display: inline-block;
+    float: left
+}
+.add-item > .fa {
+    position: absolute;
+    right: 25px;
+    top: 10px;
+    color: black;
+}
+
+.add-item-alcoholic > .fa {
+    position: absolute;
+    right: 25px;
+    top: 10px;
+    color: black;
+}
+
+.button-wrapper {
+    position: absolute;
+    bottom: 25px;
+    right: 25px;
+}
+.caption {
+    display: inline-block;
+}
+
+.drink-type {
+    color: darkgray;
+    padding-left: 10px;
+    font-size: 14px;
+    position: absolute;
+    top: 0;
+}
+
+.list-infobox {
+    width: 95%;
+    display: inline-block;
+}
+
+.list-buttonbox {
+    width: 5%;
+    display: inline-block;
+}
+
+.list-type {
+    color: darkgray;
+    display: inline-block;
+    width: 25%;
+}
+
+.list-name {
+    display: inline-block;
+    width: 50%;
+}
+
+.list-price {
+    display: inline-block;
+    text-align: right;
+    width: 20%;
+}
+
+.modal-button{
+    text-decoration: none !important;
+}
+
+.infoModal-image, .alcModal-image {
+    height: 400px;
+}
+
+.infoModal-textbox, .alcModal-textbox {
+    float: right;
+    width: 100%;
+    text-align: right;
+}
+
+#infoModal-description, #alcModal-description {
+    text-align: left;
+}
+
+#alcModal-type {
+
+}
+
+#alcModal-abv {
+
+}
+
+span#price-header {
+    font-size: 18px;
+    margin-right: 20px;
+}
+
+.price-display {
+    float: right;
+    visibility: hidden;
+}
+
+#name-input {
+    width: 50%;
+    margin-bottom: 10px;
+}
+
+#order-button {
+    float: right;
+    margin-top:-45px;
+    visibility: hidden;
+}
+.custom-drink-info{
+    text-align: center;
+    margin-right: 5px;
+    margin-top: 5px;
+    color: black;
+}
+.custom-drink-info > h3 {
+    font-size: 18px;
+}
+.thumbnail img {
+    width: 30%;
+    margin-left: 5px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-right: 0;
+}
+
+.equalize-row {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
