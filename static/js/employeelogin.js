@@ -35,7 +35,7 @@ function onLogin() {
                     if (accessGranted && eid != 'undefined') {
                         localStorage.setItem("sessionEID", eid);
                         localStorage.setItem("sessionName", ename);
-                        window.location = "/bartender";
+                        window.location = "/bartender/" + eid;
                     } else {
                         alert("Username/ID not found!");
                     }

@@ -191,29 +191,43 @@ function uiRouting(app, hbs) {
 			res.status(404).send({Error: 'Error contacting the db:'} + err)
 		});
 	});
-	app.get('/bartender', function (req,res){
+	app.get('/bartender/:eid', function (req,res){
+		var eid = req.params.eid;
 		var openOrders,
-			history;
+			ordersHistory;
 
 		var bartenderPromises = [];
 		var bartenderpromise;
 		bartenderpromise = new Promise(function (resolve, reject) {
-			request(apiRoot + '/employee/admin/availability', function (error, response, body) {
+			request(apiRoot + '/employee/bartender/openDrinks', function (error, response, body) {
 				if (error) {
 					reject(error);
 				} else {
-					garnishes = JSON.parse(body);
+					openOrders = JSON.parse(body);
 					resolve(body);
 				}
 			});
 		});
 		bartenderPromises.push(bartenderpromise);
 
+		bartenderpromise = new Promise(function (resolve, reject) {
+			request(apiRoot + '/employee/orderhistory/' + eid, function (error, response, body) {
+				if (error) {
+					reject(error);
+				} else {
+					ordersHistory = JSON.parse(body);
+					resolve(body);
+				}
+			});
+		});
+		bartenderPromises.push(bartenderpromise);
+
+
 		Promise.all(bartenderPromises)
 			.then(function() {
 				res.render('bartenderhome', {
 					openOrders: openOrders,
-					history: history
+					ordersHistory: ordersHistory
 				});
 			}).catch(function(err) {
 			res.status(404).send({Error: 'Error contacting the db:'} + err)

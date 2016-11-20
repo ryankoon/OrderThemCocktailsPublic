@@ -2,28 +2,50 @@
 <h1 id="employeeWelcomeText">Welcome</h1>
 <button class="btn btn-danger" onclick="logout()">Logout</button>
     <div id="openorders-table-container">
+        <h3>Open Orders</h3>
         <table class="table">
             <thead class="thead-default">
             <tr>
-                <th>#</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Username</th>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Table #</th>
+                <th>Drink</th>
+                <th>Notes</th>
             </tr>
             </thead>
             <tbody>
+            {{#each openOrders}}
+                <tr>
+                    <td>{{order_no}}</td>
+                    <td>{{cust_name}}</td>
+                    <td>{{table_no}}</td>
+                    <td>{{name}}</td>
+                    <td>{{notes}}</td>
+                </tr>
+            {{/each}}
+            </tbody>
+        </table>
+    </div>
+    <div id="orderhistory-table-container">
+        <h3>History</h3>
+        <table class="table">
+            <thead class="thead-default">
             <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
+                <th>Date</th>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Drink</th>
             </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-            </tr>
+            </thead>
+            <tbody>
+            {{#each ordersHistory}}
+                <tr>
+                    <td>{{date_time}}</td>
+                    <td>{{order_no}}</td>
+                    <td>{{cust_name}}</td>
+                    <td>{{drink}}</td>
+                </tr>
+            {{/each}}
             </tbody>
         </table>
     </div>
