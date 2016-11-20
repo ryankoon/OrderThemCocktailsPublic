@@ -1,29 +1,136 @@
-<script src="/js/customer.js" type="text/javascript"></script>
+<script src="/js/customdrink.js" type="text/javascript"></script>
 <link rel="stylesheet" href="/css/bootstrap-horizon.css">
 <link rel="stylesheet" href="/css/styles.css">
 <html>
-<div class = "container transparent">
-    <div class ="row transparent">
-        <div class ="col-md-12 transparent">
-            <h3>Alcoholic</h3>
-            <div class="row row-horizon transparent">
+<div class="container">
+
+    <div class="modal" id="alcModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" id="alcmodal-close">&times;</button>
+                    <h4 class="modal-title" id="alcModal-title"></h4>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img src="/images/abc.jpg" class="alcModal-image"></img>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="infoModal-textbox">
+                                <p id="alcModal-price"></p>
+                                <p id="alcModal-type"></p>
+                                <p id="alcModal-origin"></p>
+                                <p id="alcModal-abv"></p>
+                                <hr>
+                                <p id="alcModal-description"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="infoModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" id="infomodal-close">&times;</button>
+                    <h4 class="modal-title" id="infoModal-title"></h4>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img src="/images/abc.jpg" class="infoModal-image"></img>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="infoModal-textbox">
+                                <p id="infoModal-price"></p>
+                                <hr>
+                                <p id="infoModal-description"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div><input type="text" class="form-control" id="name-input" placeholder="Give your drink a name"><button type="button" id='order-button' class="btn btn-default">Add to Order</button></div>
+            <div class="list-group js-ingredients-added"></div>
+            <div class="price-display">
+                <span id="price-header">Price</span>
+                <span id="price-counter">0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Spirits and Liqueors</h3>
+
+            <div class="row-horizon equalize">
                 {{#each alcoholic}}
-                    <div class="col-sm-2 transparent">
-                        <img src="/images/abc.jpg" class="thumbnail"></img>
-                        {{this.name}} <br>
-                        {{this.type}} <br>
-                        {{this.abv}} <br>
+                    <div class="col-sm-3 equalize">
+                        <div id="data" data-name="{{this.name}}" data-price="{{this.price}}" data-type="{{this.type}}"></div>
+                        <div class="thumbnail clearfix">
+                            <a class="add-item" href="#" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                            <h6 class="drink-type">{{this.type}}</h6>
+                            <a class="modal-button" href="#" role="button" onclick="showAlcModal('{{this.name}}')">
+                                <img src="/images/abc.jpg">
+
+                                <div>
+                                    <div class="custom-drink-info">
+                                        <hr>
+                                        <h4>{{this.name}}</h4>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
                     </div>
                 {{/each}}
             </div>
-            <div>
-                <h3>NonAlcoholic</h3>
+            <h3>Mixers</h3>
+
+            <div class="row row-horizon transparent">
                 {{#each nonalcoholic}}
-                    {{this.name}}<br>
+                    <div class="col-sm-3 equalize">
+                        <div id="data" data-name="{{this.name}}" data-price="{{this.price}}" data-type="Mixer"></div>
+                        <div class="thumbnail clearfix">
+                            <a class="add-item" href="#" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                            <a class="modal-button" href="#" role="button" onclick="showInfoModal('{{this.name}}')">
+                                <img src="/images/abc.jpg">
+
+                                <div>
+                                    <div class="custom-drink-info">
+                                        <h3>{{this.name}}</h3>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 {{/each}}
-                <h3>Garnish</h3>
+            </div>
+            <h3>Garnishes</h3>
+
+            <div class="row row-horizon transparent">
                 {{#each garnish}}
-                    {{this.name}}</br>
+                    <div class="col-sm-3 equalize">
+                        <div id="data" data-name="{{this.name}}" data-price="{{this.price}}" data-type="Garnish"></div>
+                        <div class="thumbnail clearfix">
+                            <a class="add-item" href="#" role="button"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                            <a class="modal-button" href="#" role="button" onclick="showInfoModal('{{this.name}}')">
+                                <img src="/images/abc.jpg">
+
+                                <div>
+                                    <div class="custom-drink-info">
+                                        <h3>{{this.name}}</h3>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 {{/each}}
             </div>
         </div>
