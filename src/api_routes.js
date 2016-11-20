@@ -389,16 +389,35 @@ router.route('/employee/admin/whiskeybartenders')
  keys: name
  */
 
-    router.route('/employee/admin/whiskeyservedbyall')
-        .get(function (req, res) {
-            var whiskeyservedbyall = "SELECT * FROM whiskeydrinkservedbyall";
-            endpoint(whiskeyservedbyall)
-                .then(function (result) {
-                    res.json(result);
-                }).catch(function(err) {
-                console.error("Something went wrong, sorry");
-            });
+router.route('/employee/admin/whiskeyservedbyall')
+    .get(function (req, res) {
+        var whiskeyservedbyall = "SELECT * FROM whiskeydrinkservedbyall";
+        endpoint(whiskeyservedbyall)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
         });
+    });
+
+/*
+ Shows the drink that has generated the max revenue
+ */
+
+router.route('/employee/admin/maxrevenuedrink')
+    .get(function (req, res) {
+        var revenue = "select drink, max(revenue) as max from (select drink.name as drink, sum(payment.amount) as revenue " +
+            "from drinksinorder dio join customerorder co on dio.order_no = co.order_no " +
+            "join drink on drink.id = dio.drink_id join payment on payment.order_no = co.order_no " +
+            "where co.is_open = 0 group by drink.name order by revenue desc) as k";
+        endpoint(revenue)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
 
 /*
  returns preset drinks with prices
