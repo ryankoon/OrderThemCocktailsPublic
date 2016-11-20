@@ -14,7 +14,7 @@ function onLogin() {
     username = $("#employeeloginuser").val();
     password = $("#employeeloginpass").val();
 
-    if (isValidUserPass()) {
+    if (isValidInputValue()) {
         if (isAdmin(password)) {
             window.location = "/admin";
         } else {
@@ -35,19 +35,22 @@ function onLogin() {
                     if (accessGranted && eid != 'undefined') {
                         localStorage.setItem("sessionEID", eid);
                         localStorage.setItem("sessionName", ename);
+                        setAlert("alert-success", "Success!");
                         window.location = "/bartender/" + eid;
                     } else {
-                        alert("Username/ID not found!");
+                        setAlert("alert-danger", "Username/ID not found!");
+                        enableLogin();
                     }
                 })
                 .catch(function (err) {
-                    alert(err);
+                    console.log(err);
+                    enableLogin();
                 });
         };
     } else {
-        console.log("Invalid employee credentials.");
+        console.log("Invalid login values.");
+        enableLogin();
     }
-    enableLogin();
 };
 
 function isAdmin(pass) {
@@ -66,12 +69,12 @@ function getEmployeeIds() {
     });
 }
 
-function isValidUserPass(){
+function isValidInputValue(){
     if (!username || username.length === 0){
-        alert("Please enter your username.");
+        setAlert("alert-warning", "Please enter your username.");
         return false;
     } else if (!password || password.length === 0) {
-        alert("Please enter your password.");
+        setAlert("alert-warning", "Please enter your password.");
         return false;
     } else {
         return true;
@@ -79,11 +82,26 @@ function isValidUserPass(){
 }
 
 function enableLogin() {
-    $('#employeeloginbutton').removeAttr("disabled");
+    $('#employeeloginbutton').removeClass("disabled");
+    $('#employeeloginbutton').text("Login");
 }
 
 function disableLogin() {
-    $('#employeeloginbutton').attr("disabled", true);
+    console.log("disabling login");
+    $('#employeeloginbutton').addClass("disabled");
+    $('#employeeloginbutton').text("Logging in...");
+}
+
+function setAlert(alertClass, text) {
+    $('div.alert').first().addClass("collapse");
+    $('div.alert').first().removeClass("alert-success");
+    $('div.alert').first().removeClass("alert-info");
+    $('div.alert').first().removeClass("alert-warning");
+    $('div.alert').first().removeClass("alert-danger");
+
+    $('div.alert').first().text(text);
+    $('div.alert').first().addClass(alertClass);
+    $('div.alert').first().removeClass("collapse");
 }
 
 $(document).ready(function(){
