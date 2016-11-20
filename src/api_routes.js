@@ -376,10 +376,10 @@ router.route('/employee/admin/availability')
 
 router.route('/employee/admin/whiskeybartenders')
     .get(function (req, res) {
-        var checkAvailable = "SELECT bsw.bartender AS id, b.name FROM bartendersservedwhiskey bsw, bartender b " +
+        var whiskeybartenders = "SELECT bsw.bartender AS id, b.name FROM bartendersservedwhiskey bsw, bartender b " +
             "WHERE bsw.bartender = b.eid GROUP BY bsw.bartender HAVING COUNT(bsw.bartender) = ( SELECT COUNT(*) " +
             "FROM drinkswithwhiskey )";
-        endpoint(checkAvailable)
+        endpoint(whiskeybartenders)
             .then(function (result) {
                 res.json(result);
             }).catch(function(err) {
@@ -394,8 +394,8 @@ router.route('/employee/admin/whiskeybartenders')
 
     router.route('/employee/admin/whiskeyservedbyall')
         .get(function (req, res) {
-            var checkAvailable = "SELECT * FROM whiskeydrinkservedbyall";
-            endpoint(checkAvailable)
+            var whiskeyservedbyall = "SELECT * FROM whiskeydrinkservedbyall";
+            endpoint(whiskeyservedbyall)
                 .then(function (result) {
                     res.json(result);
                 }).catch(function(err) {
@@ -436,12 +436,16 @@ router.route('/customer/drinks/:drink')
         });
     });
 
-router.route('/employee/bartender')
+
+/*
+ returns a list of orders that are open and has a drink
+ */
+router.route('/employee/bartender/openDrinks')
     .get(function (req, res) {
-        var showOpenDrinks = "select co.cust_name, co.table_no, drink.name, co.notes " +
+        var showOpenDrinks = "select co.order_no, co.cust_name, co.table_no, drink.name as drink, co.notes " +
             "from drinksinorder dio join customerorder co on dio.order_no = co.order_no " +
             "join drink on drink.id = dio.drink_id " +
-            "where co.is_open = 1";
+            "where co.is_open = 1 order by co.order_no";
         endpoint(showOpenDrinks)
             .then(function (result) {
                 res.json(result);
@@ -450,17 +454,52 @@ router.route('/employee/bartender')
         });
     });
 
-
 /*
-    changes order from open to closed and adds bartender to order
+    changes order from open to closed and adds bartender to order if bartender is null
  */
 
 router.route('/employee/bartender/selectOrder/:eid/:order_no')
     .get(function (req, res) {
         var eid = req.params.eid;
         var order_no = req.params.order_no;
-        var selectOrder = "UPDATE customerorder SET bartender = " + eid + ", is_open = 0 WHERE order_no = " + order_no;
+        var selectOrder = "UPDATE customerorder SET bartender = " + eid + ", is_open = 0 WHERE order_no = " + order_no +
+            " AND bartender IS NULL";
         endpoint(selectOrder)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+/*
+ returns info about the order and bartender given an order no
+ */
+
+router.route('/employee/order/:order_no')
+    .get(function (req, res) {
+        var order_no = req.params.order_no;
+        var selectOrder = "SELECT * FROM customerorder c, bartender b WHERE c.bartender = b.eid AND c.order_no = " +
+            order_no;
+        endpoint(selectOrder)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+/*
+ returns history of orders fulfilled by given bartender eid
+ */
+
+router.route('/employee/orderhistory/:eid')
+    .get(function (req, res) {
+        var eid = req.params.eid;
+        var orderHistory = "SELECT c.date_time, c.order_no, c.cust_name, d.name AS drink FROM customerorder c, " +
+            "bartender b, drinksinorder do, drink d WHERE c.order_no = do.order_no AND c.bartender = b.eid AND " +
+            "do.drink_id = d.id AND c.bartender = " + eid;
+        endpoint(orderHistory)
             .then(function (result) {
                 res.json(result);
             }).catch(function(err) {

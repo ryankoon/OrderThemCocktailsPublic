@@ -38,6 +38,15 @@ var customhbs = exphbs.create({
     helpers: {
         inc: function (value) {
             return parseInt(value) + 1;
+        },
+        concatStrings: function (str1, str2) {
+            return str1 + str2;
+        },
+        getDateFromTS: function (timestamp) {
+            if (timestamp && timestamp.length > 0) {
+                var tsParts = timestamp.split("T");
+                return tsParts[0];
+            }
         }
     }
 });

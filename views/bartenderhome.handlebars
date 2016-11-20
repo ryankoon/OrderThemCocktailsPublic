@@ -1,44 +1,90 @@
 <script src="/js/bartenderhome.js"></script>
 <h1 id="employeeWelcomeText">Welcome</h1>
 <button class="btn btn-danger" onclick="logout()">Logout</button>
-<ul class="nav nav-tabs">
-    <li class="active"><a href="#">Refill Ingredients</a></li>
-    <li><a href="#">Manage Employees</a></li>
-    <li><a href="#">Generate Reports</a></li>
-</ul>
-
-<form>
-    <div class="form-group">
+    <tr id="openorders-table-container">
+        <h3>Open Orders</h3>
         <table class="table">
             <thead class="thead-default">
             <tr>
-                <th>#</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Username</th>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Table #</th>
+                <th>Notes</th>
+                <th></th>
+                <th class="complete-order-button-cell"></th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-            </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-            </tr>
-            <tr>
-                <th scope="row">3</th>
-                <td>Larry</td>
-                <td>the Bird</td>
-                <td>@twitter</td>
-            </tr>
+            {{#each openOrders}}
+                <tr id="{{concatStrings order_no "_row"}}">
+                    <td>{{order_no}}</td>
+                    <td>{{cust_name}}</td>
+                    <td>{{table_no}}</td>
+                    <td>{{notes}}</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownDrinks" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                Drinks
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownDrinks">
+                                {{#each drinks}}
+                                    <li>
+                                        <a>
+                                        {{#each this}}
+                                            {{this}} {{@key}}
+                                        {{/each}}
+                                        </a>
+                                    </li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    </td>
+                    <td class="complete-order-checkbox-cell"><button id="{{concatStrings order_no "_btn"}}" type="button" class="btn btn-primary" onclick="this.disabled=true;updateOpenOrder({{order_no}});">Complete</button></td>
+                </tr>
+            {{/each}}
             </tbody>
         </table>
     </div>
-    <button type="submit" class="btn btn-primary">Refill</button>
+    <div id="orderhistory-table-container">
+        <h3>History</h3>
+        <table class="table">
+            <thead class="thead-default">
+            <tr>
+                <th>Date</th>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#each ordersHistory}}
+                <tr>
+                    <td>{{getDateFromTS date_time}}</td>
+                    <td>{{order_no}}</td>
+                    <td>{{cust_name}}</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownDrinksHistory" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                Drinks
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownDrinksHistory">
+                                {{#each drinks}}
+                                    <li>
+                                        <a>
+                                            {{#each this}}
+                                                {{this}} {{@key}}
+                                            {{/each}}
+                                        </a>
+                                    </li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            {{/each}}
+            </tbody>
+        </table>
+    </div>
 </form>
