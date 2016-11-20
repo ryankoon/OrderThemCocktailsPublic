@@ -15,7 +15,10 @@ function onLogin() {
     password = $("#employeeloginpass").val();
 
     if (isValidInputValue()) {
-        if (isAdmin(password)) {
+        if (isAdmin(username, password)) {
+            localStorage.setItem("sessionEID", 0);
+            localStorage.setItem("sessionName", "Admin");
+            setAlert("alert-success", "Success!");
             window.location = "/admin";
         } else {
             getEmployeeIds()
@@ -53,8 +56,8 @@ function onLogin() {
     }
 };
 
-function isAdmin(pass) {
-    return (pass === "admin");
+function isAdmin(user, pass) {
+    return (user === "admin" && pass === "admin");
 }
 
 function getEmployeeIds() {
