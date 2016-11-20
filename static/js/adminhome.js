@@ -73,6 +73,8 @@ function restockAll() {
 }
 
 function logout() {
+    localStorage.removeItem("sessionEID");
+    localStorage.removeItem("sessionName");
     window.location = "/employee";
 }
 
