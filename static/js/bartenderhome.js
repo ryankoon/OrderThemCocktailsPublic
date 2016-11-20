@@ -22,8 +22,13 @@ function validateSession() {
 
     if (sessionid === 'undefined' || sessionid === null || sessionid.length === 0
         || routeid !== sessionid){
-        logout();
-        alert("Your session has expired. Please login again.");
+        setAlert("alert-info", "Your session has expired. Redirecting to login page...");
+        setTimeout(function() {
+            logout();
+        }, 3000);
+
+    } else {
+        $("#bartender-content").removeClass("collapse");
     }
 }
 
@@ -102,6 +107,18 @@ function errorOrderAssignment(orderNo) {
 
 function logout() {
     window.location = "/employee";
+}
+
+function setAlert(alertClass, text) {
+    $('div.alert').first().addClass("collapse");
+    $('div.alert').first().removeClass("alert-success");
+    $('div.alert').first().removeClass("alert-info");
+    $('div.alert').first().removeClass("alert-warning");
+    $('div.alert').first().removeClass("alert-danger");
+
+    $('div.alert').first().text(text);
+    $('div.alert').first().addClass(alertClass);
+    $('div.alert').first().removeClass("collapse");
 }
 
 $(document).ready(function(){
