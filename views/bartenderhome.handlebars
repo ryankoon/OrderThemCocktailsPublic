@@ -9,22 +9,35 @@
                 <th>Order #</th>
                 <th>Customer</th>
                 <th>Table #</th>
-                <th>Drink</th>
                 <th>Notes</th>
+                <th>Drink</th>
+                <th class="complete-order-checkbox-cell">Complete</th>
             </tr>
             </thead>
             <tbody>
             {{#each openOrders}}
                 <tr>
-                    <td>{{order_no}}</td>
-                    <td>{{cust_name}}</td>
-                    <td>{{table_no}}</td>
-                    <td>{{name}}</td>
-                    <td>{{notes}}</td>
+                    <td>{{this.0.order_no}}</td>
+                    <td>{{this.0.cust_name}}</td>
+                    <td>{{this.0.table_no}}</td>
+                    <td>{{this.0.notes}}</td>
+                    <td></td>
+                    <td class="complete-order-checkbox-cell"><input class="complete-order-checkbox" type="checkbox" value="{{order_no}}"></td>
                 </tr>
+                {{#each this}}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{name}}</td>
+                        <td></td>
+                    </tr>
+                {{/each}}
             {{/each}}
             </tbody>
         </table>
+        <button type="submit" class="btn btn-primary" onclick="updateOpenOrders()">Update</button>
     </div>
     <div id="orderhistory-table-container">
         <h3>History</h3>
@@ -49,5 +62,4 @@
             </tbody>
         </table>
     </div>
-    <button type="submit" class="btn btn-primary">Refill</button>
 </form>

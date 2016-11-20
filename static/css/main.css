@@ -1,3 +1,8 @@
 .body-wrapper{
     margin: 100px 0 20px 0
 }
+
+/*Bartender Page*/
+.complete-order-checkbox-cell {
+    text-align: center;
+}

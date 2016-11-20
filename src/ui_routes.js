@@ -203,7 +203,25 @@ function uiRouting(app, hbs) {
 				if (error) {
 					reject(error);
 				} else {
-					openOrders = JSON.parse(body);
+					var bodyJSON = JSON.parse(body);
+					var groupedOrders = {};
+					// group orders
+					if (bodyJSON) {
+						for (var i = 0; i < bodyJSON.length; i++) {
+							if (!groupedOrders[bodyJSON[i].order_no]) {
+								groupedOrders[bodyJSON[i].order_no] = [];
+							}
+							groupedOrders[bodyJSON[i].order_no].push(bodyJSON[i]);
+						}
+					}
+
+					// store grouped orders in an array
+					var groupedOrdersArray = [];
+					var orders = Object.keys(groupedOrders);
+					for (var n = 0; n < orders.length; n++) {
+						groupedOrdersArray.push(groupedOrders[orders[n]]);
+					}
+					openOrders = groupedOrdersArray;
 					resolve(body);
 				}
 			});

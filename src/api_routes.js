@@ -403,7 +403,7 @@ router.route('/employee/bartender/openDrinks')
         var showOpenDrinks = "select co.order_no, co.cust_name, co.table_no, drink.name, co.notes " +
             "from drinksinorder dio join customerorder co on dio.order_no = co.order_no " +
             "join drink on drink.id = dio.drink_id " +
-            "where co.is_open = 1";
+            "where co.is_open = 1 order by co.order_no";
         endpoint(showOpenDrinks)
             .then(function (result) {
                 res.json(result);
@@ -421,7 +421,7 @@ router.route('/employee/bartender/selectOrder/:eid/:order_no')
         var eid = req.params.eid;
         var order_no = req.params.order_no;
         var selectOrder = "UPDATE customerorder SET bartender = " + eid + ", is_open = 0 WHERE order_no = " + order_no +
-            "AND bartender IS NULL";
+            " AND bartender IS NULL";
         endpoint(selectOrder)
             .then(function (result) {
                 res.json(result);
