@@ -217,10 +217,10 @@ router.route('/employee/admin/availability')
 
 router.route('/employee/admin/whiskeybartenders')
     .get(function (req, res) {
-        var checkAvailable = "SELECT bsw.bartender AS id, b.name FROM bartendersservedwhiskey bsw, bartender b " +
+        var whiskeybartenders = "SELECT bsw.bartender AS id, b.name FROM bartendersservedwhiskey bsw, bartender b " +
             "WHERE bsw.bartender = b.eid GROUP BY bsw.bartender HAVING COUNT(bsw.bartender) = ( SELECT COUNT(*) " +
             "FROM drinkswithwhiskey )";
-        endpoint(checkAvailable)
+        endpoint(whiskeybartenders)
             .then(function (result) {
                 res.json(result);
             }).catch(function(err) {
@@ -235,8 +235,8 @@ router.route('/employee/admin/whiskeybartenders')
 
     router.route('/employee/admin/whiskeyservedbyall')
         .get(function (req, res) {
-            var checkAvailable = "SELECT * FROM whiskeydrinkservedbyall";
-            endpoint(checkAvailable)
+            var whiskeyservedbyall = "SELECT * FROM whiskeydrinkservedbyall";
+            endpoint(whiskeyservedbyall)
                 .then(function (result) {
                     res.json(result);
                 }).catch(function(err) {
@@ -292,16 +292,32 @@ router.route('/employee/bartender')
         });
     });
 
+/*
+ returns a list of orders that are open and has a drink
+ */
+
+router.route('/employee/bartender/openorders')
+    .get(function (req, res) {
+        var openorders = "SELECT c.order_no AS orderno, c.table_no AS tableno, d.name, c.notes FROM customerorder c, " +
+            "drinksinorder do, drink d WHERE c.order_no = do.order_no AND do.drink_id = d.id AND c.is_open = 1";
+        endpoint(openorders)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
 
 /*
-    changes order from open to closed and adds bartender to order
+    changes order from open to closed and adds bartender to order if bartender is null
  */
 
 router.route('/employee/bartender/selectOrder/:eid/:order_no')
     .get(function (req, res) {
         var eid = req.params.eid;
         var order_no = req.params.order_no;
-        var selectOrder = "UPDATE customerorder SET bartender = " + eid + ", is_open = 0 WHERE order_no = " + order_no;
+        var selectOrder = "UPDATE customerorder SET bartender = " + eid + ", is_open = 0 WHERE order_no = " + order_no +
+            "AND bartender IS NULL";
         endpoint(selectOrder)
             .then(function (result) {
                 res.json(result);
@@ -309,6 +325,25 @@ router.route('/employee/bartender/selectOrder/:eid/:order_no')
             console.error("Something went wrong, sorry");
         });
     });
+
+/*
+ returns info about the order and bartender given an order no
+ */
+
+router.route('/employee/order/:order_no')
+    .get(function (req, res) {
+        var order_no = req.params.order_no;
+        var selectOrder = "SELECT * FROM customerorder c, bartender b WHERE c.bartender = b.eid AND c.order_no = " +
+            order_no;
+        endpoint(selectOrder)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+
 router.route('/customer/drinks/order')
     .post(function (req, res) {
       /*
