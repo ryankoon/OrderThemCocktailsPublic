@@ -442,7 +442,7 @@ router.route('/customer/drinks/:drink')
  */
 router.route('/employee/bartender/openDrinks')
     .get(function (req, res) {
-        var showOpenDrinks = "select co.order_no, co.cust_name, co.table_no, drink.name, co.notes " +
+        var showOpenDrinks = "select co.order_no, co.cust_name, co.table_no, drink.name as drink, co.notes " +
             "from drinksinorder dio join customerorder co on dio.order_no = co.order_no " +
             "join drink on drink.id = dio.drink_id " +
             "where co.is_open = 1 order by co.order_no";

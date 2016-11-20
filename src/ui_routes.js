@@ -198,19 +198,50 @@ function uiRouting(app, hbs) {
 			// group orders
 			if (bodyJSON) {
 				for (var i = 0; i < bodyJSON.length; i++) {
-					if (!groupedOrders[bodyJSON[i].order_no]) {
-						groupedOrders[bodyJSON[i].order_no] = [];
+					var orderNo = bodyJSON[i].order_no;
+					var drinkName = bodyJSON[i].drink;
+					if (!groupedOrders[orderNo]) {
+
+						//store first entry found for an orderid
+						groupedOrders[orderNo] = bodyJSON[i];
+
+						// store drinks as an array or drink objects
+						// key - drink name
+						// value - number of drinks
+						delete groupedOrders[orderNo].drink;
+						groupedOrders[orderNo].drinks = {};
+						groupedOrders[orderNo].drinks[drinkName] = 1;
+					} else {
+						var drinkAmount = groupedOrders[orderNo].drinks[drinkName];
+						if (!drinkAmount) {
+							groupedOrders[orderNo].drinks[drinkName] = 1;
+						} else {
+							groupedOrders[orderNo].drinks[drinkName] += 1;
+						}
 					}
-					groupedOrders[bodyJSON[i].order_no].push(bodyJSON[i]);
 				}
 			}
 
-			// store grouped orders in an array
+			// Hashed orders to array
 			var groupedOrdersArray = [];
-			var orders = Object.keys(groupedOrders);
-			for (var n = 0; n < orders.length; n++) {
-				groupedOrdersArray.push(groupedOrders[orders[n]]);
+			var orderNos = Object.keys(groupedOrders);
+			for (var n = 0; n < orderNos.length; n++) {
+				//separate drink key value pairs into an array of drink objects
+				var drinksObject = groupedOrders[orderNos[n]].drinks;
+				var drinkNames = Object.keys(drinksObject);
+				var drinksArray = [];
+
+				for (var m = 0; m < drinkNames.length; m++) {
+					var drinkObject = {};
+					drinkObject[drinkNames[m]] = drinksObject[drinkNames[m]];
+					drinksArray.push(drinkObject);
+				}
+
+				// replace object representation with array representation of drinks
+				groupedOrders[orderNos[n]].drinks = drinksArray;
+				groupedOrdersArray.push(groupedOrders[orderNos[n]]);
 			}
+			console.log("GroupedOrdersArray", groupedOrdersArray);
 			return groupedOrdersArray;
 		}
 

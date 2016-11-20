@@ -86,7 +86,6 @@ function successfulOrderAssignment(order) {
     var buttonId = "#" + order.order_no + "_btn";
     $(buttonId).toggleClass('btn-primary btn-success');
     $(buttonId).text("Success");
-    addOrderToHistory(order);
 }
 
 function warningOrderAssignment(orderNo) {
@@ -99,10 +98,6 @@ function errorOrderAssignment(orderNo) {
     var buttonId = "#" + orderNo + "_btn";
     $(buttonId).toggleClass('btn-primary btn-danger');
     $(buttonId).text("Error");
-}
-
-function addOrderToHistory(order) {
-
 }
 
 function logout() {

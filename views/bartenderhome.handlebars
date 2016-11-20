@@ -16,11 +16,11 @@
             </thead>
             <tbody>
             {{#each openOrders}}
-                <tr id="{{concatStrings this.0.order_no "_row"}}">
-                    <td>{{this.0.order_no}}</td>
-                    <td>{{this.0.cust_name}}</td>
-                    <td>{{this.0.table_no}}</td>
-                    <td>{{this.0.notes}}</td>
+                <tr id="{{concatStrings order_no "_row"}}">
+                    <td>{{order_no}}</td>
+                    <td>{{cust_name}}</td>
+                    <td>{{table_no}}</td>
+                    <td>{{notes}}</td>
                     <td>
                         <div class="dropdown">
                             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownDrinks" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -28,13 +28,19 @@
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownDrinks">
-                                {{#each this}}
-                                    <li><a>{{name}}</a></li>
+                                {{#each drinks}}
+                                    <li>
+                                        <a>
+                                        {{#each this}}
+                                            {{this}} {{@key}}
+                                        {{/each}}
+                                        </a>
+                                    </li>
                                 {{/each}}
                             </ul>
                         </div>
                     </td>
-                    <td class="complete-order-checkbox-cell"><button id="{{concatStrings this.0.order_no "_btn"}}" type="button" class="btn btn-primary" onclick="this.disabled=true;updateOpenOrder({{this.0.order_no}});">Complete</button></td>
+                    <td class="complete-order-checkbox-cell"><button id="{{concatStrings order_no "_btn"}}" type="button" class="btn btn-primary" onclick="this.disabled=true;updateOpenOrder({{order_no}});">Complete</button></td>
                 </tr>
             {{/each}}
             </tbody>
@@ -54,9 +60,9 @@
             <tbody>
             {{#each ordersHistory}}
                 <tr>
-                    <td>{{getDateFromTS this.0.date_time}}</td>
-                    <td>{{this.0.order_no}}</td>
-                    <td>{{this.0.cust_name}}</td>
+                    <td>{{getDateFromTS date_time}}</td>
+                    <td>{{order_no}}</td>
+                    <td>{{cust_name}}</td>
                     <td>
                         <div class="dropdown">
                             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownDrinksHistory" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -64,8 +70,14 @@
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownDrinksHistory">
-                                {{#each this}}
-                                    <li><a>{{drink}}</a></li>
+                                {{#each drinks}}
+                                    <li>
+                                        <a>
+                                            {{#each this}}
+                                                {{this}} {{@key}}
+                                            {{/each}}
+                                        </a>
+                                    </li>
                                 {{/each}}
                             </ul>
                         </div>
