@@ -10,7 +10,7 @@
                 <th>Customer</th>
                 <th>Table #</th>
                 <th>Notes</th>
-                <th>Drink</th>
+                <th></th>
                 <th class="complete-order-button-cell"></th>
             </tr>
             </thead>
@@ -48,16 +48,28 @@
                 <th>Date</th>
                 <th>Order #</th>
                 <th>Customer</th>
-                <th>Drink</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
             {{#each ordersHistory}}
                 <tr>
-                    <td>{{date_time}}</td>
-                    <td>{{order_no}}</td>
-                    <td>{{cust_name}}</td>
-                    <td>{{drink}}</td>
+                    <td>{{getDateFromTS this.0.date_time}}</td>
+                    <td>{{this.0.order_no}}</td>
+                    <td>{{this.0.cust_name}}</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownDrinksHistory" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                Drinks
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownDrinksHistory">
+                                {{#each this}}
+                                    <li><a>{{drink}}</a></li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    </td>
                 </tr>
             {{/each}}
             </tbody>

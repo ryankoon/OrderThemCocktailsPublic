@@ -73,7 +73,7 @@ function updateBartenderPage(orderInfo) {
         var orderObj = orderInfo[0];
         var eid = orderObj.bartender;
         if (eid === sessionid && orderObj.is_open === 0) {
-            successfulOrderAssignment(orderObj.order_no);
+            successfulOrderAssignment(orderObj);
         } else if (eid !== sessionid) {
             warningOrderAssignment(orderObj.order_no);
         } else {
@@ -82,10 +82,11 @@ function updateBartenderPage(orderInfo) {
     }
 }
 
-function successfulOrderAssignment(orderNo) {
-    var buttonId = "#" + orderNo + "_btn";
+function successfulOrderAssignment(order) {
+    var buttonId = "#" + order.order_no + "_btn";
     $(buttonId).toggleClass('btn-primary btn-success');
     $(buttonId).text("Success");
+    addOrderToHistory(order);
 }
 
 function warningOrderAssignment(orderNo) {
@@ -98,6 +99,10 @@ function errorOrderAssignment(orderNo) {
     var buttonId = "#" + orderNo + "_btn";
     $(buttonId).toggleClass('btn-primary btn-danger');
     $(buttonId).text("Error");
+}
+
+function addOrderToHistory(order) {
+
 }
 
 function logout() {

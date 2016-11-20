@@ -192,6 +192,28 @@ function uiRouting(app, hbs) {
 		});
 	});
 	app.get('/bartender/:eid', function (req,res){
+		function groupOrdersResponse(body) {
+			var bodyJSON = JSON.parse(body);
+			var groupedOrders = {};
+			// group orders
+			if (bodyJSON) {
+				for (var i = 0; i < bodyJSON.length; i++) {
+					if (!groupedOrders[bodyJSON[i].order_no]) {
+						groupedOrders[bodyJSON[i].order_no] = [];
+					}
+					groupedOrders[bodyJSON[i].order_no].push(bodyJSON[i]);
+				}
+			}
+
+			// store grouped orders in an array
+			var groupedOrdersArray = [];
+			var orders = Object.keys(groupedOrders);
+			for (var n = 0; n < orders.length; n++) {
+				groupedOrdersArray.push(groupedOrders[orders[n]]);
+			}
+			return groupedOrdersArray;
+		}
+
 		var eid = req.params.eid;
 		var openOrders,
 			ordersHistory;
@@ -203,25 +225,7 @@ function uiRouting(app, hbs) {
 				if (error) {
 					reject(error);
 				} else {
-					var bodyJSON = JSON.parse(body);
-					var groupedOrders = {};
-					// group orders
-					if (bodyJSON) {
-						for (var i = 0; i < bodyJSON.length; i++) {
-							if (!groupedOrders[bodyJSON[i].order_no]) {
-								groupedOrders[bodyJSON[i].order_no] = [];
-							}
-							groupedOrders[bodyJSON[i].order_no].push(bodyJSON[i]);
-						}
-					}
-
-					// store grouped orders in an array
-					var groupedOrdersArray = [];
-					var orders = Object.keys(groupedOrders);
-					for (var n = 0; n < orders.length; n++) {
-						groupedOrdersArray.push(groupedOrders[orders[n]]);
-					}
-					openOrders = groupedOrdersArray;
+					openOrders = groupOrdersResponse(body);
 					resolve(body);
 				}
 			});
@@ -233,7 +237,8 @@ function uiRouting(app, hbs) {
 				if (error) {
 					reject(error);
 				} else {
-					ordersHistory = JSON.parse(body);
+					ordersHistory = groupOrdersResponse(body);
+					console.log(ordersHistory);
 					resolve(body);
 				}
 			});
