@@ -41,7 +41,7 @@ function onLogin() {
                         setAlert("alert-success", "Success!");
                         window.location = "/bartender/" + eid;
                     } else {
-                        setAlert("alert-danger", "Username/ID not found!");
+                        setAlert("alert-danger", "Invalid username or password!");
                         enableLogin();
                     }
                 })

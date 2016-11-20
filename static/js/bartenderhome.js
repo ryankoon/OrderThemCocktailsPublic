@@ -106,6 +106,8 @@ function errorOrderAssignment(orderNo) {
 }
 
 function logout() {
+    localStorage.removeItem("sessionEID");
+    localStorage.removeItem("sessionName");
     window.location = "/employee";
 }
 
