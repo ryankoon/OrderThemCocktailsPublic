@@ -44,16 +44,13 @@ function endpoint(query, res) {
                     if (err) {
                         console.log(err.message);
                         connection.release();
-												if (res){
-                        res.status(500).send({Error: 'Server error occurred when connecting to db'});
+						if (res){
+                        res.status(500).send({Error: 'Server error occurred when connecting to db : ' + JSON.stringify(err)});
 											}
                         reject(err.message);
                     }
                     //console.log('Proceeding to release a query');
                     connection.release();
-                    if (res){
-                      res.sendStatus(200);
-                    }
                     fulfill(rows);
                 });
             }
@@ -462,43 +459,30 @@ router.route('/customer/drinks/order')
         drinks = req.body.drinks;       // TODO: escape?
         amount = req.body.amount;
         card_no = req.body.card_no;
-				var payloadList = [];
-				payloadList.push(name);
-				payloadList.push(notes);
-				payloadList.push(drinks);
-				payloadList.push(amount);
-				payloadList.push(card_no);
-				var out = [];
-				out = undefinedList(payloadList);
-				if (out.length > 0){
+        var payloadList = [];
+        payloadList.push(name);
+        payloadList.push(notes);
+        payloadList.push(drinks);
+        payloadList.push(amount);
+        payloadList.push(card_no);
+        var out = [];
+        out = undefinedList(payloadList);
+        if (out.length > 0){
             res.status(404).send({Error: 'Please provide the correct payload: ' + JSON.stringify(out)});
           }
         open = 1;
         bartender = null;
         datetime = moment().format('YYYY-MM-DD').toString();
 
-
-
         createOrder = "INSERT INTO customerorder (date_time, bartender, is_open, notes, table_no, phone_no, cust_name) "
             + "VALUES ('" + datetime + "', " + bartender + ", " + open + ", '" + notes + "', " + table +  ", " + phone + ", "
             + "'" + name + "')";
 
-				customerEntry = "INSERT INTO customer(cust_name, phone_no) " + "VALUES ('" + name +	"'," + phone + ")";
-				console.log(createOrder);
-
         query_order_no = "SELECT LAST_INSERT_ID()";
         drinksId = null;
 
-        // !!!
-        var customerPromise = endpoint(customerEntry);
-
         var orderPromise = endpoint(createOrder);
         var orderNoPromise = endpoint(query_order_no);
-				customerPromise.then(function (result){
-					return;
-				}).catch(function (err){
-					// fail silently in-case this already exists.
-				}).then(function () {
         orderPromise.then(function (result) {
           console.log('we made it?');
           return orderNoPromise;
@@ -517,15 +501,15 @@ router.route('/customer/drinks/order')
             return;
           }).then(function () {
             var payment = "INSERT INTO payment (amount, card_no, order_no) VALUES (" + amount + ", " + card_no + ", " + blockScope_order_no + ")";
-            return endpoint(payment, res);
+            return endpoint(payment, res)
+          }).then(function () {
+              res.status(200).send({Message: 'Successfully made order'});
           }).catch(function (err){
-            res.status(404).send({Error: 'Database error : ' + err});
+            res.status(404).send({Error: 'Database error : ' + JSON.stringify(err)});
             console.error(err);
           })
-				})
         }).catch(function (err){
-                    res.status(404).send({Error: 'Database error : ' + err});
-
+           res.status(404).send({Error: 'Database error : ' + JSON.stringify(err)});
           console.error(err);
        });
     });
@@ -539,10 +523,23 @@ router.route('/customer/drinks/order')
                     res.json(result);
                 }).catch(function (err){
                 console.error("Something went wrong, sorry : " + err);
+                res.json(err);
             });
         });
-	};
 
-	module.exports.apiRouting = apiRouting;
+    router.route('/insertCustomer')
+        .post(function (req, res){
+            var name = req.body.name;
+            var phone = req.body.phone;
+            var customerEntry = "INSERT INTO customer(cust_name, phone_no) " + "VALUES ('" + name +	"'," + phone + ")";
+            endpoint(customerEntry).then(function(){
+                res.status(200).send({Message: 'Successfully added person to the db'});
+            }).catch(function(err){
+                res.status(404).send({Error: 'Errored out added to db: ' + err});
+            });
+        });
+};
 
-	return module
+module.exports.apiRouting = apiRouting;
+
+return module

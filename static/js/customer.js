@@ -6,6 +6,7 @@ $(document).ready(function (){
 	var orderHistory = [];
 	var newPrice;
 
+
 	var updateOrderHistoryDisplay = function (val) {
 		$('.js-drinks-added').append('<li>' + val + '</li>');
 	};
@@ -49,7 +50,7 @@ $(document).ready(function (){
 			},
 			error: function (err){
 				$('.submit-drink-order').attr('disabled', false);
-				alert('Error contacting the API: ' + err);
+				alert('Error contacting the API: ' + JSON.stringify(err));
 			}
 		});
 	});
@@ -62,4 +63,26 @@ $(document).ready(function (){
 		updateOrderHistoryDisplay(drinkOrderName);
 		updateOrderPrice(drinkPrice);
 	});
+
+	/*
+	Init
+	 */
+    var initializePage = function () {
+
+		// needs to read local storage and update val.
+		// needs to read local storage and update drinks.
+		var items;
+		items = localStorage.getItem('order');
+		if (items && items.length > 0 ) {
+			var price = 0;
+			for (var i=0; i < items.length; i++ ){
+				 orderHistory.push(items[i].id);
+                updateOrderHistoryDisplay(items[i].name);
+                price += items[i].price;
+			}
+            updateOrderPrice(price);
+		}
+		localStorage.removeItem('order');
+    }
+    initializePage();
 });
