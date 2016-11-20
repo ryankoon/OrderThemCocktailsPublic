@@ -1,3 +1,46 @@
 .body-wrapper{
     margin: 100px 0 20px 0
 }
+.top5-container{
+    text-align:center;
+    margin-bottom: 50px;
+    font-size: 36px;
+    padding-bottom: 50px;
+}
+.top5-container > span{
+    font-size: 48px;
+    display: block;
+    margin-bottom: 25px;
+}
+
+.top5-list{
+    text-align:center;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 24px;
+
+}
+.form-group {
+    font-size: 24px;
+}
+.form-group > input {
+    font-size: 18px;
+}
+.our-order-btn {
+    font-size: 18px;
+}
+.drink-selector-dropdown {
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+.drinks-currently-being-ordered {
+    margin-top: 0px;
+}
+.stretched {
+    display: block;
+    text-align: center;
+    margin-top: 120px;
+    margin-bottom: 120px;
+    font-size: 18px;
+    text-decoration: none
+}

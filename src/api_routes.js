@@ -530,7 +530,10 @@ router.route('/customer/drinks/order')
 
         query_order_no = "SELECT LAST_INSERT_ID()";
         drinksId = null;
-				var customerPromise = endpoint(customerEntry);
+
+        // !!!
+        var customerPromise = endpoint(customerEntry);
+
         var orderPromise = endpoint(createOrder);
         var orderNoPromise = endpoint(query_order_no);
 				customerPromise.then(function (result){
@@ -563,9 +566,10 @@ router.route('/customer/drinks/order')
           })
 				})
         }).catch(function (err){
-          res.status(404).send({Error: 'Database error : ' + err});
+                    res.status(404).send({Error: 'Database error : ' + err});
+
           console.error(err);
-        });
+       });
     });
 
     router.route('/top5')
