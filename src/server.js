@@ -38,6 +38,9 @@ var customhbs = exphbs.create({
     helpers: {
         inc: function (value) {
             return parseInt(value) + 1;
+        },
+        concatStrings: function(str1, str2) {
+            return str1 + str2;
         }
     }
 });

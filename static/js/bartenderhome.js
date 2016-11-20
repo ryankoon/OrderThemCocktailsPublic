@@ -35,6 +35,7 @@ function setWelcomeText() {
 
 function getSelectedOrders() {
     selectedOrderCheckboxes = $('.complete-order-checkbox:checked');
+    console.log(selectedOrderCheckboxes);
 }
 
 function updateOpenOrders() {

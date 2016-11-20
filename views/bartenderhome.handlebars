@@ -1,7 +1,7 @@
 <script src="/js/bartenderhome.js"></script>
 <h1 id="employeeWelcomeText">Welcome</h1>
 <button class="btn btn-danger" onclick="logout()">Logout</button>
-    <div id="openorders-table-container">
+    <tr id="openorders-table-container">
         <h3>Open Orders</h3>
         <table class="table">
             <thead class="thead-default">
@@ -21,19 +21,21 @@
                     <td>{{this.0.cust_name}}</td>
                     <td>{{this.0.table_no}}</td>
                     <td>{{this.0.notes}}</td>
-                    <td></td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownDrinks" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                Drinks
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownDrinks">
+                                {{#each this}}
+                                    <li><a>{{name}}</a></li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    </td>
                     <td class="complete-order-checkbox-cell"><input class="complete-order-checkbox" type="checkbox" value="{{order_no}}"></td>
                 </tr>
-                {{#each this}}
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>{{name}}</td>
-                        <td></td>
-                    </tr>
-                {{/each}}
             {{/each}}
             </tbody>
         </table>
