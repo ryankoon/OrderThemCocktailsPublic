@@ -9,70 +9,62 @@
     </ul>
     <div id="adminTabContent" class="tab-content">
         <div id="restock" class="tab-pane fade in active">
-            <form>
-                <div class="form-group">
-                    <table class="table">
-                        <thead class="thead-default">
+                <table class="table">
+                    <thead class="thead-default">
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Price</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#each garnishes}}
                         <tr>
-                            <th></th>
-                            <th>Name</th>
-                            <th>Price</th>
+                            <th scope="row">{{inc @index}}</th>
+                            <td>{{name}}</td>
+                            <td>{{price}}</td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        {{#each garnishes}}
-                            <tr>
-                                <th scope="row">{{inc @index}}</th>
-                                <td>{{name}}</td>
-                                <td>{{price}}</td>
-                            </tr>
-                        {{/each}}
-                        </tbody>
-                    </table>
-                </div>
-            </form>
+                    {{/each}}
+                    </tbody>
+                </table>
             <button type="button" class="btn btn-primary" onclick="restockAll()">Restock</button>
         </div>
 
         <div id="employees" class="tab-pane fade">
-            <form>
-                <div class="form-group">
-                    <table class="table">
-                        <thead class="thead-default">
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {{#each employees}}
-                            <tr>
-                                <td>{{id}}</td>
-                                <td>{{name}}</td>
-                            </tr>
-                        {{/each}}
-                        </tbody>
-                    </table>
-                    <div class="col-md-6">
-                        <form>
-                            <div class="form-group">
-                                <label for="employeename">Employee Name</label>
-                                <input type="text" class="form-control" id="employeename" placeholder="Enter Full Name">
-                            </div>
-                            <button type="button" class="btn btn-primary" onclick="addEmployee()">Add</button>
-                        </form>
+            <table class="table">
+                <thead class="thead-default">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each employees}}
+                    <tr>
+                        <td>{{id}}</td>
+                        <td>{{name}}</td>
+                    </tr>
+                {{/each}}
+                </tbody>
+            </table>
+            <div class="col-md-6">
+                <form>
+                    <div class="form-group">
+                        <label for="employeename">Employee Name</label>
+                        <input type="text" class="form-control" id="employeename" placeholder="Enter Full Name">
                     </div>
-                    <div class="col-md-6">
-                        <form>
-                            <div class="form-group">
-                                <label for="eid">Employee ID</label>
-                                <input type="number" class="form-control" id="eid" placeholder="e.g. 12345678">
-                            </div>
-                            <button type="button" class="btn btn-primary" onclick="removeEmployee()">Remove</button>
-                        </form>
+                    <button type="button" class="btn btn-primary" onclick="addEmployee()">Add</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <form>
+                    <div class="form-group">
+                        <label for="eid">Employee ID</label>
+                        <input type="number" class="form-control" id="eid" placeholder="e.g. 12345678">
                     </div>
-                </div>
-            </form>
+                    <button type="button" class="btn btn-primary" onclick="removeEmployee()">Remove</button>
+                </form>
+            </div>
         </div>
         <div id="reports" class="tab-pane fade">
             <div class="reports-options">
@@ -86,7 +78,7 @@
                         <li><a data-toggle="tab" href="#whiskeyExperts">Bartenders who served all whiskey drinks</a></li>
                         <li><a data-toggle="tab" href="#whiskeyServedByAll">Whisky drinks served by all bartenders</a></li>
                         <li><a data-toggle="tab" href="#top5">Frequently ordered drinks</a></li>
-                        <li><a data-toggle="tab" href="#report3">Profit loss statement</a></li>
+                        <li><a data-toggle="tab" href="#maxRevenueDrink">Drink that generated the most revenue</a></li>
                     </ul>
                 </div>
             </div>
@@ -146,28 +138,22 @@
                         </tbody>
                     </table>
                 </div>
-                <div id="report3" class="tab-pane fade">
-                    <h3>Profit Loss Statement</h3>
+                <div id="maxRevenueDrink" class="tab-pane fade">
+                    <h3>Top Revenue Drink</h3>
                     <table class="table">
                         <thead class="thead-default">
                         <tr>
                             <th>Drink</th>
-                            <th>Amount</th>
+                            <th>Revenue</th>
                         </tr>
                         </thead>
                         <tbody>
+                        {{#each maxRevenueDrink}}
                         <tr>
-                            <td>MockWhisky</td>
-                            <td>354</td>
+                            <td>{{drink}}</td>
+                            <td>{{concatStrings "$" max}}</td>
                         </tr>
-                        <tr>
-                            <td>MockVodka</td>
-                            <td>234</td>
-                        </tr>
-                        <tr>
-                            <td>MockBeer</td>
-                            <td>146</td>
-                        </tr>
+                        {{/each}}
                         </tbody>
                     </table>
                 </div>

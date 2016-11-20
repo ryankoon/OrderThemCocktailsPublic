@@ -108,7 +108,8 @@ function uiRouting(app, hbs) {
 			employees,
 			whiskeyBartenders,
 			whiskeyservedbyall,
-			top5Drinks;
+			top5Drinks,
+			maxRevenueDrink;
 
 		var adminPromises = [];
 		var adminpromise;
@@ -175,6 +176,19 @@ function uiRouting(app, hbs) {
 		});
 		adminPromises.push(adminpromise);
 
+		adminpromise = new Promise(function (resolve, reject) {
+			request.get(apiRoot + '/employee/admin/maxrevenuedrink', function (err, resp, body) {
+				if (err) {
+					console.error('Error getting drinks:' + err);
+					reject(err);
+				} else {
+					maxRevenueDrink = JSON.parse(body);
+					resolve(body);
+				}
+			});
+		});
+		adminPromises.push(adminpromise);
+
 		Promise.all(adminPromises)
 			.then(function() {
 				res.render('adminhome', {
@@ -182,7 +196,8 @@ function uiRouting(app, hbs) {
 					employees: employees,
 					whiskeyBartenders: whiskeyBartenders,
 					whiskeyservedbyall: whiskeyservedbyall,
-					top5Drinks: top5Drinks
+					top5Drinks: top5Drinks,
+					maxRevenueDrink: maxRevenueDrink
 				});
 			}).catch(function(err) {
 			res.status(404).send({Error: 'Error contacting the db:'} + err)
