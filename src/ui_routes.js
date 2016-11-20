@@ -192,7 +192,32 @@ function uiRouting(app, hbs) {
 		});
 	});
 	app.get('/bartender', function (req,res){
-	  res.render('bartenderhome');
+		var openOrders,
+			history;
+
+		var bartenderPromises = [];
+		var bartenderpromise;
+		bartenderpromise = new Promise(function (resolve, reject) {
+			request(apiRoot + '/employee/admin/availability', function (error, response, body) {
+				if (error) {
+					reject(error);
+				} else {
+					garnishes = JSON.parse(body);
+					resolve(body);
+				}
+			});
+		});
+		bartenderPromises.push(bartenderpromise);
+
+		Promise.all(bartenderPromises)
+			.then(function() {
+				res.render('bartenderhome', {
+					openOrders: openOrders,
+					history: history
+				});
+			}).catch(function(err) {
+			res.status(404).send({Error: 'Error contacting the db:'} + err)
+		});
 	});
 
 	app.get('/getgarnishes', function (req,res) {

@@ -394,29 +394,17 @@ router.route('/customer/drinks/:drink')
         });
     });
 
-router.route('/employee/bartender')
-    .get(function (req, res) {
-        var showOpenDrinks = "select co.cust_name, co.table_no, drink.name, co.notes " +
-            "from drinksinorder dio join customerorder co on dio.order_no = co.order_no " +
-            "join drink on drink.id = dio.drink_id " +
-            "where co.is_open = 1";
-        endpoint(showOpenDrinks)
-            .then(function (result) {
-                res.json(result);
-            }).catch(function(err) {
-            console.error("Something went wrong, sorry");
-        });
-    });
 
 /*
  returns a list of orders that are open and has a drink
  */
-
-router.route('/employee/bartender/openorders')
+router.route('/employee/bartender/openDrinks')
     .get(function (req, res) {
-        var openorders = "SELECT c.order_no AS orderno, c.table_no AS tableno, d.name, c.notes FROM customerorder c, " +
-            "drinksinorder do, drink d WHERE c.order_no = do.order_no AND do.drink_id = d.id AND c.is_open = 1";
-        endpoint(openorders)
+        var showOpenDrinks = "select co.order_no, co.cust_name, co.table_no, drink.name, co.notes " +
+            "from drinksinorder dio join customerorder co on dio.order_no = co.order_no " +
+            "join drink on drink.id = dio.drink_id " +
+            "where co.is_open = 1";
+        endpoint(showOpenDrinks)
             .then(function (result) {
                 res.json(result);
             }).catch(function(err) {
@@ -441,6 +429,7 @@ router.route('/employee/bartender/selectOrder/:eid/:order_no')
             console.error("Something went wrong, sorry");
         });
     });
+
 /*
  returns info about the order and bartender given an order no
  */
@@ -451,6 +440,24 @@ router.route('/employee/order/:order_no')
         var selectOrder = "SELECT * FROM customerorder c, bartender b WHERE c.bartender = b.eid AND c.order_no = " +
             order_no;
         endpoint(selectOrder)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
+/*
+ returns history of orders fulfilled by given bartender eid
+ */
+
+router.route('/employee/orderhistory/:eid')
+    .get(function (req, res) {
+        var eid = req.params.eid;
+        var orderHistory = "SELECT c.date_time, c.order_no, c.cust_name, d.name AS drink FROM customerorder c, " +
+            "bartender b, drinksinorder do, drink d WHERE c.order_no = do.order_no AND c.bartender = b.eid AND " +
+            "do.drink_id = d.id AND c.bartender = " + eid;
+        endpoint(orderHistory)
             .then(function (result) {
                 res.json(result);
             }).catch(function(err) {
