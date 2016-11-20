@@ -133,6 +133,48 @@ router.route('/drinks/withallingredients')
         }
     });
 
+router.route('/drinks/new')
+    .post(function (req, res) {
+        var name = req.body.name,
+            ingredients = req.body.ingredient,
+            id;
+
+        var addDrinkQ = "insert into drink values (null, false, '" + escape_string(name) + "', null)",
+            retrieveDrinkQ = "select id from drink where name='" + escape_string(name)+"'",
+            id;
+
+        endpoint(addDrinkQ)
+            .then(function () {
+            return endpoint(retrieveDrinkQ)
+            }).then(function (result) {
+                id = result[0].id;
+                console.log(id);
+                return endpoint(makeAddIngredientsToDrinkQuery(ingredients, id));
+            }).then(function() {
+                res.json(id);
+            }).catch(function (error) {
+                console.error("error in /drinks/new " + error);
+            });
+
+
+        function makeAddIngredientsToDrinkQuery(ingredients, id) {
+            var insertString = "insert into ingredientindrink values ";
+
+            for (var i=0; i < ingredients.length; i++) {
+                insertString += "(" + id + ", '" + escape_string(ingredients[i]) + "')";
+
+                if (i < ingredients.length - 1)
+                    insertString += ",";
+                else {
+                    insertString += ";"
+                }
+            }
+            return insertString;
+        }
+
+
+    });
+
 router.route('/ingredients/type')
     .get(function (req, res) {
         var showAllAlcoholic = "select * from alcoholictype";
@@ -153,7 +195,7 @@ router.route('/ingredients/alcoholic/:name')
         var showAlc,
             type = req.params.name;
 
-            showAlc = "select a.name, a.abv, a.origin, a.type, i.available from alcoholicingredient a " +
+            showAlc = "select a.name, a.abv, a.origin, a.type, i.description, i.available, i.price from alcoholicingredient a " +
                       "join ingredient i on i.name = a.name " +
                       "where a.name = " + "'" + escape_string(type) + "'";
 
@@ -213,7 +255,7 @@ router.route('/ingredients/all/nonalcoholic')
     });
 
 /**
- *  Get all ingredients, regardless of availability
+ *  Get ingredients, regardless of availability
  */
 router.route('/ingredients/name/:name')
     .get(function (req, res) {
@@ -224,7 +266,7 @@ router.route('/ingredients/name/:name')
         if (type == "all") {
             showIng = "select * from ingredient i where i.available=true"
         } else {
-            showIng = "select i.name, i.price from ingredient i " +
+            showIng = "select i.name, i.price, i.description from ingredient i " +
                     "where i.name = " + "'" + escape_string(type) + "' and i.available=true";
         }
 

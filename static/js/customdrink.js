@@ -1,5 +1,6 @@
 
-    var drinkIngredients = [];
+    var drinkIngredients = [],
+        _id = 0;
 
     $(document).ready(function () {
         $('#alcmodal-close').on('click', function (e) {
@@ -66,26 +67,32 @@
     };
 
     submitOrder = function () {
-        addDrinkToLocalStorage();
-        window.location.href = '/customer/';
+        if (drinkIngredients.length != 0) {
+            addDrinkOrGetIfExists();
+            addDrinkToLocalStorage(_id);
+            //window.location.href = '/customer/';
+        } else {
+            alert("Please add ingredients to your drink");
+        }
     };
 
-    addDrinkToLocalStorage = function () {
-        var totalOrder = localStorage.getItem('order');
+    addDrinkToLocalStorage = function (id) {
+        if (id) {
+            var totalOrder = localStorage.getItem('order');
 
-        if (!totalOrder) {
-            totalOrder = [];
-        } else {
-            totalOrder = JSON.parse(totalOrder);
+            if (!totalOrder) {
+                totalOrder = [];
+            } else {
+                totalOrder = JSON.parse(totalOrder);
+            }
+
+            totalOrder.push({
+                    name: $('#name-input').val(),
+                    id: id,
+                    price: parseFloat($('#price-counter').text())}
+            );
+            localStorage.setItem('order', JSON.stringify(totalOrder));
         }
-
-        totalOrder.push({
-                         name: $('#name-input').val(),
-                         ingredients: drinkIngredients,
-                         price: parseFloat($('#price-counter').text())}
-        );
-
-        localStorage.setItem('order', JSON.stringify(totalOrder));
     };
 
     ingredientNotInDrink = function (name) {
@@ -104,9 +111,9 @@
             success: function (result) {
                 $('#alcModal-title').html(result[0].name);
                 $('#alcModal-type').html(result[0].type);
-                $('#alcModal-abv').html(result[0].abv);
-                $('#alcModal-description').html('"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."')
-                $('#alcModal-price').html(result[0].price);
+                $('#alcModal-abv').html(result[0].abv + "% ABV");
+                $('#alcModal-description').html(result[0].description);
+                $('#alcModal-price').html("$" + parseFloat(result[0].price).toFixed(2));
                 $('#alcModal-origin').html(result[0].origin);
                 $('#alcModal').show();
             },
@@ -117,7 +124,7 @@
     }
 
     /**
-     * Display alcoholic modal
+     * Display non-alcoholic modal
      * @param name
      */
     function showInfoModal(name) {
@@ -126,12 +133,12 @@
             type: "GET",
             success: function (result) {
                 $('#infoModal-title').html(result[0].name);
-                $('#infoModal-description').html('"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."')
+                $('#infoModal-description').html(result[0].description);
 
                 if (parseFloat(result[0].price.toFixed(2)) == 0.00) {
                     $('#infoModal-price').html("Free");
                 } else {
-                    $('#infoModal-price').html(parseFloat(result[0].price.toFixed(2)) );
+                    $('#infoModal-price').html("$" + parseFloat(result[0].price).toFixed(2));
                 }
                 $('#infoModal').show();
             },
@@ -141,23 +148,61 @@
         })
     }
 
-    function checkIfDrinkExists (drinkIngredients) {
+    function addDrinkOrGetIfExists () {
 
-        var jsonPayload = JSON.stringify(drinkIngredients);
+        var jsonPayload = $.param({ingredient: drinkIngredients});
 
         $.ajax('http://localhost:8080/api/drinks/withallingredients', {
             contentType: 'application/json',
             data: jsonPayload,
             dataType: 'json',
             type: 'GET',
+            async: false,
             success: function (result) {
-                console.log(JSON.stringify(result));
+                processDrinkSearchResult(result);
             },
             error: function (err){
                 console.log(error);
             }
         });
     };
+
+    function processDrinkSearchResult (result) {
+        // If the result is length zero, then the drink doesn't exist.  We can add it to the drinks table and fetch
+        // id.  Other the drink already exists, then the result will be the id.
+        if (result.length !== 0) {
+            _id = result[0].d_id;
+        } else {
+            addDrinkToDB();
+        }
+    };
+
+    function addDrinkToDB () {
+        var jsonPayload = JSON.stringify({name: $('#name-input').val(),
+                           ingredient: drinkIngredients});
+
+        console.log(jsonPayload);
+
+        $.ajax('http://localhost:8080/api/drinks/new', {
+            contentType: 'application/json',
+            data: jsonPayload,
+            dataType: 'json',
+            type: 'POST',
+            async: false,
+            success: function (result) {
+                setId(result);
+            },
+            error: function (err) {
+                alert('Error contacting the API: ' + err);
+            }
+        });
+    }
+
+    function setId(result) {
+        _id = result;
+    }
+
+
 
 
 
