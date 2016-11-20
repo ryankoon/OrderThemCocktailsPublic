@@ -25,8 +25,6 @@ $('.user-info-form').on('submit', function (e) {
           	console.log('Error with inserting because: ' + err);
         }
     });
-
-
 	window.location.href = "http://localhost:8080/customer"
 	});
 });
