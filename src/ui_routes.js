@@ -39,9 +39,6 @@ function uiRouting(app, hbs) {
 					drink: jsonObject,
 					top5: top5Result
 				})
-			}).catch(function (err){
-				console.error(err);
-				res.status(404).send({Error: 'Error contacting the db:'} + err)
 			});
 		});
 	});

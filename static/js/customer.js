@@ -6,6 +6,7 @@ $(document).ready(function (){
 	var orderHistory = [];
 	var newPrice;
 
+
 	var updateOrderHistoryDisplay = function (val) {
 		$('.js-drinks-added').append('<li>' + val + '</li>');
 	};
@@ -38,20 +39,45 @@ $(document).ready(function (){
 		};
 		var jsonPayload = JSON.stringify(payload);
 
-		$('.submit-drink-order').attr('disabled', true);
-		$.ajax('http://localhost:8080/api/customer/drinks/order', {
-			contentType: 'application/json',
-			data: jsonPayload,
-			dataType: 'json',
-			type: 'POST',
-			success: function () {
-				alert('Order successfully sent. Please have a seat at your table.');
-			},
-			error: function (err){
-				$('.submit-drink-order').attr('disabled', false);
-				alert('Error contacting the API: ' + err);
-			}
-		});
+		if (orderHistory && orderHistory.length > 0) {
+            $('.submit-drink-order').attr('disabled', true);
+            $.ajax('http://localhost:8080/api/customer/drinks/order', {
+                contentType: 'application/json',
+                data: jsonPayload,
+                dataType: 'json',
+                type: 'POST',
+                success: function () {
+                    $('.alert-handler').addClass('alert-success');
+                    $('.alert-handler').text('Order successfully sent. Please have a seat at your table');
+                    $('.alert-handler').show();
+                    window.setTimeout(function () {
+                        $('.alert-handler').hide();
+                        $('.alert-handler').removeClass('alert-success');
+                    }, 5000);
+                },
+                error: function (err) {
+                    $('.submit-drink-order').attr('disabled', false);
+                    $('.alert-handler').addClass('alert-danger');
+                    $('.alert-handler').text('Error contacting the db.');
+                    $('.alert-handler').show();
+                    window.setTimeout(function () {
+                        $('.alert-handler').hide();
+                        $('.alert-handler').removeClass('alert-danger');
+                    }, 5000);
+                }
+            });
+        }
+        else{
+            $('.submit-drink-order').attr('disabled', false);
+            $('.alert-handler').addClass('alert-danger');
+            $('.alert-handler').text('Please add drinks before making an order.');
+            $('.alert-handler').show();
+            window.setTimeout(function () {
+                $('.alert-handler').hide();
+                $('.alert-handler').removeClass('alert-danger');
+
+            }, 5000);
+		}
 	});
 	$('.increment-drink').on('click', function (e) {
 		e.preventDefault();
@@ -62,4 +88,26 @@ $(document).ready(function (){
 		updateOrderHistoryDisplay(drinkOrderName);
 		updateOrderPrice(drinkPrice);
 	});
+
+	/*
+	Init
+	 */
+    var initializePage = function () {
+
+		// needs to read local storage and update val.
+		// needs to read local storage and update drinks.
+		var items;
+		items = localStorage.getItem('order');
+		if (items && items.length > 0 ) {
+			var price = 0;
+			for (var i=0; i < items.length; i++ ){
+				 orderHistory.push(items[i].id);
+                updateOrderHistoryDisplay(items[i].name);
+                price += items[i].price;
+			}
+            updateOrderPrice(price);
+		}
+		localStorage.removeItem('order');
+    }
+    initializePage();
 });
