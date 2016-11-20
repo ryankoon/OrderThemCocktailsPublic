@@ -3,62 +3,78 @@
 
     <div class ="row">
         <div class  = "col-md-12">
-            <table class="top5-list">
-                <tr>
-                    <th>Drink Name</th>
-                    <th> Number Ordered </th>
-                </tr>
-            {{#each top5}}
-                <tr>
-                    <td>{{this.name}} </td>
-                    <td>{{this.total}}<td>
-                </tr>
-            {{/each}}
-            </table>
+            <div class="top5-container panel">
+                <span>Top 5 Drinks Ordered</span>
+                <table class="top5-list">
+                    <tr>
+                        <th>Drink Name</th>
+                        <th> Number Ordered </th>
+                    </tr>
+                {{#each top5}}
+                    <tr>
+                        <td>{{this.name}} </td>
+                        <td>{{this.total}}<td>
+                    </tr>
+                {{/each}}
+                </table>
+            </div>
         </div>
+    </div>
 
     <div class = "row">
-		<select class ="drink-selector-dropdown">
-	{{#each drink}}
-		<option name-attr={{this.name}} price-attr={{this.price}} value={{this.id}}>
-			{{this.name}} - ${{this.price}}
-		</option>
-	{{/each}}
-	</select>
-	<button class="increment-drink"> + </button>
-	</div>
-	<div class ="row">
-		<div class ="col-md-6">
-			<div >
-				<h3> Drinks currently being ordered: </h3>
+        <div class ="col-md-4">
+            <div class="panel">
+                    <select class ="form-control drink-selector-dropdown">
+                {{#each drink}}
+                    <option name-attr={{this.name}} price-attr={{this.price}} value={{this.id}}>
+                        {{this.name}} - ${{this.price}}
+                    </option>
+                {{/each}}
+                    </select>
+                <button class="btn btn-primary  our-order-btn increment-drink"> Add Drink</button>
+                <div class ="total-cost-container">
+                <h2>Total cost</h2>
+                <h3 class = "js-total-price"> 0 </h3>
+                </div>
+            </div>
+        </div>
+		<div class ="col-md-4">
+			<div class="panel" >
+				<h3 class ="drinks-currently-being-ordered"> Drinks currently being ordered: </h3>
 				<ul class = "js-drinks-added">
 
 				</ul>
-				<h2>Total cost</h2>
-				<h3 class = "js-total-price"> 0 </h3>
 			</div>
+         </div>
 
-		</div>
-		<div class ="col-md-6">
-			<form class="order-information">
-				<div class="form-group">
- 					 <label for="table-input"> Table # </label>
- 					 <input type="name" class="form-control" id="table-input" placeholder=
- 									 "Please leave your table #" required/>
- 			 </div>
- 			 <div class="form-group">
- 					 <label for="order-notes"> Order Notes </label>
- 					 <input type="number" class="form-control" id="order-notes" placeholder=
- 									 "Leave notes about your order here!"/>
- 			 </div>
-			 <div class="form-group">
-					 <label for="credit-card"> Credit Card </label>
-					 <input type="number" class="form-control" id="credit-card" placeholder=
-									 "Insert credit card (required)" required/>
-			 </div>
-			 <button class="btn btn-success js-submit-drink-order">Submit Order</button>
-		 </form>
+		<div class ="col-md-4">
+            <div>
+                <form class="order-information">
+                        <div class="form-group">
+                             <label for="table-input"> Table # </label>
+                             <input type="name" class="form-control" id="table-input" placeholder=
+                                             "Please leave your table #" required/>
+                     </div>
+                     <div class="form-group">
+                             <label for="order-notes"> Order Notes </label>
+                             <input type="string" class="form-control" id="order-notes" placeholder=
+                                             "Leave notes about your order here!"/>
+                     </div>
+                     <div class="form-group">
+                             <label for="credit-card"> Credit Card </label>
+                             <input type="number" class="form-control" id="credit-card" placeholder=
+                                             "Insert credit card (required)" required/>
+                     </div>
+                    <button class="btn btn-success our-order-btn js-submit-drink-order">Submit Order</button>
+		         </form>
+            </div>
 		</div>
 	</div>
+    <div class = "row">
+        <div class = "col-md-12">
+            <div class = "stretched">
+                <a href = "/customer/customdrink"> Don't see your drink above? Click here to make a custom drink! </a>
+            </div>
+        </div>
     </div>
 </div>
