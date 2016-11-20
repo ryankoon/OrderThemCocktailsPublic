@@ -5,20 +5,18 @@ const apiRoot = 'http://localhost:8080/api';
 var sessionid,
     sessionname,
     routeid;
-var selectedOrderCheckboxes = [];
 
 function init() {
     validateSession();
     setWelcomeText();
-    $('.complete-order-checkbox').click(function () {
-        getSelectedOrders();
-    });
 }
 
 function validateSession() {
     sessionid = localStorage.getItem("sessionEID");
+    sessionid = parseInt(sessionid);
     sessionname = localStorage.getItem("sessionName");
     routeid = location.pathname.split("/").pop();
+    routeid = parseInt(routeid);
     console.log("routeid", routeid);
     console.log(sessionid, sessionname);
 
@@ -33,44 +31,17 @@ function setWelcomeText() {
     $("#employeeWelcomeText").text(sessionname);
 }
 
-function getSelectedOrders() {
-    selectedOrderCheckboxes = $('.complete-order-checkbox:checked');
-    console.log(selectedOrderCheckboxes);
-}
-
-function updateOpenOrders() {
-    var selectedOrders = [];
-    var updatePromise;
-    var updatePromises = [];
-    for(var i = 0; i < selectedOrderCheckboxes.length; i++) {
-        if (selectedOrderCheckboxes[i].value) {
-            var intValue = parseInt(selectedOrderCheckboxes[i].value);
-            if (intValue) {
-                selectedOrders.push(intValue);
-                updatePromise = new Promise(function (resolve, reject) {
-                    callApiToUpdateOrder(intValue)
-                        .then(function (result) {
-                           resolve();
-                        })
-                        .catch(function (err) {
-                            reject("Error updating orders: " + err);
-                        });
-                });
-                updatePromises.push(updatePromise);
-            }
-        }
-    }
-
-    Promise.all(updatePromises)
-        .then(function (result){
-            return getSelectedOrdersInfo(selectedOrders);
+function updateOpenOrder(orderno) {
+    callApiToUpdateOrder(orderno)
+        .then(function() {
+           return getOrderInfo(orderno);
         })
-        .then(function (selectedOrdersInfo){
-            return updateOpenOrdersTable(selectedOrdersInfo);
+        .then(function(orderInfo) {
+            updateBartenderPage(orderInfo);
         })
-        .catch(function (err){
+        .catch(function(err) {
             console.log(err);
-        })
+        });
 }
 
 function callApiToUpdateOrder(orderNo) {
@@ -85,28 +56,6 @@ function callApiToUpdateOrder(orderNo) {
     })
 }
 
-function getSelectedOrdersInfo(orders) {
-    var getorderPromise;
-    var getorderPromises = [];
-
-    if (orders) {
-        for(var i = 0; i < orders.length; i++) {
-            getorderPromise = new Promise(function (resolve, reject) {
-                getOrderInfo(orders[i])
-                    .then(function(result) {
-                        resolve(result);
-                    })
-                    .catch(function(err) {
-                        reject(err);
-                    });
-            });
-            getorderPromises.push(getorderPromise);
-        }
-    }
-
-    return Promise.all(getorderPromises);
-}
-
 function getOrderInfo(orderNo) {
     return new Promise(function (resolve,reject) {
         $.get(apiRoot + "/employee/order/" + orderNo)
@@ -119,8 +68,36 @@ function getOrderInfo(orderNo) {
     });
 }
 
-function updateOpenOrdersTable(ordersInfo) {
-    console.log(ordersInfo);
+function updateBartenderPage(orderInfo) {
+    if (orderInfo && orderInfo[0]) {
+        var orderObj = orderInfo[0];
+        var eid = orderObj.bartender;
+        if (eid === sessionid && orderObj.is_open === 0) {
+            successfulOrderAssignment(orderObj.order_no);
+        } else if (eid !== sessionid) {
+            warningOrderAssignment(orderObj.order_no);
+        } else {
+            errorOrderAssignment(orderObj.order_no)
+        }
+    }
+}
+
+function successfulOrderAssignment(orderNo) {
+    var buttonId = "#" + orderNo + "_btn";
+    $(buttonId).toggleClass('btn-primary btn-success');
+    $(buttonId).text("Success");
+}
+
+function warningOrderAssignment(orderNo) {
+    var buttonId = "#" + orderNo + "_btn";
+    $(buttonId).toggleClass('btn-primary btn-warning');
+    $(buttonId).text("Closed");
+}
+
+function errorOrderAssignment(orderNo) {
+    var buttonId = "#" + orderNo + "_btn";
+    $(buttonId).toggleClass('btn-primary btn-danger');
+    $(buttonId).text("Error");
 }
 
 function logout() {

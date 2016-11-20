@@ -11,12 +11,12 @@
                 <th>Table #</th>
                 <th>Notes</th>
                 <th>Drink</th>
-                <th class="complete-order-checkbox-cell">Complete</th>
+                <th class="complete-order-button-cell"></th>
             </tr>
             </thead>
             <tbody>
             {{#each openOrders}}
-                <tr>
+                <tr id="{{concatStrings this.0.order_no "_row"}}">
                     <td>{{this.0.order_no}}</td>
                     <td>{{this.0.cust_name}}</td>
                     <td>{{this.0.table_no}}</td>
@@ -34,12 +34,11 @@
                             </ul>
                         </div>
                     </td>
-                    <td class="complete-order-checkbox-cell"><input class="complete-order-checkbox" type="checkbox" value="{{order_no}}"></td>
+                    <td class="complete-order-checkbox-cell"><button id="{{concatStrings this.0.order_no "_btn"}}" type="button" class="btn btn-primary" onclick="this.disabled=true;updateOpenOrder({{this.0.order_no}});">Complete</button></td>
                 </tr>
             {{/each}}
             </tbody>
         </table>
-        <button type="submit" class="btn btn-primary" onclick="updateOpenOrders()">Update</button>
     </div>
     <div id="orderhistory-table-container">
         <h3>History</h3>
