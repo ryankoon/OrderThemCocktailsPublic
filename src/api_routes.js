@@ -662,6 +662,24 @@ router.route('/customer/drinks/order')
             });
         });
 
+    router.route('/aggregatedrinkstats')
+        .get(function (req,res){
+            var aggType = escape_string(req.query.type);
+                nestedQuery = "select " + aggType + "(frequency) from " +
+                              "(select c.cust_name as customer_name, count(co.cust_name) as frequency from customer c " +
+                              "join customerorder co on (co.cust_name = c.cust_name and co.phone_no = c.phone_no) " +
+                              "join drinksinorder dio on co.order_no = dio.order_no " +
+                              "join drink d on dio.drink_id = d.id " +
+                              "where co.is_open = 0 " +
+                              "group by customer_name) as k;";
+            endpoint(nestedQuery)
+                .then(function (result) {
+                    res.json(result);})
+                .catch(function (error) {
+                    console.error("There was an error in /aggregatedrinkstats " + error)
+                })
+        });
+
     router.route('/insertCustomer')
         .post(function (req, res){
             var name = req.body.name;
