@@ -1,5 +1,49 @@
-.body-wrapper{
-    margin: 100px 0 20px 0
+.body-wrapper {
+    margin: 50px 0 20px 0
+}
+
+.otd-header {
+    display: flex;
+    height: 75px;
+    background-color: orange;
+}
+
+.otd-logo {
+    height: 90%;
+    width: 100%;
+}
+
+.otd-header > h1{
+    margin-left: 5px;
+}
+
+.form-control, .form-group .form-control {
+    border: 0;
+    background-image: linear-gradient(#9c27b0, #9c27b0), linear-gradient(#D2D2D2, #D2D2D2);
+    background-size: 0 2px, 100% 1px;
+    background-repeat: no-repeat;
+    background-position: center bottom, center calc(100% - 1px);
+    background-color: transparent;
+    transition: background 0s ease-out;
+    float: none;
+    box-shadow: none;
+    border-radius: 0;
+    font-weight: 400;
+}
+
+.btn, .alert {
+    border: none;
+    border-radius: 3px;
+    background-image: none !important;
+    transition: box-shadow 0.2s cubic-bezier(0.4, 0, 1, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn.dropdown-toggle, .drink-selector-dropdown {
+    border: 1px solid #eee;
+}
+
+.alert {
+    margin-top: 5px;
 }
 
 /*Bartender Page*/
@@ -7,6 +51,21 @@
     text-align: center;
 }
 /**/
+
+/*Admin Page*/
+.employee-header {
+    display: flex;
+    align-items: center;
+}
+
+.employee-header > h1 {
+    margin-right: auto;
+}
+/**/
+
+#btn-logout {
+    margin-top: 10px;
+}
 
 .top5-container{
     text-align:center;

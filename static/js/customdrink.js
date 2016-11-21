@@ -70,7 +70,7 @@
         if (drinkIngredients.length != 0) {
             addDrinkOrGetIfExists();
             addDrinkToLocalStorage(_id);
-            //window.location.href = '/customer/';
+            window.location.href = '/customer/';
         } else {
             alert("Please add ingredients to your drink");
         }

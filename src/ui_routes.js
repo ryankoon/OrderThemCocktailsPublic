@@ -29,7 +29,7 @@ function uiRouting(app, hbs) {
 		});
 
 		promiseFirst.then(function (top5Result) {
-			request.get(apiRoot + '/customer/drinks', function (err, resp, body) {
+			request.get(apiRoot + '/drinks/menu/available', function (err, resp, body) {
 				if (err) {
 					console.error('Error getting drinks:' + err);
 					res.status(404).send({Error: 'Error contacting the db:'} + err)
