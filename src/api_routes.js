@@ -199,8 +199,6 @@ router.route('/drinks/menu/available')
         "on d_number.id = d_avail.id " +
         "where d_number.ing_number = d_avail.ing_avail ";
 
-        console.log(getDrinks);
-
         endpoint(getDrinks)
             .then(function (result) {
                 res.json(result)
