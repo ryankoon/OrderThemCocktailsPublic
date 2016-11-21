@@ -168,8 +168,43 @@ router.route('/drinks/new')
             }
             return insertString;
         }
+    });
 
+/*
+ Return only on-menu drinks where all ingredients are available
+*/
+router.route('/drinks/menu/available')
+    .get(function (req, res) {
+        var getDrinks = "select d_number.id, name, on_menu, description " +
 
+            "from (select d.id, d.name, d.on_menu, d.description, count(i_name) as ing_number " +
+                "from drink d " +
+                "join ingredientindrink iid " +
+                "on d.id = iid.d_id " +
+                "where d.on_menu=true " +
+                "group by d.id) " +
+            "as d_number " +
+
+            "join (	select d2.id, count(i_name) as ing_avail " +
+                "from drink d2 " +
+                "join ingredientindrink iid2 " +
+                "on d2.id = iid2.d_id " +
+                "join ingredient i2 " +
+                "on iid2.i_name = i2.name " +
+                "where i2.available=true " +
+                "group by d2.id) " +
+            "as d_avail " +
+            "on d_number.id = d_avail.id " +
+            "where d_number.ing_number = d_avail.ing_avail";
+
+        console.log(getDrinks);
+
+        endpoint(getDrinks)
+            .then(function (result) {
+                res.json(result)
+            }).catch (function (error) {
+            console.log("Error in /drinks/menu/available");
+        })
     });
 
 router.route('/ingredients/type')
@@ -403,7 +438,6 @@ router.route('/employee/admin/whiskeyservedbyall')
 /*
  Shows the drink that has generated the max revenue
  */
-
 router.route('/employee/admin/maxrevenuedrink')
     .get(function (req, res) {
         var revenue = "select drink, max(revenue) as max from (select drink.name as drink, sum(payment.amount) as revenue " +
@@ -422,7 +456,6 @@ router.route('/employee/admin/maxrevenuedrink')
 /*
  returns preset drinks with prices
  */
-
 router.route('/customer/drinks')
     .get(function (req, res) {
         var drinks_with_prices = "select  d.id, d.name, sum(ig.price) as price from ingredientindrink id " +
@@ -473,7 +506,6 @@ router.route('/employee/bartender/openDrinks')
 /*
     changes order from open to closed and adds bartender to order if bartender is null
  */
-
 router.route('/employee/bartender/selectOrder/:eid/:order_no')
     .get(function (req, res) {
         var eid = req.params.eid;
@@ -491,7 +523,6 @@ router.route('/employee/bartender/selectOrder/:eid/:order_no')
 /*
  returns info about the order and bartender given an order no
  */
-
 router.route('/employee/order/:order_no')
     .get(function (req, res) {
         var order_no = req.params.order_no;
