@@ -70,7 +70,8 @@ CREATE TABLE NonAlcoholic (
 CREATE TABLE Customer (
  cust_name CHAR(30),
  phone_no BIGINT,
- PRIMARY KEY (cust_name, phone_no)
+  PRIMARY KEY (cust_name, phone_no),
+  CHECK (phone_no > 999999999)
 );
 
 CREATE TABLE CustomerOrder (
