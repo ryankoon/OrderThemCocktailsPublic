@@ -674,7 +674,7 @@ router.route('/customer/drinks/order')
     router.route('/aggregatedrinkstats')
         .get(function (req,res){
             var aggType = escape_string(req.query.type);
-                nestedQuery = "select " + aggType + "(frequency) from " +
+                nestedQuery = "select " + aggType + "(frequency) as answer from " +
                               "(select c.cust_name as customer_name, count(co.cust_name) as frequency from customer c " +
                               "join customerorder co on (co.cust_name = c.cust_name and co.phone_no = c.phone_no) " +
                               "join drinksinorder dio on co.order_no = dio.order_no " +

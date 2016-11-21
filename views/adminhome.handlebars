@@ -7,6 +7,7 @@
     <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" href="#ingredients">Ingredients</a></li>
         <li><a data-toggle="tab" href="#employees">Manage Employees</a></li>
+        <li><a data-toggle="tab" href="#stats">Purchase Stats</a></li>
         <li><a data-toggle="tab" href="#reports">Generate Reports</a></li>
     </ul>
     <div id="adminTabContent" class="tab-content">
@@ -90,6 +91,27 @@
                     </div>
                     <button id="removeEmplBtn" type="button" class="btn btn-danger" onclick="removeEmployee()">Remove</button>
                 </form>
+            </div>
+        </div>
+        <div id="stats" class="tab-pane fade">
+            <h3>Customer Purchasing Statistics</h3>
+            <div class="col-md-4">
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="aggStatsSelect"
+                            data-toggle="dropdown">
+                        Select statistic
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="attrdropdownMenu">
+                        <li><a id="agg-max" agg-type="max">Max drinks purchased</a></li>
+                        <li><a id="agg-min" agg-type="min">Min drinks purchased</a></li>
+                        <li><a id="agg-avg" agg-type="avg">Average drinks purchased</a></li>
+                        <li><a id="agg-count" agg-type="count">Customer count</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div id="agg-response"></div>
             </div>
         </div>
         <div id="reports" class="tab-pane fade">

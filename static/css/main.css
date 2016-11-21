@@ -69,6 +69,11 @@
 #ingredientCondText {
     vertical-align: middle;
 }
+
+#agg-response {
+    text-align: center;
+}
+
 /**/
 
 #btn-logout {

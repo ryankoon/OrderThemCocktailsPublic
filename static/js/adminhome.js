@@ -37,6 +37,22 @@ function init() {
         ingredientAttr = "price";
     });
 
+    $('#agg-max').click(function () {
+        sendNestedAggregateQuery('max');
+    });
+
+    $('#agg-min').click(function () {
+        sendNestedAggregateQuery('min');
+    });
+
+    $('#agg-avg').click(function () {
+        sendNestedAggregateQuery('avg');
+    });
+
+    $('#agg-count').click(function () {
+        sendNestedAggregateQuery('count');
+    });
+
     setIngredientHeaders();
     enableRestockButton();
 }
@@ -53,6 +69,52 @@ function validateSession() {
 
     } else {
         $("#admin-content").removeClass("collapse");
+    }
+}
+
+function sendNestedAggregateQuery(type) {
+    var returnStatement,
+        jsonPayload = $.param({type: type});
+
+    switch (type) {
+        case "max":
+            returnStatement = "The most number of drinks in a customer's purchase history is ";
+            break;
+        case "min":
+            returnStatement = "The fewest number of drinks in a customer's purchase history is ";
+            break;
+        case "avg":
+            returnStatement = "The average number of drinks in a customer's purchase history is";
+            break;
+        case "count":
+            returnStatement = "The number of distinct customers who have ordered is ";
+    }
+
+    $.ajax(apiRoot + '/aggregatedrinkstats', {
+        contentType: 'application/json',
+        data: jsonPayload,
+        dataType: 'json',
+        type: 'GET',
+        async: false,
+        success: function (result) {
+            updateAggResponse(result, returnStatement);
+        },
+        error: function (err){
+            alert("There was a problem retrieving your data");
+            console.log("Error getting aggregate stats: " + err);
+        }
+    });
+
+    function updateAggResponse(result, returnStatement) {
+        var number = result[0].answer;
+
+        // hold it to one decimal place if not an integer
+        if (number % 1 !== 0) {
+            number = number.toFixed(1);
+        }
+
+        $('#agg-response').html(returnStatement + "<br><h3>" + number + "</h3>");
+
     }
 }
 
