@@ -103,8 +103,12 @@ function uiRouting(app, hbs) {
 	app.get('/employee', function (req,res){
 	  res.render('employeelogin');
 	});
+
 	app.get('/admin', function (req,res){
-		var garnishes,
+		var attr = req.query.attr;
+		var condition = req.query.condition;
+		console.log(attr, condition);
+		var ingredients,
 			employees,
 			whiskeyBartenders,
 			whiskeyservedbyall,
@@ -113,12 +117,17 @@ function uiRouting(app, hbs) {
 
 		var adminPromises = [];
 		var adminpromise;
+		var apiEndpoint = '/employee/admin/ingredients/display/available/condition/0';
+		if (attr && condition) {
+			apiEndpoint = '/employee/admin/ingredients/display/' + attr + "/condition/" + condition;
+		}
 		adminpromise = new Promise(function (resolve, reject) {
-			request(apiRoot + '/employee/admin/availability', function (error, response, body) {
+			request(apiRoot + apiEndpoint, function (error, response, body) {
 				if (error) {
 					reject(error);
 				} else {
-					garnishes = JSON.parse(body);
+					ingredients = JSON.parse(body);
+					console.log("ingredients", ingredients);
 					resolve(body);
 				}
 			});
@@ -192,7 +201,7 @@ function uiRouting(app, hbs) {
 		Promise.all(adminPromises)
 			.then(function() {
 				res.render('adminhome', {
-					garnishes: garnishes,
+					ingredients: ingredients,
 					employees: employees,
 					whiskeyBartenders: whiskeyBartenders,
 					whiskeyservedbyall: whiskeyservedbyall,

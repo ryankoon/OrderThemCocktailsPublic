@@ -390,15 +390,24 @@ router.route('/employee/admin/removestaff/:eid')
  returns list of ingredients that are not available
  */
 
-router.route('/employee/admin/availability')
+router.route('/employee/admin/ingredients/display/:attr/condition/:condition')
     .get(function (req, res) {
-        var checkAvailable = "select * from ingredient where available = 0";
-        endpoint(checkAvailable )
-            .then(function (result) {
-                res.json(result);
-            }).catch(function(err) {
-            console.error("Something went wrong, sorry");
-        });
+        var attr = req.params.attr;
+        var condition = req.params.condition;
+        var query;
+        if (attr === "available") {
+            query = "select name, available as value from ingredient where available = " + condition;
+        } else if (attr === "price") {
+            query = "select name, price as value from ingredient where price >= " + condition;
+        }
+        if (query) {
+            endpoint(query)
+                .then(function (result) {
+                    res.json(result);
+                }).catch(function (err) {
+                console.error("Something went wrong, sorry");
+            });
+        }
     });
 
 /*
