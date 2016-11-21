@@ -16,15 +16,15 @@
                     <tr>
                         <th></th>
                         <th>Name</th>
-                        <th>Price</th>
+                        <th>Value</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {{#each garnishes}}
+                    {{#each ingredients}}
                         <tr>
                             <th scope="row">{{inc @index}}</th>
                             <td>{{name}}</td>
-                            <td>{{price}}</td>
+                            <td>{{value}}</td>
                         </tr>
                     {{/each}}
                     </tbody>
