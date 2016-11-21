@@ -1,6 +1,8 @@
 const apiRoot = 'http://localhost:8080/api';
 var currentTab = window.location.href;
 var navTabs;
+var ingredientAttr;
+var ingredientCond;
 
 function init() {
     validateSession();
@@ -21,6 +23,22 @@ function init() {
         $(this)[0].classList.remove("active");
         //e.stopPropagation();
     });
+
+    $('#attrAvailable').click(function () {
+        $("#attrdropdownMenu").text("Availabile");
+        $("#ingredientCondText").text("=");
+        ingredientAttr = "available";
+
+    });
+
+    $('#attrPrice').click(function () {
+        $("#attrdropdownMenu").text("Price");
+        $("#ingredientCondText").text(">=");
+        ingredientAttr = "price";
+    });
+
+    setIngredientHeaders();
+    enableRestockButton();
 }
 
 function validateSession() {
@@ -35,6 +53,34 @@ function validateSession() {
 
     } else {
         $("#admin-content").removeClass("collapse");
+    }
+}
+
+function setIngredientHeaders() {
+    ingredientAttr = localStorage.getItem("ingredientAttr");
+    ingredientCond = localStorage.getItem("ingredientCond");
+    ingredientCond = parseInt(ingredientCond);
+
+    $("#ingredientCondition").val(ingredientCond);
+
+    if (ingredientAttr === "available") {
+        $("#attrdropdownMenu").text("Available");
+        $("#ingredientCondText").text("=");
+    } else if (ingredientAttr === "price") {
+        $("#attrdropdownMenu").text("Price");
+        $("#ingredientCondText").text(">=");
+    } else {
+        $("#ingredientCondText").text("");
+    }
+}
+
+function enableRestockButton() {
+    if (ingredientAttr === "available" && ingredientCond === 0) {
+        console.log("disabled false");
+        $('#restockIngredientsBtn').prop("disabled", false);
+    } else {
+        console.log("disabled true");
+        $('#restockIngredientsBtn').prop("disabled", true);
     }
 }
 
@@ -93,10 +139,31 @@ function removeEmployee() {
 
 function restockAll() {
     $.get(apiRoot + "/employee/admin/setAllIngredientsAvailable", function(data) {
-        //TODO: handle any errors
-        //TODO: display notification
+        setAlert("alert-success", "Successfully restocked ingredients. Reloading page...");
         window.location.reload();
     });
+}
+
+function changeIngredientsView(){
+    var conditionVal = $('#ingredientCondition').val();
+    conditionVal = parseInt(conditionVal);
+
+    console.log("changeingredientsview", ingredientAttr, conditionVal, conditionVal.length)
+    if (ingredientAttr === "available" && conditionVal !== 0 && conditionVal !== 1){
+        setAlert("alert-warning", "Invalid availability value. 0 = unavailable 1 = available", "#ingredientsViewAlert");
+    } else if (ingredientAttr && !isNaN(conditionVal)) {
+        localStorage.setItem("ingredientAttr", ingredientAttr);
+        localStorage.setItem("ingredientCond", conditionVal);
+        location.search = "?attr=" + ingredientAttr + "&condition=" + conditionVal;
+    } else if (!ingredientAttr) {
+        setAlert("alert-warning", "Ingredient attribute not selected. Choose to display availability or price.",
+            "#ingredientsViewAlert");
+    } else if (isNaN(conditionVal)) {
+        setAlert("alert-warning", "Ingredient condition value is is empty or not a number. Please input a number.",
+            "#ingredientsViewAlert");
+    } else {
+        setAlert("alert-danger", "Invalid ingredient attribute or condition values.", "#ingredientsViewAlert");
+    }
 }
 
 function logout() {
@@ -113,11 +180,17 @@ function resetAlert() {
     $('div.alert').first().removeClass("alert-danger");
 }
 
-function setAlert(alertClass, text) {
+function setAlert(alertClass, text, selector) {
+    var selectorVal = 'div.alert';
+    if (selector) {
+        selectorVal = selector;
+    }
+    console.log("selector", selector);
+
     resetAlert();
-    $('div.alert').first().text(text);
-    $('div.alert').first().addClass(alertClass);
-    $('div.alert').first().removeClass("collapse");
+    $(selectorVal).first().text(text);
+    $(selectorVal).first().addClass(alertClass);
+    $(selectorVal).first().removeClass("collapse");
 }
 
 $(document).ready(function(){

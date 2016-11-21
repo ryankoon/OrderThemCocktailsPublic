@@ -5,31 +5,55 @@
         <button id="btn-logout" class="btn btn-danger" onclick="logout()">Logout</button>
     </div>
     <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#restock">Restock Ingredients</a></li>
+        <li class="active"><a data-toggle="tab" href="#ingredients">Ingredients</a></li>
         <li><a data-toggle="tab" href="#employees">Manage Employees</a></li>
         <li><a data-toggle="tab" href="#reports">Generate Reports</a></li>
     </ul>
     <div id="adminTabContent" class="tab-content">
-        <div id="restock" class="tab-pane fade in active">
+        <div id="ingredients" class="tab-pane fade in active">
                 <table class="table">
                     <thead class="thead-default">
                     <tr>
+                        <section id="ingredientsViewAlert" class="alert collapse"></section>
+                    </tr>
+                    <tr>
                         <th></th>
                         <th>Name</th>
-                        <th>Price</th>
+                        <th class="center-align-cell">
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="attrdropdownMenu"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    Choose an attribute
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="attrdropdownMenu">
+                                    <li><a id="attrAvailable">Available</a></li>
+                                    <li><a id="attrPrice">Price</a></li>
+                                </ul>
+                            </div>
+                        </th>
+                        <th id="ingredientCondText">
+                        </th>
+                        <th>
+                            <input type="number" class="form-control" id="ingredientCondition" placeholder="Enter a number">
+                        </th>
+                        <th>
+                            <button type="button" class="btn btn-info" onclick="changeIngredientsView()">Go</button>
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
-                    {{#each garnishes}}
+                    {{#each ingredients}}
                         <tr>
                             <th scope="row">{{inc @index}}</th>
                             <td>{{name}}</td>
-                            <td>{{price}}</td>
+                            <td class="ingredients-value-td center-align-cell">{{value}}</td>
                         </tr>
                     {{/each}}
                     </tbody>
                 </table>
-            <button type="button" class="btn btn-primary" onclick="restockAll()">Restock</button>
+            <button id="restockIngredientsBtn" type="button" title="Enabled when viewing unavailable ingredients."
+                    class="btn btn-primary" onclick="restockAll()">Restock</button>
         </div>
 
         <div id="employees" class="tab-pane fade">
