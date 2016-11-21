@@ -85,13 +85,13 @@ function isValidInputValue(){
 }
 
 function enableLogin() {
-    $('#employeeloginbutton').removeClass("disabled");
+    $('#employeeloginbutton').prop("disabled", false);
     $('#employeeloginbutton').text("Login");
 }
 
 function disableLogin() {
     console.log("disabling login");
-    $('#employeeloginbutton').addClass("disabled");
+    $('#employeeloginbutton').prop("disabled", true);
     $('#employeeloginbutton').text("Logging in...");
 }
 

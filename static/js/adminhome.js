@@ -42,11 +42,19 @@ function addEmployee() {
     var enameinput = $('#employeename');
     var ename = enameinput.val();
     enameinput.val('');
+    $('#addEmplBtn').prop("disabled", true);
 
     $.get(apiRoot + "/employee/admin/addstaff/" + ename, function(data) {
-        //TODO: handle any errors
-        //TODO: display notification
-        window.location.reload();
+        setAlert("alert-success", "Added new employee: " + ename + ". Reload the page to see the updated list.");
+        $('#addEmplBtn').removeClass("btn-primary");
+        $('#addEmplBtn').addClass("btn-success");
+        $('#addEmplBtn').text("Success");
+        setTimeout(function() {
+            $('#addEmplBtn').prop("disabled", false);
+            $('#addEmplBtn').removeClass("btn-success");
+            $('#addEmplBtn').addClass("btn-primary");
+            $('#addEmplBtn').text("Add");
+        }, 1000);
     });
 }
 
@@ -55,13 +63,32 @@ function removeEmployee() {
     var eid = eidinput.val();
     eidinput.val('');
 
-    $.ajax({
-        url: apiRoot + "/employee/admin/removestaff/" + eid,
-        type: 'DELETE',
-        success: function(result) {
-            window.location.reload();
-        }
-    });
+    if (eid) {
+        $('#removeEmplBtn').prop("disabled", true);
+        $.ajax({
+            url: apiRoot + "/employee/admin/removestaff/" + eid,
+            type: 'DELETE',
+            success: function (result) {
+                if (result) {
+                    var tableChanged = result.affectedRows;
+                    if (tableChanged) {
+                        setAlert("alert-success", "Removed employee #" + eid + ". Reloading page...");
+                        window.location.reload();
+                    } else {
+                        $('#removeEmplBtn').prop("disabled", false);
+                        setAlert("alert-danger", "The employee ID does not exist.");
+                        setTimeout(function() {
+                            resetAlert();
+                        }, 3000);
+                    }
+                }
+            },
+            error: function () {
+                $('#removeEmplBtn').prop("disabled", false);
+                console.log("ajax DELETE error!")
+            }
+        });
+    }
 }
 
 function restockAll() {
@@ -78,13 +105,16 @@ function logout() {
     window.location = "/employee";
 }
 
-function setAlert(alertClass, text) {
+function resetAlert() {
     $('div.alert').first().addClass("collapse");
     $('div.alert').first().removeClass("alert-success");
     $('div.alert').first().removeClass("alert-info");
     $('div.alert').first().removeClass("alert-warning");
     $('div.alert').first().removeClass("alert-danger");
+}
 
+function setAlert(alertClass, text) {
+    resetAlert();
     $('div.alert').first().text(text);
     $('div.alert').first().addClass(alertClass);
     $('div.alert').first().removeClass("collapse");
