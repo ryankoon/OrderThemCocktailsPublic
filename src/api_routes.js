@@ -588,9 +588,9 @@ router.route('/customer/drinks/order')
           return orderNoPromise;
         }).then(function (order_no) {
           var foundOrderNumber = order_no[0]['LAST_INSERT_ID()'];
-          var drinksinorder = "INSERT INTO drinksinorder (order_no, drink_id) VALUES (" + foundOrderNumber + ", " + drinksId + ")";
           for (var key in drinks) {
               drinksId = drinks[key];
+              var drinksinorder = "INSERT INTO drinksinorder (order_no, drink_id) VALUES (" + foundOrderNumber + ", " + drinksId + ")";
               var drinkPromise = endpoint(drinksinorder);
               secondPromiseArray.push(drinkPromise);
           }

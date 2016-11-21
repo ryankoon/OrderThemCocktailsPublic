@@ -82,7 +82,7 @@ $(document).ready(function (){
 	$('.increment-drink').on('click', function (e) {
 		e.preventDefault();
 		var drinkIdOrdered = $('.drink-selector-dropdown option:selected').val();
-		var drinkOrderName = $('.drink-selector-dropdown option:selected').attr('name-attr');
+		var drinkOrderName = $('.drink-selector-dropdown option:selected').text().trim();
 		var drinkPrice = $('.drink-selector-dropdown option:selected').attr('price-attr');
 		orderHistory.push(drinkIdOrdered);
 		updateOrderHistoryDisplay(drinkOrderName);
