@@ -1,8 +1,8 @@
 const apiRoot = 'http://localhost:8080/api';
 var currentTab = window.location.href;
 var navTabs;
-var ingredientAttr;
-var ingredientCond;
+var ingredientAttr = "available";
+var ingredientCond = 0;
 
 function init() {
     validateSession();
@@ -62,6 +62,12 @@ function setIngredientHeaders() {
     ingredientCond = parseInt(ingredientCond);
 
     $("#ingredientCondition").val(ingredientCond);
+    if (ingredientAttr == null) {
+        ingredientAttr = "available";
+    }
+    if (isNaN(ingredientCond)) {
+        ingredientCond = 0;
+    }
 
     if (ingredientAttr === "available") {
         $("#attrdropdownMenu").text("Available");
@@ -72,14 +78,14 @@ function setIngredientHeaders() {
     } else {
         $("#ingredientCondText").text("");
     }
+
+    $("#ingredientCondition").val(ingredientCond)
 }
 
 function enableRestockButton() {
     if (ingredientAttr === "available" && ingredientCond === 0) {
-        console.log("disabled false");
         $('#restockIngredientsBtn').prop("disabled", false);
     } else {
-        console.log("disabled true");
         $('#restockIngredientsBtn').prop("disabled", true);
     }
 }
@@ -148,7 +154,6 @@ function changeIngredientsView(){
     var conditionVal = $('#ingredientCondition').val();
     conditionVal = parseInt(conditionVal);
 
-    console.log("changeingredientsview", ingredientAttr, conditionVal, conditionVal.length)
     if (ingredientAttr === "available" && conditionVal !== 0 && conditionVal !== 1){
         setAlert("alert-warning", "Invalid availability value. 0 = unavailable 1 = available", "#ingredientsViewAlert");
     } else if (ingredientAttr && !isNaN(conditionVal)) {
@@ -185,7 +190,6 @@ function setAlert(alertClass, text, selector) {
     if (selector) {
         selectorVal = selector;
     }
-    console.log("selector", selector);
 
     resetAlert();
     $(selectorVal).first().text(text);
