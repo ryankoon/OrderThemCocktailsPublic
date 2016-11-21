@@ -115,12 +115,13 @@ $(document).ready(function (){
 		// needs to read local storage and update drinks.
 		var items;
 		items = localStorage.getItem('order');
-		if (items && items.length > 0 ) {
+		var itemList = JSON.parse(items);
+		if (itemList && itemList.length > 0 ) {
 			var price = 0;
-			for (var i=0; i < items.length; i++ ){
-				 orderHistory.push(items[i].id);
-                updateOrderHistoryDisplay(items[i].name);
-                price += items[i].price;
+			for (var i=0; i < itemList.length; i++ ){
+				 orderHistory.push(itemList[i].id);
+                updateOrderHistoryDisplay(itemList[i].name);
+                price += itemList[i].price;
 			}
             updateOrderPrice(price);
 		}

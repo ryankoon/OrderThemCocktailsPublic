@@ -172,6 +172,7 @@
         // id.  Other the drink already exists, then the result will be the id.
         if (result.length !== 0) {
             _id = result[0].d_id;
+            window.location.href = "/customer";
         } else {
             addDrinkToDB();
         }
@@ -200,6 +201,7 @@
 
     function setId(result) {
         _id = result;
+        window.location.href = "/customer";
     }
 
 
