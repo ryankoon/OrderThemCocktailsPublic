@@ -1,8 +1,10 @@
 <script src="/js/bartenderhome.js"></script>
 <div class="alert collapse"></div>
 <div id="bartender-content" class="container collapse">
-<h1 id="employeeWelcomeText">Welcome</h1>
-<button class="btn btn-danger" onclick="logout()">Logout</button>
+    <div class="bartender-header employee-header">
+        <h1 id="employeeWelcomeText">Welcome</h1>
+        <button id="btn-logout" class="btn btn-danger" onclick="logout()">Logout</button>
+    </div>
     <div id="openorders-table-container">
         <h3>Open Orders</h3>
         <table class="table">

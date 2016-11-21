@@ -1,8 +1,10 @@
 <script src="js/adminhome.js"></script>
 <div class="alert collapse"></div>
 <div id="admin-content" class="container container-admin collapse">
-    <h1>Administration</h1>
-    <button class="btn btn-danger" onclick="logout()">Logout</button>
+    <div class="admin-header employee-header">
+        <h1>Administration</h1>
+        <button id="btn-logout" class="btn btn-danger" onclick="logout()">Logout</button>
+    </div>
     <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" href="#restock">Restock Ingredients</a></li>
         <li><a data-toggle="tab" href="#employees">Manage Employees</a></li>

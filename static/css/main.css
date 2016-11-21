@@ -8,6 +8,21 @@
 }
 /**/
 
+/*Admin Page*/
+.employee-header {
+    display: flex;
+    align-items: center;
+}
+
+.employee-header > h1 {
+    margin-right: auto;
+}
+/**/
+
+#btn-logout {
+    margin-top: 10px;
+}
+
 .top5-container{
     text-align:center;
     margin-bottom: 50px;
