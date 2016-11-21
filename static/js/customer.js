@@ -5,6 +5,7 @@ Handles ordering multiple drinks for a customer on the customers page.
 $(document).ready(function (){
 	var orderHistory = [];
 	var newPrice;
+	var paymentId;
 
 
 	var updateOrderHistoryDisplay = function (val) {
@@ -17,6 +18,19 @@ $(document).ready(function (){
 		$('.js-total-price').text(newPrice.toString());
 	};
 
+	$('.payment-del').on('click', function (e){
+        $('.payment-del').attr('disabled', true);
+        var url = 'http://localhost:8080/api/deletePayment' + paymentId;
+        $.ajax(url, {
+            type: 'DELETE',
+			success : function () {
+            	alert('Successful delete');
+			},
+			error : function (err){
+            	alert('Error deleting!');
+			}
+        })
+	})
 	/*
 	Event bindings.
 	*/
@@ -46,14 +60,17 @@ $(document).ready(function (){
                 data: jsonPayload,
                 dataType: 'json',
                 type: 'POST',
-                success: function () {
+                success: function (res) {
+                	paymentId = res.paymentId;
                     $('.alert-handler').addClass('alert-success');
-                    $('.alert-handler').text('Order successfully sent. Please have a seat at your table');
+                    $('.alert-handler-text').text('Order successfully sent. Please have a seat at your table');
                     $('.alert-handler').show();
+                    $('.payment-del').show();
                     window.setTimeout(function () {
                         $('.alert-handler').hide();
                         $('.alert-handler').removeClass('alert-success');
-                    }, 5000);
+                        $('.payment-del').hide();
+                    }, 10000);
                 },
                 error: function (err) {
                     $('.submit-drink-order').attr('disabled', false);
