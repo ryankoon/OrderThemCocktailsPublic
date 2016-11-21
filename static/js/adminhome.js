@@ -25,7 +25,7 @@ function init() {
     });
 
     $('#attrAvailable').click(function () {
-        $("#attrdropdownMenu").text("Availability");
+        $("#attrdropdownMenu").text("Availabile");
         $("#ingredientCondText").text("=");
         ingredientAttr = "available";
 
@@ -139,7 +139,7 @@ function removeEmployee() {
 
 function restockAll() {
     $.get(apiRoot + "/employee/admin/setAllIngredientsAvailable", function(data) {
-        setAlert("alert-success", "Successfully restocked ingredients.");
+        setAlert("alert-success", "Successfully restocked ingredients. Reloading page...");
         window.location.reload();
     });
 }
