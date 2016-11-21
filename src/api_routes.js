@@ -175,27 +175,29 @@ router.route('/drinks/new')
 */
 router.route('/drinks/menu/available')
     .get(function (req, res) {
-        var getDrinks = "select d_number.id, name, on_menu, description " +
+        var getDrinks = "select d_number.id, name, price " +
 
-            "from (select d.id, d.name, d.on_menu, d.description, count(i_name) as ing_number " +
-                "from drink d " +
-                "join ingredientindrink iid " +
-                "on d.id = iid.d_id " +
-                "where d.on_menu=true " +
-                "group by d.id) " +
-            "as d_number " +
+        "from (select d.id, d.name, d.on_menu, d.description, sum(i.price) as price, count(i_name) as ing_number " +
+        "from drink d " +
+        "join ingredientindrink iid " +
+        "on d.id = iid.d_id " +
+        "join ingredient i " +
+        "on iid.i_name = i.name " +
+        "where d.on_menu=true " +
+        "group by d.id) " +
+        "as d_number " +
 
-            "join (	select d2.id, count(i_name) as ing_avail " +
-                "from drink d2 " +
-                "join ingredientindrink iid2 " +
-                "on d2.id = iid2.d_id " +
-                "join ingredient i2 " +
-                "on iid2.i_name = i2.name " +
-                "where i2.available=true " +
-                "group by d2.id) " +
-            "as d_avail " +
-            "on d_number.id = d_avail.id " +
-            "where d_number.ing_number = d_avail.ing_avail";
+        "join (select d2.id, count(i_name) as ing_avail " +
+        "from drink d2 " +
+        "join ingredientindrink iid2 " +
+        "on d2.id = iid2.d_id " +
+        "join ingredient i2 " +
+        "on iid2.i_name = i2.name " +
+        "where i2.available=true " +
+        "group by d2.id) " +
+        "as d_avail " +
+        "on d_number.id = d_avail.id " +
+        "where d_number.ing_number = d_avail.ing_avail ";
 
         console.log(getDrinks);
 
