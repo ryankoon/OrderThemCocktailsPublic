@@ -341,6 +341,10 @@ insert into ingredientindrink
 	(141, "Lemon Twist"),
 	(141, "Maraschino Cherry");
 
+insert into admin (name, pw)
+	values
+    ('admin', 'admin')
+
 insert into bartender 
 	values
 	(null, "Moe Szyslak"),

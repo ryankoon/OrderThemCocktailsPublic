@@ -1,6 +1,8 @@
 const apiRoot = 'http://localhost:8080/api';
 var currentTab = window.location.href;
 var navTabs;
+var ingredientAttr = "available";
+var ingredientCond = 0;
 
 function init() {
     validateSession();
@@ -21,6 +23,38 @@ function init() {
         $(this)[0].classList.remove("active");
         //e.stopPropagation();
     });
+
+    $('#attrAvailable').click(function () {
+        $("#attrdropdownMenu").text("Availabile");
+        $("#ingredientCondText").text("=");
+        ingredientAttr = "available";
+
+    });
+
+    $('#attrPrice').click(function () {
+        $("#attrdropdownMenu").text("Price");
+        $("#ingredientCondText").text(">=");
+        ingredientAttr = "price";
+    });
+
+    $('#agg-max').click(function () {
+        sendNestedAggregateQuery('max');
+    });
+
+    $('#agg-min').click(function () {
+        sendNestedAggregateQuery('min');
+    });
+
+    $('#agg-avg').click(function () {
+        sendNestedAggregateQuery('avg');
+    });
+
+    $('#agg-count').click(function () {
+        sendNestedAggregateQuery('count');
+    });
+
+    setIngredientHeaders();
+    enableRestockButton();
 }
 
 function validateSession() {
@@ -35,6 +69,86 @@ function validateSession() {
 
     } else {
         $("#admin-content").removeClass("collapse");
+    }
+}
+
+function sendNestedAggregateQuery(type) {
+    var returnStatement,
+        jsonPayload = $.param({type: type});
+
+    switch (type) {
+        case "max":
+            returnStatement = "The most number of drinks in a customer's purchase history is ";
+            break;
+        case "min":
+            returnStatement = "The fewest number of drinks in a customer's purchase history is ";
+            break;
+        case "avg":
+            returnStatement = "The average number of drinks in a customer's purchase history is";
+            break;
+        case "count":
+            returnStatement = "The number of distinct customers who have ordered is ";
+    }
+
+    $.ajax(apiRoot + '/aggregatedrinkstats', {
+        contentType: 'application/json',
+        data: jsonPayload,
+        dataType: 'json',
+        type: 'GET',
+        async: false,
+        success: function (result) {
+            updateAggResponse(result, returnStatement);
+        },
+        error: function (err){
+            alert("There was a problem retrieving your data");
+            console.log("Error getting aggregate stats: " + err);
+        }
+    });
+
+    function updateAggResponse(result, returnStatement) {
+        var number = result[0].answer;
+
+        // hold it to one decimal place if not an integer
+        if (number % 1 !== 0) {
+            number = number.toFixed(1);
+        }
+
+        $('#agg-response').html(returnStatement + "<br><h3>" + number + "</h3>");
+
+    }
+}
+
+function setIngredientHeaders() {
+    ingredientAttr = localStorage.getItem("ingredientAttr");
+    ingredientCond = localStorage.getItem("ingredientCond");
+    ingredientCond = parseInt(ingredientCond);
+
+    $("#ingredientCondition").val(ingredientCond);
+    if (ingredientAttr == null) {
+        ingredientAttr = "available";
+    }
+    if (isNaN(ingredientCond)) {
+        ingredientCond = 0;
+    }
+
+    if (ingredientAttr === "available") {
+        $("#attrdropdownMenu").text("Available");
+        $("#ingredientCondText").text("=");
+    } else if (ingredientAttr === "price") {
+        $("#attrdropdownMenu").text("Price");
+        $("#ingredientCondText").text(">=");
+    } else {
+        $("#ingredientCondText").text("");
+    }
+
+    $("#ingredientCondition").val(ingredientCond)
+}
+
+function enableRestockButton() {
+    if (ingredientAttr === "available" && ingredientCond === 0) {
+        $('#restockIngredientsBtn').prop("disabled", false);
+    } else {
+        $('#restockIngredientsBtn').prop("disabled", true);
     }
 }
 
@@ -93,10 +207,30 @@ function removeEmployee() {
 
 function restockAll() {
     $.get(apiRoot + "/employee/admin/setAllIngredientsAvailable", function(data) {
-        //TODO: handle any errors
-        //TODO: display notification
+        setAlert("alert-success", "Successfully restocked ingredients. Reloading page...");
         window.location.reload();
     });
+}
+
+function changeIngredientsView(){
+    var conditionVal = $('#ingredientCondition').val();
+    conditionVal = parseInt(conditionVal);
+
+    if (ingredientAttr === "available" && conditionVal !== 0 && conditionVal !== 1){
+        setAlert("alert-warning", "Invalid availability value. 0 = unavailable 1 = available", "#ingredientsViewAlert");
+    } else if (ingredientAttr && !isNaN(conditionVal)) {
+        localStorage.setItem("ingredientAttr", ingredientAttr);
+        localStorage.setItem("ingredientCond", conditionVal);
+        location.search = "?attr=" + ingredientAttr + "&condition=" + conditionVal;
+    } else if (!ingredientAttr) {
+        setAlert("alert-warning", "Ingredient attribute not selected. Choose to display availability or price.",
+            "#ingredientsViewAlert");
+    } else if (isNaN(conditionVal)) {
+        setAlert("alert-warning", "Ingredient condition value is is empty or not a number. Please input a number.",
+            "#ingredientsViewAlert");
+    } else {
+        setAlert("alert-danger", "Invalid ingredient attribute or condition values.", "#ingredientsViewAlert");
+    }
 }
 
 function logout() {
@@ -113,11 +247,16 @@ function resetAlert() {
     $('div.alert').first().removeClass("alert-danger");
 }
 
-function setAlert(alertClass, text) {
+function setAlert(alertClass, text, selector) {
+    var selectorVal = 'div.alert';
+    if (selector) {
+        selectorVal = selector;
+    }
+
     resetAlert();
-    $('div.alert').first().text(text);
-    $('div.alert').first().addClass(alertClass);
-    $('div.alert').first().removeClass("collapse");
+    $(selectorVal).first().text(text);
+    $(selectorVal).first().addClass(alertClass);
+    $(selectorVal).first().removeClass("collapse");
 }
 
 $(document).ready(function(){

@@ -25,6 +25,7 @@ $(document).ready(function (){
             type: 'DELETE',
 			success : function () {
                 showSuccess('Successful delete', false);
+				location.assign("/");
 			},
 			error : function (err){
             	showError('Error deleting!');

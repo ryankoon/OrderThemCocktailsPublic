@@ -47,7 +47,7 @@
 }
 
 /*Bartender Page*/
-.complete-order-checkbox-cell {
+.complete-order-checkbox-cell, .center-align-cell {
     text-align: center;
 }
 /**/
@@ -61,6 +61,19 @@
 .employee-header > h1 {
     margin-right: auto;
 }
+
+.ingredients-value-td {
+    text-align: center;
+}
+
+#ingredientCondText {
+    vertical-align: middle;
+}
+
+#agg-response {
+    text-align: center;
+}
+
 /**/
 
 #btn-logout {

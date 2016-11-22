@@ -1,4 +1,4 @@
-CREATE TABLE Drink (
+ CREATE TABLE Drink (
     id int AUTO_INCREMENT,
     on_menu BOOLEAN NOT NULL,
     name CHAR(30) NOT NULL,
@@ -70,7 +70,8 @@ CREATE TABLE NonAlcoholic (
 CREATE TABLE Customer (
  cust_name CHAR(30),
  phone_no BIGINT,
- PRIMARY KEY (cust_name, phone_no)
+  PRIMARY KEY (cust_name, phone_no),
+  CHECK (phone_no > 999999999)
 );
 
 CREATE TABLE CustomerOrder (
@@ -109,6 +110,11 @@ CREATE TABLE Payment (
         REFERENCES CustomerOrder (order_no)
         ON DELETE CASCADE,
     PRIMARY KEY (payment_id , order_no)
+);
+
+CREATE TABLE Admin (
+    name CHAR(30),
+    pw CHAR(30)
 );
 
 CREATE VIEW drinkswithwhiskey AS
@@ -157,3 +163,20 @@ CREATE VIEW WhiskeyExperts AS
     SELECT COUNT(*)
     FROM drinkswithwhiskey
   );
+
+/* Triggers don't work with Azure
+
+# CREATE TRIGGER seinfeld
+# AFTER INSERT ON customerorder
+# FOR EACH ROW
+#   IF cust_name = 'George Costanza'
+#   THEN SET notes = 'Poisoned boss';
+#   END IF;
+
+# CREATE TRIGGER total_order
+# AFTER INSERT ON customerorder
+# FOR EACH ROW
+#   IF Mod(count(customerorder.order_no), 1000) = 0
+#   THEN INSERT INTO payment (amount, card_no, order_no)
+#   VALUES (0, payment.card_no, customerorder.order_no);
+#   END IF;
