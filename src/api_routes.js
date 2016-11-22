@@ -91,6 +91,29 @@ function escape_string (str) {
     });
 }
 
+router.route('/login/employee/')
+    .get(function (req, res) {
+        var name = req.query.name,
+            pw = req.query.pw,
+            type = req.query.type,
+
+            admin = 'SELECT count(*) as response from admin where name="' + escape_string(name) +'" and pw="' + pw + '"',
+            emp = 'SELECT count(*) as response from bartender where name="' + escape_string(name) +'" and eid="' + pw +'"';
+
+            if (type === 'admin') {
+                type = admin;
+            } else {
+                type = emp;
+            }
+
+        endpoint(type)
+            .then (function (result) {
+                res.json(result);
+            }).catch (function (error) {
+                console.log("there was an error with employee login " + error);
+        });
+    })
+
 /*
  Endpoint for drink searching using ingredients via division.  This endpoint will return only drinks
  that contain the entire ingredient list;
@@ -246,7 +269,8 @@ router.route('/ingredients/all/alcoholic/')
     .get(function (req, res) {
 
         var showAlc = "select a.name, a.abv, a.origin, a.type, i.price, i.available from alcoholicingredient a " +
-                      "join ingredient i on i.name = a.name ";
+                      "join ingredient i on i.name = a.name " +
+                      "where available=1";
 
         endpoint(showAlc)
             .then(function (result) {
@@ -257,12 +281,13 @@ router.route('/ingredients/all/alcoholic/')
     });
 
 /**
- *  Get all garnishes, regardless of availability
+ *  Get all available garnishes
  */
 router.route('/ingredients/all/garnish/')
     .get(function (req, res) {
         var showGarnish = "select ingredient.name, price, available, description from ingredient " +
-            "join garnish g on g.name = ingredient.name";
+            "join garnish g on g.name = ingredient.name " +
+            "where available=1";
         endpoint(showGarnish)
             .then(function (result) {
             res.json(result);
@@ -272,12 +297,13 @@ router.route('/ingredients/all/garnish/')
     });
 
 /**
- *  Get all non-alcoholic ingredients, regardless of availability
+ *  Get all available non-alcoholic ingredients
  */
 router.route('/ingredients/all/nonalcoholic')
     .get(function (req, res) {
         var showNonAlcoholic = "select ingredient.name, price, available, description from ingredient " +
-            "join nonalcoholic n on n.name = ingredient.name";
+            "join nonalcoholic n on n.name = ingredient.name " +
+            "where available=1;";
         endpoint(showNonAlcoholic)
             .then(function (result) {
             res.json(result);
@@ -287,7 +313,7 @@ router.route('/ingredients/all/nonalcoholic')
     });
 
 /**
- *  Get ingredients, regardless of availability
+ *  Get ingredients
  */
 router.route('/ingredients/name/:name')
     .get(function (req, res) {
