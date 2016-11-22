@@ -350,6 +350,22 @@ router.route('/employee/admin/setAllIngredientsAvailable')
         });
     });
 
+
+/*
+ gets all payments for open orders
+ */
+router.route('/employee/admin/openorderpayments')
+    .get(function (req, res) {
+        var openorderpayments = "SELECT p.payment_id, p.order_no, p.amount, p.card_no FROM payment p, " +
+            "customerorder co WHERE p.order_no = co.order_no AND co.is_open = 1 ORDER BY p.payment_id DESC;";
+        endpoint(openorderpayments)
+            .then(function (result) {
+                res.json(result);
+            }).catch(function(err) {
+            console.error("Something went wrong, sorry");
+        });
+    });
+
 router.route('/employee/admin/staff')
     .get(function (req, res) {
         var showBartender = "select eid as id, name from bartender";

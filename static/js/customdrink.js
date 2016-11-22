@@ -20,9 +20,18 @@
                 price = $parent.attr('data-price');
                 updateOrderHistoryDisplay({name: name, type: type, price: price});
         });
-
         $('#order-button').on('click', submitOrder);
     });
+
+    var showErrorState = function (input) {
+        $('.custom-error-state').attr('disabled', false);
+        $('.alert-handler').text(input);
+        $('.alert-handler').show();
+        window.setTimeout(function () {
+            $('.alert-handler').hide();
+
+        }, 5000);
+    }
 
     updateOrderHistoryDisplay = function (drinkObj) {
         if (ingredientNotInDrink(drinkObj.name)) {
@@ -49,7 +58,7 @@
             });
             updateOrderPrice(drinkObj.price);
         } else {
-            alert(drinkObj.name + " is already in your drink");
+            showErrorState(drinkObj.name + " is already in your drink");
         }
     };
 
@@ -67,12 +76,15 @@
     };
 
     submitOrder = function () {
-        if (drinkIngredients.length != 0) {
+        if (drinkIngredients.length != 0 && $('#name-input').val().length > 0) {
             addDrinkOrGetIfExists();
             addDrinkToLocalStorage(_id);
             window.location.href = '/customer/';
-        } else {
-            alert("Please add ingredients to your drink");
+        }else if ($('#name-input').val().length === 0){
+            showErrorState("Please enter a drink name.");
+        }
+        else {
+            showErrorState("Please add ingredients to your drink.");
         }
     };
 
@@ -118,7 +130,7 @@
                 $('#alcModal').show();
             },
             error: function (err) {
-                alert("ERROR! : " + err)
+                showErrorState("ERROR! : " + err)
             }
         })
     }
@@ -143,7 +155,7 @@
                 $('#infoModal').show();
             },
             error: function (err) {
-                alert("ERROR! : " + err)
+                showErrorState("ERROR! : " + err)
             }
         })
     }
@@ -173,11 +185,12 @@
         if (result.length !== 0) {
             _id = result[0].d_id;
         } else {
-            addDrinkToDB();
+                addDrinkToDB();
         }
     };
 
     function addDrinkToDB () {
+
         var jsonPayload = JSON.stringify({name: $('#name-input').val(),
                            ingredient: drinkIngredients});
 
@@ -193,7 +206,7 @@
                 setId(result);
             },
             error: function (err) {
-                alert('Error contacting the API: ' + err);
+                showErrorState('Error contacting the API: ' + err);
             }
         });
     }
