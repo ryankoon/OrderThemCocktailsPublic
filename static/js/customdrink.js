@@ -76,7 +76,7 @@
     };
 
     submitOrder = function () {
-        if (drinkIngredients.length != 0) {
+        if (drinkIngredients.length != 0 && $('#name-input').val().length > 0) {
             addDrinkOrGetIfExists();
             addDrinkToLocalStorage(_id);
             window.location.href = '/customer/';
