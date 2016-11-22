@@ -2,7 +2,9 @@
 .body-wrapper {
     margin: 50px 0 20px 0
 }
-
+.login-form{
+    margin-bottom: 50px
+}
 .otd-header {
     display: flex;
     height: 75px;

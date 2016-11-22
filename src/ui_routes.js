@@ -6,7 +6,7 @@ function uiRouting(app, hbs) {
 	/*
 	Home route for customers to input information.
 	*/
-	app.get('/home', function (req,res){
+	app.get('/', function (req,res){
 	  res.render('home');
 	});
 
@@ -315,9 +315,6 @@ function uiRouting(app, hbs) {
 	     res.send(body);
 	    }
 	  });
-	});
-	app.get('/', function (req, res){
-		res.render('login');
 	});
 }
 module.exports.uiRouting = uiRouting;
