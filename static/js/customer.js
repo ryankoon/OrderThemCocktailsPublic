@@ -120,12 +120,12 @@ $(document).ready(function (){
 			var price = 0;
 			for (var i=0; i < itemList.length; i++ ){
 				 orderHistory.push(itemList[i].id);
-                updateOrderHistoryDisplay(itemList[i].name);
+				 var display = itemList[i].name + ' - $' + itemList[i].price;
+                updateOrderHistoryDisplay(display);
                 price += itemList[i].price;
 			}
             updateOrderPrice(price);
 		}
-		localStorage.removeItem('order');
     }
     initializePage();
 });
