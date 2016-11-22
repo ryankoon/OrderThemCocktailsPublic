@@ -1,3 +1,4 @@
+
 .body-wrapper {
     margin: 50px 0 20px 0
 }
@@ -122,4 +123,7 @@
     margin-bottom: 120px;
     font-size: 18px;
     text-decoration: none;
+}
+.create-account{
+    display: none;
 }

@@ -623,11 +623,12 @@ router.route('/customer/drinks/order')
 
         var orderPromise = endpoint(createOrder);
         var orderNoPromise = endpoint(query_order_no);
+        var foundOrderNumber;
         orderPromise.then(function (result) {
           console.log('we made it?');
           return orderNoPromise;
         }).then(function (order_no) {
-          var foundOrderNumber = order_no[0]['LAST_INSERT_ID()'];
+          foundOrderNumber = order_no[0]['LAST_INSERT_ID()'];
           for (var key in drinks) {
               drinksId = drinks[key];
               var drinksinorder = "INSERT INTO drinksinorder (order_no, drink_id) VALUES (" + foundOrderNumber + ", " + drinksId + ")";
@@ -642,11 +643,9 @@ router.route('/customer/drinks/order')
           }).then(function () {
             var payment = "INSERT INTO payment (amount, card_no, order_no) VALUES (" + amount + ", " + card_no + ", " + blockScope_order_no + ")";
             return endpoint(payment, res)
-          }).then(function getPaymentID(result) {
-            return endpoint('SELECT LAST_INSERT_ID()')
           }).then(function (result) {
-              var id = result[0]['LAST_INSERT_ID()'];
-              // need to get the last payment ID and send it back.
+              var id = foundOrderNumber;
+              // need to get the last order ID and send it back.
               res.status(200).send({Message: 'Successfully made order', paymentId : id});
           }).catch(function (err){
             res.status(404).send({Error: 'Database error : ' + JSON.stringify(err)});
@@ -703,7 +702,7 @@ router.route('/customer/drinks/order')
     router.route('/deletePayment:id')
         .delete(function (req, res) {
             // console.log("insert into bartender (name) values (" + req.params.bartender + ")");
-            var addBartender = "DELETE FROM payment where payment.payment_id = " + escape_string(req.params.id);
+            var addBartender = "DELETE FROM customerorder where customerorder.order_no = " + escape_string(req.params.id);
             endpoint(addBartender)
                 .then(function (result) {
                     res.json(result);
