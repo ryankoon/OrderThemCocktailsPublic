@@ -1,4 +1,4 @@
-CREATE TABLE Drink (
+ CREATE TABLE Drink (
     id int AUTO_INCREMENT,
     on_menu BOOLEAN NOT NULL,
     name CHAR(30) NOT NULL,
@@ -110,6 +110,11 @@ CREATE TABLE Payment (
         REFERENCES CustomerOrder (order_no)
         ON DELETE CASCADE,
     PRIMARY KEY (payment_id , order_no)
+);
+
+CREATE TABLE Admin (
+    name CHAR(30),
+    pw CHAR(30)
 );
 
 CREATE VIEW drinkswithwhiskey AS

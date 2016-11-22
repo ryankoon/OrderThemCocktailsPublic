@@ -24,7 +24,8 @@ $(document).ready(function (){
         $.ajax(url, {
             type: 'DELETE',
 			success : function () {
-            	alert('Successful delete');
+            	console.log('Successful delete');
+				location.assign("/");
 			},
 			error : function (err){
             	alert('Error deleting!');
