@@ -1,3 +1,8 @@
+drop view drinkswithwhiskey;
+drop view NonWhiskeyOrders;
+drop view BartendersServedWhiskey;
+drop view WhiskeyDrinkServedByAll;
+drop view WhiskeyExperts;
 drop table drinksinorder;
 drop table garnish;
 drop table nonalcoholic;
