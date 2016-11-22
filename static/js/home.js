@@ -1,5 +1,6 @@
 $(document).ready(function () {
-$('.user-info-form').on('submit', function (e) {
+	localStorage.removeItem('order');
+    $('.user-info-form').on('submit', function (e) {
 	e.preventDefault();
 	var name, phone_no;
 	name = $('#name-input').val();
