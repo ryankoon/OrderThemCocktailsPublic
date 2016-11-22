@@ -10,3 +10,4 @@ drop table drink;
 drop table customerorder;
 drop table bartender;
 drop table customer;
+drop table admin;

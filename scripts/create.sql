@@ -1,4 +1,4 @@
-CREATE TABLE Drink (
+ CREATE TABLE Drink (
     id int AUTO_INCREMENT,
     on_menu BOOLEAN NOT NULL,
     name CHAR(30) NOT NULL,
@@ -112,6 +112,11 @@ CREATE TABLE Payment (
     PRIMARY KEY (payment_id , order_no)
 );
 
+CREATE TABLE Admin (
+    name CHAR(30),
+    pw CHAR(30)
+);
+
 CREATE VIEW drinkswithwhiskey AS
   SELECT d.id, d.name, ai.type
   FROM drink d, ingredientindrink iid, ingredient i, alcoholicingredient ai
@@ -158,3 +163,4 @@ CREATE VIEW WhiskeyExperts AS
     SELECT COUNT(*)
     FROM drinkswithwhiskey
   );
+
