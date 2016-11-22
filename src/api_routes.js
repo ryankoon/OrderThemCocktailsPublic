@@ -93,9 +93,9 @@ function escape_string (str) {
 
 router.route('/login/employee/')
     .get(function (req, res) {
-        var name = req.query.name,
+        var name = req.query.username,
             pw = req.query.pw,
-            type = req.query.type,
+            type = req.query.role,
 
             admin = 'SELECT count(*) as response from admin where name="' + escape_string(name) +'" and pw="' + pw + '"',
             emp = 'SELECT count(*) as response from bartender where name="' + escape_string(name) +'" and eid="' + pw +'"';
