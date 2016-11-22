@@ -109,6 +109,7 @@ function uiRouting(app, hbs) {
 		var condition = req.query.condition;
 		console.log(attr, condition);
 		var ingredients,
+			openorderpayments,
 			employees,
 			whiskeyBartenders,
 			whiskeyservedbyall,
@@ -140,6 +141,18 @@ function uiRouting(app, hbs) {
 					reject(error);
 				} else {
 					employees = JSON.parse(body);
+					resolve(body);
+				}
+			});
+		});
+		adminPromises.push(adminpromise);
+
+		adminpromise = new Promise(function (resolve, reject) {
+			request(apiRoot + '/employee/admin/openorderpayments', function (error, response, body) {
+				if (error) {
+					reject(error);
+				} else {
+					openorderpayments = JSON.parse(body);
 					resolve(body);
 				}
 			});
@@ -202,6 +215,7 @@ function uiRouting(app, hbs) {
 			.then(function() {
 				res.render('adminhome', {
 					ingredients: ingredients,
+					openorderpayments: openorderpayments,
 					employees: employees,
 					whiskeyBartenders: whiskeyBartenders,
 					whiskeyservedbyall: whiskeyservedbyall,

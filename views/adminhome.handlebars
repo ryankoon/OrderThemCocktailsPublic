@@ -6,6 +6,7 @@
     </div>
     <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" href="#ingredients">Ingredients</a></li>
+        <li><a data-toggle="tab" href="#openorderpayments">Payments - Open Orders</a></li>
         <li><a data-toggle="tab" href="#employees">Manage Employees</a></li>
         <li><a data-toggle="tab" href="#stats">Purchase Stats</a></li>
         <li><a data-toggle="tab" href="#reports">Generate Reports</a></li>
@@ -56,7 +57,28 @@
             <button id="restockIngredientsBtn" type="button" title="Enabled when viewing unavailable ingredients."
                     class="btn btn-primary" onclick="restockAll()">Restock</button>
         </div>
-
+        <div id="openorderpayments" class="tab-pane fade">
+            <table class="table">
+                <thead class="thead-default">
+                <tr>
+                    <th>Payment ID</th>
+                    <th>Order #</th>
+                    <th>Amount</th>
+                    <th>Card #</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each openorderpayments}}
+                    <tr>
+                        <td>{{payment_id}}</td>
+                        <td>{{order_no}}</td>
+                        <td>{{amount}}</td>
+                        <td>{{card_no}}</td>
+                    </tr>
+                {{/each}}
+                </tbody>
+            </table>
+        </div>
         <div id="employees" class="tab-pane fade">
             <table class="table">
                 <thead class="thead-default">
