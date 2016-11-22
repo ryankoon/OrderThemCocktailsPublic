@@ -114,7 +114,8 @@ CREATE TABLE Payment (
 
 CREATE TABLE Admin (
     name CHAR(30),
-    pw CHAR(30)
+    pw CHAR(30),
+    PRIMARY KEY (name)
 );
 
 CREATE VIEW drinkswithwhiskey AS
@@ -164,7 +165,7 @@ CREATE VIEW WhiskeyExperts AS
     FROM drinkswithwhiskey
   );
 
-/* Triggers don't work with Azure
+# Triggers don't work with Azure
 
 # CREATE TRIGGER seinfeld
 # AFTER INSERT ON customerorder

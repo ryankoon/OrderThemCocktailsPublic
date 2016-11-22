@@ -91,6 +91,29 @@ function escape_string (str) {
     });
 }
 
+router.route('/login/employee/')
+    .get(function (req, res) {
+        var name = req.query.username,
+            pw = req.query.pw,
+            type = req.query.role,
+
+            admin = 'SELECT count(*) as response from admin where name="' + escape_string(name) +'" and pw="' + pw + '"',
+            emp = 'SELECT count(*) as response from bartender where name="' + escape_string(name) +'" and eid="' + pw +'"';
+
+            if (type === 'admin') {
+                type = admin;
+            } else {
+                type = emp;
+            }
+
+        endpoint(type)
+            .then (function (result) {
+                res.json(result);
+            }).catch (function (error) {
+                console.log("there was an error with employee login " + error);
+        });
+    })
+
 /*
  Endpoint for drink searching using ingredients via division.  This endpoint will return only drinks
  that contain the entire ingredient list;
@@ -246,7 +269,8 @@ router.route('/ingredients/all/alcoholic/')
     .get(function (req, res) {
 
         var showAlc = "select a.name, a.abv, a.origin, a.type, i.price, i.available from alcoholicingredient a " +
-                      "join ingredient i on i.name = a.name ";
+                      "join ingredient i on i.name = a.name " +
+                      "where available=1";
 
         endpoint(showAlc)
             .then(function (result) {
@@ -257,12 +281,13 @@ router.route('/ingredients/all/alcoholic/')
     });
 
 /**
- *  Get all garnishes, regardless of availability
+ *  Get all available garnishes
  */
 router.route('/ingredients/all/garnish/')
     .get(function (req, res) {
         var showGarnish = "select ingredient.name, price, available, description from ingredient " +
-            "join garnish g on g.name = ingredient.name";
+            "join garnish g on g.name = ingredient.name " +
+            "where available=1";
         endpoint(showGarnish)
             .then(function (result) {
             res.json(result);
@@ -272,12 +297,13 @@ router.route('/ingredients/all/garnish/')
     });
 
 /**
- *  Get all non-alcoholic ingredients, regardless of availability
+ *  Get all available non-alcoholic ingredients
  */
 router.route('/ingredients/all/nonalcoholic')
     .get(function (req, res) {
         var showNonAlcoholic = "select ingredient.name, price, available, description from ingredient " +
-            "join nonalcoholic n on n.name = ingredient.name";
+            "join nonalcoholic n on n.name = ingredient.name " +
+            "where available=1;";
         endpoint(showNonAlcoholic)
             .then(function (result) {
             res.json(result);
@@ -287,7 +313,7 @@ router.route('/ingredients/all/nonalcoholic')
     });
 
 /**
- *  Get ingredients, regardless of availability
+ *  Get ingredients
  */
 router.route('/ingredients/name/:name')
     .get(function (req, res) {
@@ -639,11 +665,12 @@ router.route('/customer/drinks/order')
 
         var orderPromise = endpoint(createOrder);
         var orderNoPromise = endpoint(query_order_no);
+        var foundOrderNumber;
         orderPromise.then(function (result) {
           console.log('we made it?');
           return orderNoPromise;
         }).then(function (order_no) {
-          var foundOrderNumber = order_no[0]['LAST_INSERT_ID()'];
+          foundOrderNumber = order_no[0]['LAST_INSERT_ID()'];
           for (var key in drinks) {
               drinksId = drinks[key];
               var drinksinorder = "INSERT INTO drinksinorder (order_no, drink_id) VALUES (" + foundOrderNumber + ", " + drinksId + ")";
@@ -658,11 +685,9 @@ router.route('/customer/drinks/order')
           }).then(function () {
             var payment = "INSERT INTO payment (amount, card_no, order_no) VALUES (" + amount + ", " + card_no + ", " + blockScope_order_no + ")";
             return endpoint(payment, res)
-          }).then(function getPaymentID(result) {
-            return endpoint('SELECT LAST_INSERT_ID()')
           }).then(function (result) {
-              var id = result[0]['LAST_INSERT_ID()'];
-              // need to get the last payment ID and send it back.
+              var id = foundOrderNumber;
+              // need to get the last order ID and send it back.
               res.status(200).send({Message: 'Successfully made order', paymentId : id});
           }).catch(function (err){
             res.status(404).send({Error: 'Database error : ' + JSON.stringify(err)});
@@ -719,7 +744,7 @@ router.route('/customer/drinks/order')
     router.route('/deletePayment:id')
         .delete(function (req, res) {
             // console.log("insert into bartender (name) values (" + req.params.bartender + ")");
-            var addBartender = "DELETE FROM payment where payment.payment_id = " + escape_string(req.params.id);
+            var addBartender = "DELETE FROM customerorder where customerorder.order_no = " + escape_string(req.params.id);
             endpoint(addBartender)
                 .then(function (result) {
                     res.json(result);

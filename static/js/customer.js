@@ -25,7 +25,6 @@ $(document).ready(function (){
             type: 'DELETE',
 			success : function () {
                 showSuccess('Successful delete', false);
-				location.assign("/");
 			},
 			error : function (err){
             	showError('Error deleting!');
@@ -46,6 +45,7 @@ $(document).ready(function (){
             $('.alert-handler').hide();
             $('.alert-handler').removeClass('alert-success');
             $('.payment-del').hide();
+            location.assign("/");
         }, 10000);
 	}
 	var showError = function (val){

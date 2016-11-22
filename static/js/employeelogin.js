@@ -1,4 +1,4 @@
-var username, password, bartenders;
+var username, password, bartenders, _role;
 const apiRoot = 'http://localhost:8080/api';
 function init() {
     $("input").keypress(function(event) {
@@ -15,6 +15,63 @@ function onLogin() {
     password = $("#employeeloginpass").val();
 
     if (isValidInputValue()) {
+        var role = $('#role-select').val(),
+            params;
+
+        if (role === "Manager") {
+            role = "admin";
+        } else {
+            role = "emp";
+        }
+
+        params = $.param({username: username, pw: password, role: role});
+
+        $.ajax('http://localhost:8080/api/login/employee', {
+            contentType: 'application/json',
+            data: params,
+            dataType: 'json',
+            type: 'GET',
+            async: false,
+            success: function (result) {
+                checkIfLoginSuccessful(result, role, username, password);
+            },
+            error: function (err) {
+                console.log(error);
+            }
+        });
+    } else {
+        console.log("Invalid login values.");
+        enableLogin();
+    }
+}
+
+    function checkIfLoginSuccessful(result, role, username, password) {
+        if (result[0].response !== 0) {
+            // found a match in the db
+            if (role === "admin") {
+                // its a manager
+                localStorage.setItem("sessionEID", 0);
+                localStorage.setItem("sessionName", "Admin");
+                setAlert("alert-success", "Success!");
+                window.location = "/admin";
+            } else {
+                localStorage.setItem("sessionEID", password);
+                localStorage.setItem("sessionName", username);
+                setAlert("alert-success", "Success!");
+                window.location = "/bartender/" + password;
+            }
+        } else {
+            // no matches in the db
+            setAlert("alert-danger", "Invalid username or password!");
+            enableLogin();
+        }
+    }
+
+
+/*
+        // something about setting session eid and name...
+        // then redirect
+
         if (isAdmin(username, password)) {
             localStorage.setItem("sessionEID", 0);
             localStorage.setItem("sessionName", "Admin");
@@ -50,15 +107,13 @@ function onLogin() {
                     enableLogin();
                 });
         };
-    } else {
-        console.log("Invalid login values.");
-        enableLogin();
-    }
-};
 
-function isAdmin(user, pass) {
-    return (user === "admin" && pass === "admin");
-}
+};
+*/
+
+//function isAdmin(user, pass) {
+//    return (user === "admin" && pass === "admin");
+//}
 
 function getEmployeeIds() {
     return new Promise(function (resolve, reject) {

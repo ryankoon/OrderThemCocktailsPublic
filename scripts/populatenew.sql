@@ -1,8 +1,8 @@
 insert into ingredient (name, description, available, price)
 values
-	("Tanqueray", null, true, 6.00),
-	("Beefeater", null, true, 5.00),
-	("Bombay Sapphire", null, true, 7.00),
+	("Tanqueray", "The recipe is a closely guarded trade secret, although it is known to contain four botanicals (juniper, coriander, angelica root and liquorice", true, 6.00),
+	("Beefeater", "Beefeater Gin contains nine different botanicals: juniper, angelica root, angelica seeds, coriander seeds, liquorice, almonds, orris root, seville oranges, and lemon peels. They are steeped for a full 24 hours prior to distillation.", true, 5.00),
+	("Bombay Sapphire", "The flavour of the drink comes from ten ingredients: almond, lemon peel, liquorice, juniper berries, orris root, angelica, coriander, cassia, cubeb, and grains of paradise", true, 7.00),
 	("Hendrick's", null, true, 5.00),
 	("Plymouth", null, true, 5.00),
 
@@ -13,10 +13,10 @@ values
 	("Appleton Estate 12 Year Rare", null, true, 8.00),
 	("Captain Morgan", null, true, 5.00),
 
-	("Polar Ice", null, true, 5.00),
-	("Grey Goose", null, true, 8.00),
-	("Belvedere", null, true, 8.00),
-	("Absolut", null, true, 6.00),
+	("Polar Ice", "Produced from Canadian wheat, it is quadruple distilled, which its vendors claim rids the vodka of microscopic impurities", true, 5.00),
+	("Grey Goose", "The wheat used in the creation of Grey Goose vodka is grown in Picardy, France.  It is soft winter wheat, sown in October and harvested in August, which provides it with four additional months of growth", true, 8.00),
+	("Belvedere", "Clear, water-white colour; aromas of citrus, pastry and vanilla; round and smooth with sweet grainy flavours and a long finish", true, 8.00),
+	("Absolut", "Clear and colourless; soft grain aroma; warmth of alcohol with hint of sweetness smooth and clean", true, 6.00),
 	("Stolichnaya", null, true, 5.00),
 
 	("Don Julio Blanco", null, true, 6.00),
@@ -25,44 +25,44 @@ values
 	("Jose Cuervo Especial Gold", null, true, 5.00),
 	("Jose Cuervo Especial Silver", null, true, 5.00),
 
-	("Martini Rosso", null, true, 2.00),
+	("Martini Rosso", "Copper/amber colour; floral aroma with herbs, spice and orange in aroma & flavour; sweet with good balance", true, 2.00),
 	("Noilly Prat Rouge", null, true, 2.50),
 	("Cinzano Rosso", null, true, 3.00),
 
-	("Martini Dry", null, true, 2.00),
+	("Martini Dry", "The brand may have given the American martini vermouth and gin cocktail its name (a first recipe of which is known from 1888), though other speculations on the cocktail's etymology exist.", true, 2.00),
 	("Noilly Prat Extra Dry", null, true, 3.00),
 
 	("Canadian Club", null, true, 6.00),
-	("Crown Royal", null, true, 7.00),
+	("Crown Royal", "The reigning monarch King George VI, and his wife, Queen Elizabeth, visited Canada in 1939. Crown Royal was introduced that year by Seagram, as a tribute to the royal visit", true, 7.00),
 	("Crown Royal Northern Harvest", null, true, 8.00),
-	("Alberta Premium", null, true, 5.00),
+	("Alberta Premium", "Alberta Premium won Canadian Whisky of the Year in Jim Murray's 2006, 2007, 2008 and 2009 Whisky Bibles. It is quite strongly flavoured for a Canadian whisky", true, 5.00),
 
 	("Green Tree", null, true, 8.00),
 	("Blanche Traditionelle", null, true, 11.00),
 	("Blues Cat", null, true, 9.00),
 
 	("Lillet Blanc", null, true, 3.00),
-	("Campari", null, true, 5.00),
+	("Campari", "ampari is an alcoholic liqueur, considered an apéritif, obtained from the infusion of herbs and fruit (including chinotto and cascarilla) in alcohol and water", true, 5.00),
 	("Pernod", null, true, 4.00),
 
 	("Courvoisier V.S.", null, true, 6.00),
 	("Hennessy V.S.O.P", null, true, 10.00),
 	("Courvoisier Reserve Edward VII", null, true, 1000.00),
 
-	("Makers Mark", null, true, 7.00),
-	("Woodford Reserve", null, true, 8.00),
+	("Makers Mark", "Maker's Mark is unusual in that no rye is used as part of the mash. Instead red winter wheat is used, along with corn (the predominant grain) and malted barley", true, 7.00),
+	("Woodford Reserve", "The official Bourbon of the Kentucky Derby", true, 8.00),
 	("Wild Turkey", null, true, 6.00),
 	("Buffalo Trace", null, true, 5.50),
 	("Bulleit", null, true, 6.00),
-	("Jim Beam", null, true, 5.00),
+	("Jim Beam", "Since 1795 (interrupted by Prohibition), seven generations of the Beam family have been involved in whiskey production for the company that produces thisbrand", true, 5.00),
 
 	("Bailey's Original Irish Cream", null, true, 4.00),
-	("Cointreau", null, true, 5.00),
+	("Cointreau", "Cointreau is a brand of triple-sec that sources its bitter oranges from all over the world, usually Spain, Brazil, Haiti and Macedonia", true, 5.00),
 	("Drambuie", null, true, 4.00),
 	("Fireball", null, true, 4.00),
 	("Grand Marnier Cordon Rouge", null, true, 4.50),
-	("Jagermeister", null, true, 4.00),
-	("Kahula", null, true, 4.00),
+	("Jagermeister", "Jägermeister’s ingredients include 56 herbs, fruits, roots, and spices, including citrus peel, licorice, anise, poppy seeds, saffron, ginger, juniper berries, and ginseng.", true, 4.00),
+	("Kahula", "Because Kahlúa is made from coffee beans, it contains caffeine. According to the company, this is approximately 10 mg per 100 mL (4.85 mg in each 1.5 oz) drink", true, 4.00),
 	("Luxardo Maraschino", null, true, 4.50),
 	("Meagher's Triple Sec", null, true, 3.00),
 	("Creme de Violette", null, true, 4.00),
@@ -343,7 +343,7 @@ insert into ingredientindrink
 
 insert into admin (name, pw)
 	values
-    ('admin', 'admin')
+    ('admin', 'admin');
 
 insert into bartender 
 	values
