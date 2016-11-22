@@ -164,3 +164,19 @@ CREATE VIEW WhiskeyExperts AS
     FROM drinkswithwhiskey
   );
 
+/* Triggers don't work with Azure
+
+# CREATE TRIGGER seinfeld
+# AFTER INSERT ON customerorder
+# FOR EACH ROW
+#   IF cust_name = 'George Costanza'
+#   THEN SET notes = 'Poisoned boss';
+#   END IF;
+
+# CREATE TRIGGER total_order
+# AFTER INSERT ON customerorder
+# FOR EACH ROW
+#   IF Mod(count(customerorder.order_no), 1000) = 0
+#   THEN INSERT INTO payment (amount, card_no, order_no)
+#   VALUES (0, payment.card_no, customerorder.order_no);
+#   END IF;
