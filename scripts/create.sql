@@ -165,7 +165,7 @@ CREATE VIEW WhiskeyExperts AS
     FROM drinkswithwhiskey
   );
 
-/* Triggers don't work with Azure
+# Triggers don't work with Azure
 
 # CREATE TRIGGER seinfeld
 # AFTER INSERT ON customerorder
