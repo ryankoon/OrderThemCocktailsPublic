@@ -24,13 +24,40 @@ $(document).ready(function (){
         $.ajax(url, {
             type: 'DELETE',
 			success : function () {
-            	alert('Successful delete');
+                showSuccess('Successful delete', false);
 			},
 			error : function (err){
-            	alert('Error deleting!');
+            	showError('Error deleting!');
 			}
         })
 	})
+	var showSuccess = function  (val, ourBool) {
+        $('.alert-handler').addClass('alert-success');
+        $('.alert-handler-text').text(val);
+        $('.alert-handler').show();
+        if (ourBool === true) {
+            $('.payment-del').show();
+        }
+        else{
+        	$('.payment-del').hide();
+		}
+        window.setTimeout(function () {
+            $('.alert-handler').hide();
+            $('.alert-handler').removeClass('alert-success');
+            $('.payment-del').hide();
+        }, 10000);
+	}
+	var showError = function (val){
+
+        $('.submit-drink-order').attr('disabled', false);
+        $('.alert-handler').addClass('alert-danger');
+        $('.alert-handler').text(val);
+        $('.alert-handler').show();
+        window.setTimeout(function () {
+            $('.alert-handler').hide();
+            $('.alert-handler').removeClass('alert-danger');
+        }, 5000);
+	}
 	/*
 	Event bindings.
 	*/
@@ -61,16 +88,9 @@ $(document).ready(function (){
                 dataType: 'json',
                 type: 'POST',
                 success: function (res) {
+
                 	paymentId = res.paymentId;
-                    $('.alert-handler').addClass('alert-success');
-                    $('.alert-handler-text').text('Order successfully sent. Please have a seat at your table');
-                    $('.alert-handler').show();
-                    $('.payment-del').show();
-                    window.setTimeout(function () {
-                        $('.alert-handler').hide();
-                        $('.alert-handler').removeClass('alert-success');
-                        $('.payment-del').hide();
-                    }, 10000);
+         			showSuccess('Order successfully sent. Please have a seat at your table', true);
                 },
                 error: function (err) {
                     $('.submit-drink-order').attr('disabled', false);
